@@ -52,6 +52,8 @@ const ScrollToTop = () => {
   return null;
 };
 import Index from "./pages/Index.tsx";
+import Komunita from "./pages/Komunita.tsx";
+import { KOMUNITA_PATH } from "./lib/cennikCta.ts";
 import Konzultacia from "./pages/Konzultacia.tsx";
 import Gdpr from "./pages/Gdpr.tsx";
 import KalkulackyCategoryPage from "./pages/kalkulacky/KalkulackyCategoryPage.tsx";
@@ -90,6 +92,7 @@ const App = () => (
     <ScrollToTop />
     <Routes>
       <Route path="/" element={<Index />} />
+      <Route path={KOMUNITA_PATH} element={<Komunita />} />
       <Route path="/konzultacia" element={<Konzultacia />} />
       <Route path="/gdpr" element={<Gdpr />} />
       <Route path={BONUSY_BASE_PATH} element={<KalkulackyCategoryPage />} />
