@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { scrollToAnchorId, isScrolledNearAnchor } from "@/lib/scrollToFormular";
 
@@ -59,7 +59,6 @@ import KalkulackyProductPage from "./pages/kalkulacky/KalkulackyProductPage.tsx"
 import {
   BONUSY_BASE_PATH,
   KALKULACKY_CALCULATORS,
-  KALKULACKY_LEGACY_PATH_REDIRECTS,
 } from "./pages/kalkulacky/kalkulackyConfig.ts";
 import HypotekarnaCalculator from "./components/calculators/hypotekarna/HypotekarnaCalculator.tsx";
 import InvesticnaCalculator from "./components/calculators/investicna/InvesticnaCalculator.tsx";
@@ -112,9 +111,6 @@ const App = () => (
           />
         );
       })}
-      {KALKULACKY_LEGACY_PATH_REDIRECTS.map(({ from, to }) => (
-        <Route key={from} path={from} element={<Navigate to={to} replace />} />
-      ))}
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<NotFound />} />
     </Routes>

@@ -109,18 +109,6 @@ export const BONUSY_PDF_CARD = {
   Icon: FileDown,
 } as const;
 
-/** Presmerovania zo starých /kalkulacky URL. */
-export const KALKULACKY_LEGACY_PATH_REDIRECTS: { from: string; to: string }[] = [
-  { from: "/kalkulacky", to: BONUSY_BASE_PATH },
-  { from: "/kalkulacky/hypo-smart", to: `${BONUSY_BASE_PATH}/hypo-kalkulacka` },
-  { from: "/kalkulacky/investicna", to: `${BONUSY_BASE_PATH}/investicna-kalkulacka` },
-  { from: "/kalkulacky/mzdova-kalkulacka", to: `${BONUSY_BASE_PATH}/mzdova-kalkulacka` },
-  { from: "/kalkulacky/uvery", to: `${BONUSY_BASE_PATH}/uverova-kalkulacka` },
-  { from: "/kalkulacky/rentova-kalkulacka", to: `${BONUSY_BASE_PATH}/rentova-kalkulacka` },
-  { from: "/kalkulacky/podla-prijmu", to: `${BONUSY_BASE_PATH}/uverova-kalkulacka` },
-  { from: "/kalkulacky/uvery-dti-dsti", to: `${BONUSY_BASE_PATH}/uverova-kalkulacka` },
-];
-
 /** Skupiny pre dropdown navigáciu v headeri. */
 export type NavGroup = {
   label: string;
