@@ -100,14 +100,15 @@
 .km-stage-cap small { font-weight: 500; opacity: 0.72; }
 .km-stage-frame { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: var(--km-r); overflow: hidden; background: var(--km-ink); }
 .km-stage-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
-.km-strip { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 62rem; margin: 2.5rem auto 0; padding: 0; list-style: none; border-radius: var(--km-r); border: 1px solid var(--km-hair); background: linear-gradient(180deg, #fffcf7 0%, #f6f0e7 100%); overflow: hidden; }
+.km-strip { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 62rem; margin: 2.5rem auto 0; padding: 0; list-style: none; border-radius: var(--km-r); border: 1px solid rgba(243, 233, 221, 0.14); outline: 1px solid rgba(41, 36, 32, 0.08); outline-offset: 6px; background: radial-gradient(120% 140% at 50% -20%, #4a3c31 0%, #322b26 45%, #241f1b 100%); color: var(--km-paper); overflow: hidden; }
 @media (min-width: 768px) { .km-strip { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-.km-strip li { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 1.5rem 1rem 1.375rem; text-align: center; border-left: 1px solid var(--km-hair); }
+.km-strip li { position: relative; display: flex; flex-direction: column; align-items: center; gap: 0.625rem; padding: 1.75rem 1rem 1.5rem; text-align: center; border-left: 1px solid rgba(243, 233, 221, 0.14); transition: background 0.25s; }
+.km-strip li:hover { background: rgba(243, 233, 221, 0.05); }
 .km-strip li:first-child { border-left: none; }
-@media (max-width: 767px) { .km-strip li:nth-child(odd) { border-left: none; } .km-strip li:nth-child(n + 3) { border-top: 1px solid var(--km-hair); } }
-.km-strip-ico { display: inline-flex; align-items: center; justify-content: center; width: 2.25rem; height: 2.25rem; border-radius: 9999px; background: var(--km-stone); color: var(--km-green); }
-.km-strip b { display: block; white-space: nowrap; font-family: var(--font-serif); font-size: clamp(1.625rem, 2.4vw, 2.25rem); line-height: 1; font-weight: 800; letter-spacing: -0.02em; color: var(--km-ink); font-variant-numeric: tabular-nums; }
-.km-strip span:last-child { display: block; font-size: 0.8125rem; line-height: 1.35; color: var(--km-fg3); }
+@media (max-width: 767px) { .km-strip li:nth-child(odd) { border-left: none; } .km-strip li:nth-child(n + 3) { border-top: 1px solid rgba(243, 233, 221, 0.14); } }
+.km-strip-ico { display: inline-flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: 9999px; background: rgba(243, 233, 221, 0.1); color: var(--km-gold); }
+.km-strip b { display: block; white-space: nowrap; font-family: var(--font-serif); font-size: clamp(1.875rem, 2.8vw, 2.75rem); line-height: 1; font-weight: 800; letter-spacing: -0.02em; color: var(--km-paper); font-variant-numeric: tabular-nums; }
+.km-strip span:last-child { display: block; font-size: 0.875rem; line-height: 1.35; color: rgba(243, 233, 221, 0.68); }
 
 /* ------------------------------ Vyhlásenie ------------------------------ */
 .km-pull { max-width: 52rem; margin: 0 auto; text-align: center; }
