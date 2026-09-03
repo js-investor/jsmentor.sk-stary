@@ -19,6 +19,9 @@ const FEATURED = [
   "etf-semafor",
   "poplatkovy-rontgen",
   "rentova-kalkulacka",
+  "skoring-bytov",
+  "bytovy-semafor",
+  "investicna-kalkulacka",
 ];
 
 const HeroHeroKalkulackySection = ({ locked = false }: { locked?: boolean }) => {

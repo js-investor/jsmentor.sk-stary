@@ -107,11 +107,17 @@
 .km-strip b { display: block; white-space: nowrap; font-family: var(--font-serif); font-size: clamp(2rem, 2.9vw, 2.75rem); line-height: 1; font-weight: 800; letter-spacing: -0.03em; color: var(--km-ink); font-variant-numeric: tabular-nums; }
 .km-strip p { margin: 0.625rem 0 0; font-size: 0.9375rem; line-height: 1.45; color: var(--km-fg2); text-wrap: pretty; }
 
-/* ------------------------------ Vyhlásenie ------------------------------ */
-.km-pull { max-width: 52rem; margin: 0 auto; text-align: center; }
-.km-pull blockquote { margin: 0; font-family: var(--font-serif); font-size: clamp(1.625rem, 3.6vw, 2.5rem); line-height: 1.2; font-weight: 700; letter-spacing: -0.02em; color: var(--km-ink); text-wrap: balance; }
-.km-pull blockquote em { font-style: italic; color: var(--km-green); }
+/* ------------------------------ Pre koho to je: fotka + vyhlásenie (Alo / Patreon) ------------------------------ */
+.km-section--tight { padding-top: 3.5rem; }
+@media (min-width: 768px) { .km-section--tight { padding-top: 4.5rem; } }
+.km-intro { display: grid; grid-template-columns: 1fr; gap: 2.25rem; align-items: center; }
+@media (min-width: 1024px) { .km-intro { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 4.5rem; } }
+.km-intro-photo img { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 18%; border-radius: var(--km-r); background: var(--km-ink-2); }
+@media (max-width: 1023px) { .km-intro-photo img { aspect-ratio: 16 / 10; } }
+.km-intro-statement { margin: 0 0 1.25rem; font-family: var(--font-serif); font-size: clamp(1.75rem, 3.2vw, 2.625rem); line-height: 1.15; font-weight: 700; letter-spacing: -0.02em; color: var(--km-ink); text-wrap: balance; }
+.km-intro-statement em { font-style: italic; color: var(--km-green); }
 .km-pull-lead { color: var(--km-fg3); font-weight: 600; }
+.km-intro-copy .km-lede { max-width: 34rem; }
 
 /* ------------------------------ 2. Chyby: mriežka na hnedom ------------------------------ */
 .km-mistakes-head { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-bottom: 2.5rem; }
@@ -190,23 +196,27 @@
 .km-bonusy .headline-landing-section { font-family: var(--font-serif); letter-spacing: -0.02em; }
 
 /* ------------------------------ 7. Dôkazy ------------------------------ */
-.km-bigstats { display: grid; grid-template-columns: 1fr; gap: 1rem; margin: 0 0 1.25rem; padding: 0; list-style: none; }
-@media (min-width: 640px) { .km-bigstats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; } }
-.km-bigstats li { padding: 1.5rem; border-radius: var(--km-r); background: var(--km-ivory); border: 1px solid var(--km-hair); }
-.km-bigstats li:nth-child(2) { background: var(--km-sand); border-color: transparent; }
-.km-bigstats li:nth-child(3) { background: var(--km-green); border-color: transparent; color: var(--km-paper); }
-.km-bigstats b { display: block; font-family: var(--font-serif); font-size: clamp(2.5rem, 4.5vw, 3.5rem); line-height: 1; font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
-.km-bigstats span { display: block; margin-top: 0.625rem; font-size: 0.9375rem; line-height: 1.45; color: var(--km-fg2); }
-.km-bigstats li:nth-child(3) span { color: rgba(243, 233, 221, 0.82); }
-.km-bigstats span strong { font-weight: 600; color: inherit; }
-.km-quotes { display: grid; grid-template-columns: 1fr; gap: 1rem; }
-@media (min-width: 768px) { .km-quotes { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; } }
-.km-quote { display: flex; flex-direction: column; gap: 1.25rem; margin: 0; padding: 1.5rem; border-radius: var(--km-r); background: var(--km-ivory); border: 1px solid var(--km-hair); }
-.km-quote blockquote { margin: 0; font-family: var(--font-serif); font-size: 1.25rem; line-height: 1.3; font-weight: 600; color: var(--km-ink); text-wrap: pretty; }
-.km-quote blockquote::before { content: "„"; color: var(--km-green); margin-right: 0.125rem; }
-.km-quote figcaption { display: grid; grid-template-columns: 2.75rem 1fr; gap: 0.75rem; align-items: center; margin-top: auto; font-size: 0.8125rem; line-height: 1.35; color: var(--km-fg3); }
-.km-quote figcaption b { display: block; font-size: 0.9375rem; font-weight: 600; color: var(--km-ink); }
-.km-avatar { width: 2.75rem; height: 2.75rem; border-radius: 9999px; object-fit: cover; background: var(--km-sand); }
+.km-carousel { position: relative; max-width: 58rem; margin: 0 auto; padding: 2.5rem 1.5rem 2rem; border-radius: var(--km-r); background: var(--km-ivory); border: 1px solid var(--km-hair); text-align: center; }
+@media (min-width: 768px) { .km-carousel { padding: 3.5rem 6rem 2.5rem; } }
+.km-car-item { margin: 0; animation: km-in 0.5s var(--km-ease) both; }
+.km-car-item blockquote { margin: 0 auto; max-width: 40rem; font-family: var(--font-serif); font-size: clamp(1.5rem, 2.8vw, 2.25rem); line-height: 1.25; font-weight: 600; color: var(--km-ink); text-wrap: balance; }
+.km-car-item figcaption { display: inline-flex; align-items: center; gap: 0.875rem; margin-top: 1.75rem; text-align: left; font-size: 0.875rem; line-height: 1.35; color: var(--km-fg3); }
+.km-car-item figcaption img { width: 3.25rem; height: 3.25rem; border-radius: 9999px; object-fit: cover; background: var(--km-sand); }
+.km-car-item figcaption b { display: block; font-size: 1rem; font-weight: 600; color: var(--km-ink); }
+.km-car-btn { position: absolute; top: 50%; display: inline-flex; align-items: center; justify-content: center; width: 2.75rem; height: 2.75rem; border-radius: 9999px; border: 1px solid var(--km-hair-2); background: var(--km-ivory); color: var(--km-ink); cursor: pointer; transform: translateY(-50%); transition: background 0.2s, border-color 0.2s; }
+.km-car-btn:hover { background: var(--km-sand); border-color: var(--km-hair-2); }
+.km-car-btn--prev { left: 1rem; }
+.km-car-btn--next { right: 1rem; }
+@media (max-width: 767px) { .km-car-btn { display: none; } }
+.km-car-dots { display: flex; justify-content: center; gap: 0.5rem; margin-top: 1.5rem; }
+.km-dot { width: 0.5rem; height: 0.5rem; padding: 0; border: none; border-radius: 9999px; background: var(--km-hair-2); cursor: pointer; transition: transform 0.2s, background 0.2s; }
+.km-dot.is-on { background: var(--km-green); transform: scale(1.3); }
+.km-proofstats { display: grid; grid-template-columns: 1fr; gap: 1.5rem; max-width: 58rem; margin: 3rem auto 0; padding: 2rem 0 0; list-style: none; border-top: 1px solid var(--km-hair-2); }
+@media (min-width: 640px) { .km-proofstats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem; } }
+.km-proofstats small { display: block; margin-bottom: 0.625rem; font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--km-green); }
+.km-proofstats b { display: block; white-space: nowrap; font-family: var(--font-serif); font-size: clamp(2rem, 2.9vw, 2.75rem); line-height: 1; font-weight: 800; letter-spacing: -0.03em; color: var(--km-ink); font-variant-numeric: tabular-nums; }
+.km-proofstats p { margin: 0.625rem 0 0; font-size: 0.9375rem; line-height: 1.45; color: var(--km-fg2); }
+.km-proofstats p strong { font-weight: 600; color: var(--km-ink); }
 .km-wall { margin-top: 3.5rem; }
 .km-wall-cap { margin: 0 0 1rem; text-align: center; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--km-fg3); }
 .km-marquee { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); }
@@ -223,13 +233,13 @@
 @media (min-width: 1024px) { .km-offer { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 4rem; } }
 .km-offer-price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem 1rem; margin: 1.5rem 0 0.75rem; }
 .km-offer-price b { font-family: var(--font-serif); font-size: clamp(4.5rem, 10vw, 7.5rem); line-height: 0.9; font-weight: 800; letter-spacing: -0.04em; color: var(--km-paper); }
-.km-offer-price span { font-family: var(--font-serif); font-style: italic; font-size: 1.5rem; font-weight: 600; color: #bfe0cb; }
+.km-offer-price span { font-family: var(--font-serif); font-style: italic; font-size: 1.5rem; font-weight: 600; color: var(--km-gold); }
 .km-offer-line { margin: 0; font-size: 1.125rem; line-height: 1.5; color: rgba(243, 233, 221, 0.86); text-wrap: pretty; }
 .km-offer-line + .km-offer-line { margin-top: 0.375rem; color: rgba(243, 233, 221, 0.66); font-size: 1rem; }
 .km-checks { list-style: none; margin: 1.75rem 0 0; padding: 0; display: flex; flex-direction: column; }
 .km-checks li { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.75rem 0; border-top: 1px solid rgba(243, 233, 221, 0.18); font-size: 1rem; line-height: 1.5; color: var(--km-paper); }
 .km-checks li:last-child { border-bottom: 1px solid rgba(243, 233, 221, 0.18); }
-.km-checks svg { flex-shrink: 0; margin-top: 0.2rem; color: #bfe0cb; }
+.km-checks svg { flex-shrink: 0; margin-top: 0.2rem; color: var(--km-gold); }
 .km-offer-note { margin: 1rem 0 0; font-size: 0.8125rem; line-height: 1.5; color: rgba(243, 233, 221, 0.62); }
 .km-offer-side { padding: 1.75rem; border-radius: var(--km-r); background: var(--km-ivory); color: var(--km-ink); }
 @media (min-width: 768px) { .km-offer-side { padding: 2.25rem; } }

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import {
+  ArrowLeft,
   ArrowRight,
   BarChart3,
   Calculator,
@@ -29,6 +30,7 @@ import videoPoster from "@/assets/images/komunita-video-poster.jpg";
 import ivanKniha from "@/assets/images/js-investor-ivan-kniha.jpg";
 import ivanPolo from "@/assets/images/jsmentor-casual-biznis-muz-biela-kosela.jpg";
 import vitajWide from "@/assets/images/komunita-vitaj.jpg";
+import vitajBlizko from "@/assets/images/komunita-vitaj-blizko.jpg";
 import {
   CENNIK,
   CHYBY,
@@ -160,12 +162,6 @@ const CountUp = ({ text }: { text: string }) => {
   );
 };
 
-const BigStat = ({ number, text }: { number: string; text: string }) => (
-  <li>
-    <b><CountUp text={number} /></b>
-    <span>{rich(text)}</span>
-  </li>
-);
 
 /** Pás čísel pod videom (variant A – editoriál bez karty). Prvé číslo podľa Ivana: stiahnutia online kurzov. */
 const STRIP = (tools: number) => [
@@ -174,6 +170,43 @@ const STRIP = (tools: number) => [
   { kicker: "V starostlivosti", value: "3,5\u00a0mil.\u00a0€", text: "klientskych aktív pod dohľadom NBS" },
   { kicker: "Bonusy", value: String(tools), text: "nástrojov a kalkulačiek zadarmo" },
 ];
+
+/** Jedna recenzia naraz – veľký citát, šípky, bodky, samo sa strieda (Alo Wellness Club). */
+const Testimonials = () => {
+  const items = REVIEWS.testimonials;
+  const [index, setIndex] = useState(0);
+  const [hover, setHover] = useState(false);
+  useEffect(() => {
+    if (hover || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const id = window.setInterval(() => setIndex((v) => (v + 1) % items.length), 6000);
+    return () => window.clearInterval(id);
+  }, [hover, items.length]);
+  const t = items[index];
+  return (
+    <div className="km-carousel" onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
+      <button type="button" className="km-car-btn km-car-btn--prev" onClick={() => setIndex((index - 1 + items.length) % items.length)} aria-label="Predchádzajúca recenzia">
+        <ArrowLeft className="h-4 w-4" strokeWidth={1.75} aria-hidden />
+      </button>
+      <figure className="km-car-item" key={t.name}>
+        <blockquote>„{t.quote}“</blockquote>
+        <figcaption>
+          <img src={asset(t.avatar.src)} alt="" decoding="async" />
+          <span><b>{t.name}</b>{t.role}</span>
+        </figcaption>
+      </figure>
+      <button type="button" className="km-car-btn km-car-btn--next" onClick={() => setIndex((index + 1) % items.length)} aria-label="Ďalšia recenzia">
+        <ArrowRight className="h-4 w-4" strokeWidth={1.75} aria-hidden />
+      </button>
+      <div className="km-car-dots" role="tablist" aria-label="Recenzie">
+        {items.map((it, k) => (
+          <button key={it.name} type="button" role="tab" aria-selected={k === index} className={cn("km-dot", k === index && "is-on")} onClick={() => setIndex(k)} aria-label={`Recenzia ${k + 1}`} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const PROOF_KICKERS = ["Investičný kurz", "Rentový kurz", "Individuálne plány"];
 
 const Komunita2 = () => {
   useScrollDepth();
@@ -269,16 +302,25 @@ const Komunita2 = () => {
           </div>
         </section>
 
-        {/* ═══ Pre koho to je ═══ */}
-        <section className="km-section" id={SECTION_IDS.intro}>
+        {/* ═══ Pre koho to je: fotka + vyhlásenie ═══ */}
+        <section className="km-section km-section--tight" id={SECTION_IDS.intro}>
           <div className="km-wrap">
-            <AnimatedSection>
-              <figure className="km-pull">
-                <blockquote>
+            <div className="km-intro">
+              <AnimatedSection className="km-intro-photo">
+                <img src={vitajBlizko} alt="Ivan Jašík pred stenou členov komunity" loading="lazy" decoding="async" />
+              </AnimatedSection>
+              <AnimatedSection delay={0.06} className="km-intro-copy">
+                <span className="km-kicker">Pre koho to je</span>
+                <p className="km-intro-statement">
                   <span className="km-pull-lead">{INTRO.mutedLead}</span> je pre ľudí, ktorí chcú <em>finančne rásť.</em> Ktorí chcú počuť odborné praktické rady a nie prázdne teórie.
-                </blockquote>
-              </figure>
-            </AnimatedSection>
+                </p>
+                <p className="km-lede">{CHYBY.intro}</p>
+                <div className="km-actions">
+                  <CtaLink cta={HERO.primaryCta} />
+                  <a href={`#${SECTION_IDS.nastroje}`} className="km-link">Pozrieť, čo je vnútri</a>
+                </div>
+              </AnimatedSection>
+            </div>
           </div>
         </section>
 
@@ -428,7 +470,7 @@ const Komunita2 = () => {
           <HeroHeroKalkulackySection locked />
         </div>
 
-        {/* ═══ 7. Dôkazy ═══ */}
+        {/* ═══ 7. Dôkazy: veľký citát, čísla, stena správ ═══ */}
         <section className="km-section" id={SECTION_IDS.reviews}>
           <div className="km-wrap">
             <AnimatedSection>
@@ -438,24 +480,18 @@ const Komunita2 = () => {
               </div>
             </AnimatedSection>
             <AnimatedSection delay={0.05}>
-              <ul className="km-bigstats">
-                {REVIEWS.stats.map((s) => (
-                  <BigStat key={s.number} number={s.number} text={s.text} />
-                ))}
-              </ul>
+              <Testimonials />
             </AnimatedSection>
             <AnimatedSection delay={0.1}>
-              <div className="km-quotes">
-                {REVIEWS.testimonials.map((t) => (
-                  <figure key={t.name} className="km-quote">
-                    <blockquote>{t.quote}</blockquote>
-                    <figcaption>
-                      <img className="km-avatar" src={asset(t.avatar.src)} alt="" decoding="async" />
-                      <span><b>{t.name}</b>{t.role}</span>
-                    </figcaption>
-                  </figure>
+              <ul className="km-proofstats" aria-label="Čísla">
+                {REVIEWS.stats.map((st, i) => (
+                  <li key={st.number}>
+                    <small>{PROOF_KICKERS[i]}</small>
+                    <b><CountUp text={st.number} /></b>
+                    <p>{rich(st.text)}</p>
+                  </li>
                 ))}
-              </div>
+              </ul>
               <div className="km-actions km-center"><CtaLink cta={REVIEWS.cta} /></div>
             </AnimatedSection>
           </div>
@@ -473,8 +509,8 @@ const Komunita2 = () => {
           </div>
         </section>
 
-        {/* ═══ 8. Ponuka (CTA1): tmavozelený plagát ═══ */}
-        <section className="km-band km-band--green" id={HODNOTA.sectionId} data-section={HODNOTA.sectionId}>
+        {/* ═══ 8. Ponuka (CTA1): hnedý plagát ═══ */}
+        <section className="km-band km-band--ink km-band--offer" id={HODNOTA.sectionId} data-section={HODNOTA.sectionId}>
           <div className="km-wrap">
             <div className="km-offer">
               <AnimatedSection>
