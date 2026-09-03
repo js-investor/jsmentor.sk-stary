@@ -196,6 +196,9 @@
 .km-bonusy .headline-landing-section { font-family: var(--font-serif); letter-spacing: -0.02em; }
 
 /* ------------------------------ 7. Dôkazy ------------------------------ */
+/* po bonusoch (majú vlastné spodné odsadenie) nasleduje sekcia dôkazov tesnejšie */
+.km-bonusy + .km-section { padding-top: 1.5rem; }
+@media (min-width: 768px) { .km-bonusy + .km-section { padding-top: 2rem; } }
 .km-carousel { position: relative; max-width: 58rem; margin: 0 auto; padding: 2.5rem 1.5rem 2rem; border-radius: var(--km-r); background: var(--km-ivory); border: 1px solid var(--km-hair); text-align: center; }
 @media (min-width: 768px) { .km-carousel { padding: 3.5rem 6rem 2.5rem; } }
 .km-car-item { margin: 0; animation: km-in 0.5s var(--km-ease) both; }
