@@ -1,6 +1,6 @@
 import AnimatedSection from "@/components/AnimatedSection";
 import { CENNIK_SECTION_HREF } from "@/lib/cennikCta";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { BONUSY_BASE_PATH, KALKULACKY_CALCULATORS } from "@/pages/kalkulacky/kalkulackyConfig";
 import { ToolCard } from "@/pages/kalkulacky/bonusyCards";
@@ -21,7 +21,7 @@ const FEATURED = [
   "rentova-kalkulacka",
 ];
 
-const HeroHeroKalkulackySection = () => {
+const HeroHeroKalkulackySection = ({ locked = false }: { locked?: boolean }) => {
   const featured = FEATURED.map((slug) => KALKULACKY_CALCULATORS.find((c) => c.slug === slug)).filter(
     (c): c is (typeof KALKULACKY_CALCULATORS)[number] => Boolean(c),
   );
@@ -44,16 +44,17 @@ const HeroHeroKalkulackySection = () => {
             <span className="font-[500]">A k tomu dostaneš aj</span> <strong className="font-bold">praktické bonusy</strong> <span aria-hidden>🎁</span>
           </h2>
           <p className="mx-auto mt-5 max-w-2xl text-center font-sans text-[1.125rem] leading-relaxed text-muted-foreground md:text-[1.25rem] lg:text-[1.375rem]">
-            Dvanásť kalkulačiek a nástrojov priamo v prehliadači. Žiadna registrácia, presné čísla hneď.
-            V komunite ti ukážem, ako z nich vyťažiť maximum na tvojich vlastných číslach.
+            {locked
+              ? "Dvanásť kalkulačiek a nástrojov, ktoré dostaneš ako bonus hneď po pripojení do komunity. Ukážem ti, ako z nich vyťažiť maximum na tvojich vlastných číslach."
+              : "Dvanásť kalkulačiek a nástrojov priamo v prehliadači. Žiadna registrácia, presné čísla hneď. V komunite ti ukážem, ako z nich vyťažiť maximum na tvojich vlastných číslach."}
           </p>
         </AnimatedSection>
 
         <AnimatedSection delay={0.06}>
-          <div className="bonusy kb">
+          <div className={locked ? "bonusy kb kb-locked" : "bonusy kb"}>
             <div className="kb-grid">
               {featured.map((meta, i) => (
-                <ToolCard key={meta.slug} meta={meta} index={i} />
+                <ToolCard key={meta.slug} meta={meta} index={i} locked={locked} />
               ))}
             </div>
           </div>
@@ -62,22 +63,33 @@ const HeroHeroKalkulackySection = () => {
         <AnimatedSection delay={0.1}>
           <div className="kb-more">
             <span className="kb-more-label">A ďalšie:</span>
-            {rest.map((c) => (
-              <Link key={c.slug} to={`${BONUSY_BASE_PATH}/${c.slug}`} className="kb-chip">
-                {c.menuLabel}
-              </Link>
-            ))}
+            {rest.map((c) =>
+              locked ? (
+                <span key={c.slug} className="kb-chip kb-chip--locked">
+                  <Lock className="h-3 w-3" strokeWidth={2.25} aria-hidden />
+                  {c.menuLabel}
+                </span>
+              ) : (
+                <Link key={c.slug} to={`${BONUSY_BASE_PATH}/${c.slug}`} className="kb-chip">
+                  {c.menuLabel}
+                </Link>
+              ),
+            )}
           </div>
         </AnimatedSection>
 
         <AnimatedSection delay={0.14} className="w-full text-center">
           <div className="kb-actions">
             <a href={CENNIK_SECTION_HREF} className="btn-primary inline-flex text-body" data-umami-event="click_cennik" data-umami-event-section="kalkulacky">
-              Chcem tieto bonusy 🎁
+              {locked ? "Odomknúť bonusy zadarmo 🎁" : "Chcem tieto bonusy 🎁"}
             </a>
-            <Link to={BONUSY_BASE_PATH} className="kb-link">
-              Vyskúšať všetky nástroje zadarmo <ArrowRight className="h-4 w-4" aria-hidden />
-            </Link>
+            {locked ? (
+              <span className="kb-note">Bonusy sa odomknú hneď po pripojení. Prvé 2 týždne zadarmo.</span>
+            ) : (
+              <Link to={BONUSY_BASE_PATH} className="kb-link">
+                Vyskúšať všetky nástroje zadarmo <ArrowRight className="h-4 w-4" aria-hidden />
+              </Link>
+            )}
           </div>
         </AnimatedSection>
       </div>

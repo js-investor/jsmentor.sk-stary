@@ -21,3 +21,13 @@
 .kb-link svg { transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1); }
 .kb-link:hover { text-decoration: underline; text-underline-offset: 4px; }
 .kb-link:hover svg { transform: translateX(3px); }
+
+/* zamknuté bonusy na /komunita: karty nie sú odkazy, majú zámok a text „Odomkne sa po pripojení“ */
+.kb-locked .bz-card--locked { cursor: default; }
+.kb-locked .bz-card--locked:hover { transform: none; }
+.kb-locked .bz-card--locked .bz-glyph { opacity: 0.85; }
+.kb-locked .bz-lock { display: inline-flex; align-items: center; gap: 0.25rem; }
+.kb-locked .bz-card--locked .bz-card-cta { gap: 0.375rem; opacity: 0.85; }
+.kb-chip--locked { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.4375rem 0.875rem; border: 1px solid rgba(41, 36, 32, 0.14); border-radius: 9999px; background: transparent; font-family: 'Matter', 'Gilroy', sans-serif; font-size: 0.875rem; font-weight: 500; color: #6b625a; }
+.kb-chip--locked svg { color: #2a6647; }
+.kb-note { font-family: 'Matter', 'Gilroy', sans-serif; font-size: 0.9375rem; color: #4a4239; }

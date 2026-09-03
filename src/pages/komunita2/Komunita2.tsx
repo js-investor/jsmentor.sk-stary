@@ -22,7 +22,7 @@ import PageWrapper from "@/components/layout/PageWrapper";
 import BonusyHeader from "@/components/layout/BonusyHeader";
 import HeroHeroKalkulackySection from "@/components/sections/HeroHeroKalkulackySection";
 import useScrollDepth from "@/hooks/useScrollDepth";
-import { BONUSY_BASE_PATH, KALKULACKY_CALCULATORS } from "@/pages/kalkulacky/kalkulackyConfig";
+import { KALKULACKY_CALCULATORS } from "@/pages/kalkulacky/kalkulackyConfig";
 import { cn } from "@/lib/utils";
 import jsLogo from "@/assets/images/js-mentor-logo.png";
 import videoPoster from "@/assets/images/komunita-video-poster.jpg";
@@ -181,7 +181,6 @@ const Komunita2 = () => {
   const [playing, setPlaying] = useState(false);
   const [barOn, setBarOn] = useState(false);
   const heroRef = useRef<HTMLElement>(null);
-  const stageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Lišta sa ukáže, keď hero odíde z obrazovky, a schová sa, kým je vidieť ponuku (CTA1).
@@ -198,11 +197,6 @@ const Komunita2 = () => {
     return () => { ioHero.disconnect(); ioOffer.disconnect(); };
   }, []);
 
-  const playHero = () => {
-    setPlaying(true);
-    stageRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-  };
-
   const videoSrc = HERO.video.src.replace("autoplay=0", "autoplay=1");
 
   return (
@@ -214,7 +208,7 @@ const Komunita2 = () => {
           logoAlt="JS Mentor"
           leadingLinks={[
             { label: "Čo získaš", href: `#${SECTION_IDS.nastroje}` },
-            { label: "Bonusy", href: BONUSY_BASE_PATH },
+            { label: "Bonusy", href: "#bonusy-kalkulacky" },
             { label: "Cena", href: LINKS.cennikSectionHash },
             { label: "Otázky", href: `#${SECTION_IDS.faq}` },
           ]}
@@ -238,9 +232,6 @@ const Komunita2 = () => {
               <p className="km-lede km-reveal" style={st(7)}>{HERO.subheadline}</p>
               <div className="km-hero-actions km-reveal" style={st(8)}>
                 <CtaLink cta={HERO.primaryCta} className="km-btn km-btn--lg" />
-                <button type="button" className="km-link" onClick={playHero}>
-                  <Play className="h-4 w-4" strokeWidth={2.25} aria-hidden /> Pozrieť video
-                </button>
               </div>
               <p className="km-trust km-reveal" style={st(9)}>
                 <span className="km-trust-avatars" aria-hidden>
@@ -252,7 +243,7 @@ const Komunita2 = () => {
               </p>
             </div>
 
-            <div className="km-stage km-reveal" style={st(10)} ref={stageRef}>
+            <div className="km-stage km-reveal" style={st(10)}>
               {playing ? (
                 <div className="km-stage-frame">
                   <iframe src={videoSrc} title={HERO.video.title} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen />
@@ -295,12 +286,9 @@ const Komunita2 = () => {
         <section className="km-band km-band--ink" id={SECTION_IDS.chyby}>
           <div className="km-wrap">
             <AnimatedSection>
-              <div className="km-mistakes-head">
-                <div>
-                  <span className="km-kicker km-kicker--gold">Nájdeš sa v tom?</span>
-                  <h2 className="km-h2">{rich(CHYBY.heading)}</h2>
-                </div>
-                <p className="km-lede">{CHYBY.intro}</p>
+              <div className="km-head km-center">
+                <span className="km-kicker km-kicker--gold">Nájdeš sa v tom?</span>
+                <h2 className="km-h2">{rich(CHYBY.heading)}</h2>
               </div>
             </AnimatedSection>
             <AnimatedSection delay={0.06}>
@@ -437,7 +425,7 @@ const Komunita2 = () => {
 
         {/* ═══ 6. Bonusy ═══ */}
         <div className="km-bonusy">
-          <HeroHeroKalkulackySection />
+          <HeroHeroKalkulackySection locked />
         </div>
 
         {/* ═══ 7. Dôkazy ═══ */}
@@ -619,22 +607,22 @@ const Komunita2 = () => {
           </div>
         </section>
 
-        {/* ═══ 12. Záver: plagát „Vitaj vo svete, kde peniaze robia peniaze“ ═══ */}
+        {/* ═══ 12. Záver: plagát vľavo, výzva vpravo ═══ */}
         <section className="km-band km-band--ink">
           <div className="km-wrap">
             <AnimatedSection>
-              <figure className="km-poster">
-                <img src={vitajWide} alt="Ivan Jašík víta nových členov komunity" loading="lazy" decoding="async" />
-                <figcaption className="km-poster-text">Vitaj vo svete, kde peniaze robia peniaze</figcaption>
-              </figure>
-            </AnimatedSection>
-            <AnimatedSection delay={0.06}>
               <div className="km-final">
-                <span className="km-kicker km-kicker--gold">Rozhodni sa podľa seba</span>
-                <h2>Prvé 2 týždne zadarmo, <em>potom len 5 € mesačne.</em></h2>
-                <p>{CENNIK.subheading}. Vojdeš dnu, pozrieš si videá, vyskúšaš nástroje a ak ti to nedáva hodnotu, jedným klikom zrušíš.</p>
-                <CtaLink cta={CENNIK.cta} className="km-btn km-btn--light km-btn--lg" />
-                <small>{CENNIK.note} · {HODNOTA.note}</small>
+                <figure className="km-poster">
+                  <img src={vitajWide} alt="Ivan Jašík víta nových členov komunity" loading="lazy" decoding="async" />
+                  <figcaption className="km-poster-text">Vitaj vo svete, kde peniaze robia peniaze</figcaption>
+                </figure>
+                <div className="km-final-copy">
+                  <span className="km-kicker km-kicker--gold">Rozhodni sa podľa seba</span>
+                  <h2>Prvé 2 týždne zadarmo, <em>potom len 5 € mesačne.</em></h2>
+                  <p>{CENNIK.subheading}. Vojdeš dnu, pozrieš si videá, vyskúšaš nástroje a ak ti to nedáva hodnotu, jedným klikom zrušíš.</p>
+                  <CtaLink cta={CENNIK.cta} className="km-btn km-btn--light km-btn--lg" />
+                  <small>{CENNIK.note} · {HODNOTA.note}</small>
+                </div>
               </div>
             </AnimatedSection>
           </div>

@@ -117,6 +117,7 @@
 .km-mistakes-head { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-bottom: 2.5rem; }
 @media (min-width: 900px) { .km-mistakes-head { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 3rem; align-items: end; } .km-mistakes-head .km-lede { max-width: 30rem; } }
 .km-mistakes { display: grid; grid-template-columns: 1fr; gap: 0.875rem; margin: 0; padding: 0; list-style: none; }
+.km-band--ink .km-head .km-kicker { justify-content: center; }
 @media (min-width: 768px) { .km-mistakes { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; } }
 .km-mistake { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.25rem 1rem 1rem; border-radius: var(--km-r); background: var(--km-ivory); color: var(--km-ink); transition: transform 0.35s var(--km-ease); }
 .km-mistake:hover { transform: translateY(-2px); }
@@ -150,7 +151,7 @@
 .km-summary { padding: 1.5rem; border-radius: var(--km-r); background: var(--km-ivory); border: 1px solid var(--km-hair); }
 @media (min-width: 1024px) { .km-summary { position: sticky; top: 6rem; padding: 1.75rem; } }
 .km-summary-head { display: flex; align-items: center; gap: 0.875rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--km-hair); }
-.km-summary-head img { width: 3rem; height: 3rem; border-radius: 9999px; object-fit: cover; object-position: 50% 15%; background: var(--km-sand); }
+.km-summary-head img { width: 3.25rem; height: 3.25rem; border-radius: 9999px; object-fit: cover; object-position: 50% 12%; background: var(--km-sand); }
 .km-summary-head b { display: block; font-size: 1rem; font-weight: 600; color: var(--km-ink); }
 .km-summary-head small { display: block; margin-top: 0.125rem; font-size: 0.8125rem; color: var(--km-fg3); }
 .km-summary-meta { list-style: none; margin: 0; padding: 0.5rem 0; }
@@ -289,20 +290,17 @@
 .km-ledger-vs { display: flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-style: italic; font-size: 1.25rem; color: var(--km-fg3); }
 @media (min-width: 768px) { .km-ledger-vs { display: none; } }
 
-/* ------------------------------ 12. Záver: plagát + výzva ------------------------------ */
-.km-poster { position: relative; margin: 0 auto 3rem; max-width: 66rem; border-radius: var(--km-r); overflow: hidden; background: var(--km-ink-2); }
-@media (min-width: 768px) { .km-poster { margin-bottom: 3.5rem; } }
-.km-poster img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; object-position: 50% 25%; }
-@media (min-width: 768px) { .km-poster img { aspect-ratio: 16 / 9; } }
+/* ------------------------------ 12. Záver: plagát vľavo, výzva vpravo ------------------------------ */
+.km-final { display: grid; grid-template-columns: 1fr; gap: 2rem; align-items: center; }
+@media (min-width: 1024px) { .km-final { grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: 4rem; } }
+.km-poster { position: relative; margin: 0; border-radius: var(--km-r); overflow: hidden; background: var(--km-ink-2); }
+.km-poster img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; object-position: 50% 30%; }
 .km-poster::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(18, 15, 13, 0.88) 0%, rgba(18, 15, 13, 0.45) 34%, rgba(18, 15, 13, 0) 62%); pointer-events: none; }
-.km-poster-text { position: absolute; left: 1.25rem; right: 1.25rem; bottom: 1.5rem; z-index: 1; margin: 0 auto; max-width: 18ch; text-align: center; font-family: var(--font-sans); font-size: clamp(1.5rem, 4.4vw, 3.25rem); line-height: 1.08; font-weight: 700; color: #fff; text-wrap: balance; }
-@media (min-width: 768px) { .km-poster-text { bottom: 2.5rem; } }
-.km-final { max-width: 46rem; margin: 0 auto; text-align: center; }
-.km-final .km-kicker { justify-content: center; }
-.km-final h2 { margin: 0 0 1rem; font-family: var(--font-serif); font-size: clamp(2rem, 4.6vw, 3.5rem); line-height: 1.04; font-weight: 800; letter-spacing: -0.025em; color: var(--km-paper); text-wrap: balance; }
-.km-final h2 em { font-style: italic; font-weight: 600; color: var(--km-gold); }
-.km-final p { margin: 0 auto 2rem; max-width: 34rem; font-size: 1.0625rem; line-height: 1.6; color: rgba(243, 233, 221, 0.8); text-wrap: pretty; }
-.km-final small { display: block; margin-top: 1.25rem; font-size: 0.8125rem; color: rgba(243, 233, 221, 0.6); }
+.km-poster-text { position: absolute; left: 1rem; right: 1rem; bottom: 1.25rem; z-index: 1; margin: 0 auto; max-width: 18ch; text-align: center; font-family: var(--font-sans); font-size: clamp(1.375rem, 2.4vw, 2rem); line-height: 1.1; font-weight: 700; color: #fff; text-wrap: balance; }
+.km-final-copy h2 { margin: 0 0 1rem; font-family: var(--font-serif); font-size: clamp(2rem, 3.6vw, 3rem); line-height: 1.04; font-weight: 800; letter-spacing: -0.025em; color: var(--km-paper); text-wrap: balance; }
+.km-final-copy h2 em { font-style: italic; font-weight: 600; color: var(--km-gold); }
+.km-final-copy p { margin: 0 0 2rem; max-width: 30rem; font-size: 1.0625rem; line-height: 1.6; color: rgba(243, 233, 221, 0.8); text-wrap: pretty; }
+.km-final-copy small { display: block; margin-top: 1.25rem; font-size: 0.8125rem; color: rgba(243, 233, 221, 0.6); }
 
 /* ------------------------------ Lepiaca lišta na mobile ------------------------------ */
 .km-bar { position: fixed; left: 0.75rem; right: 0.75rem; bottom: 0.75rem; z-index: 50; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.625rem 0.625rem 0.625rem 1rem; border-radius: 9999px; background: var(--km-ink); color: var(--km-paper); transform: translateY(140%); transition: transform 0.45s var(--km-ease); }

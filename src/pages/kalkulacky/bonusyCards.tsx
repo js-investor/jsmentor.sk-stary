@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { BONUSY_BASE_PATH } from "@/pages/kalkulacky/kalkulackyConfig";
 import type { KalkulackaCalculatorMeta } from "@/pages/kalkulacky/kalkulackyConfig";
@@ -157,21 +157,43 @@ export const GlyphArt = ({ glyph, tone }: { glyph: Glyph; tone: ToneId }) => {
 
 /* ------------------------------ Karta nástroja ------------------------------ */
 
-export const ToolCard = ({ meta, index = 0 }: { meta: KalkulackaCalculatorMeta; index?: number }) => {
+export const ToolCard = ({ meta, index = 0, locked = false }: { meta: KalkulackaCalculatorMeta; index?: number; locked?: boolean }) => {
   const info = TOOL_META[meta.slug] ?? { category: "Nástroj", tone: "stone" as ToneId, glyph: "arcs" as Glyph };
-  return (
-    <Link to={`${BONUSY_BASE_PATH}/${meta.slug}`} className={cn("bz-card bz-reveal", focusClass)} style={toneStyle(info.tone, index)} data-umami-event="click_bonus_tool" data-umami-event-slug={meta.slug}>
+  const inner = (
+    <>
       <span className={cn("bz-glyph", info.glyph === "map" && "bz-glyph--map")} aria-hidden><GlyphArt glyph={info.glyph} tone={info.tone} /></span>
       <span className="bz-card-head">
         <span className="bz-cat">{info.category}</span>
-        {NEW_SLUGS.has(meta.slug) ? <span className="bz-new">Nové</span> : null}
-        {FAVORITE_SLUGS.has(meta.slug) ? <span className="bz-new bz-fav">Obľúbené</span> : null}
+        {locked ? (
+          <span className="bz-new bz-lock"><Lock className="h-3 w-3" strokeWidth={2.25} aria-hidden />Bonus</span>
+        ) : (
+          <>
+            {NEW_SLUGS.has(meta.slug) ? <span className="bz-new">Nové</span> : null}
+            {FAVORITE_SLUGS.has(meta.slug) ? <span className="bz-new bz-fav">Obľúbené</span> : null}
+          </>
+        )}
       </span>
       <span className="bz-card-body">
         <span className="bz-card-title">{meta.title}</span>
         <span className="bz-card-text">{meta.description}</span>
-        <span className="bz-card-cta">Otvoriť <ArrowRight className="h-4 w-4" aria-hidden /></span>
+        {locked ? (
+          <span className="bz-card-cta"><Lock className="h-4 w-4" strokeWidth={2} aria-hidden /> Odomkne sa po pripojení</span>
+        ) : (
+          <span className="bz-card-cta">Otvoriť <ArrowRight className="h-4 w-4" aria-hidden /></span>
+        )}
       </span>
+    </>
+  );
+  if (locked) {
+    return (
+      <div className="bz-card bz-reveal bz-card--locked" style={toneStyle(info.tone, index)} aria-label={`${meta.title} – bonus po pripojení do komunity`}>
+        {inner}
+      </div>
+    );
+  }
+  return (
+    <Link to={`${BONUSY_BASE_PATH}/${meta.slug}`} className={cn("bz-card bz-reveal", focusClass)} style={toneStyle(info.tone, index)} data-umami-event="click_bonus_tool" data-umami-event-slug={meta.slug}>
+      {inner}
     </Link>
   );
 };
