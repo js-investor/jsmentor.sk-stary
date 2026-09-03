@@ -204,6 +204,8 @@ const Komunita2 = () => {
           ctaHref={LINKS.cennikSectionHash}
           ctaUmamiEvent="click_cennik"
           ctaUmamiEventSection="header"
+          ctaVariant="button"
+          progress
         />
 
         {/* ═══ 1. Hook: sľub, jedno video, pás čísel ═══ */}

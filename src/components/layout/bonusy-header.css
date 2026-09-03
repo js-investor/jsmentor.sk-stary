@@ -146,6 +146,45 @@
 .bzh-cta:hover .bzh-cta-arrow { transform: translateX(3px); }
 .bzh-cta:focus-visible { outline: 2px solid #2a6647; outline-offset: 3px; border-radius: 4px; }
 
+/* variant „button“: plné zelené tlačidlo (predajné stránky ako /komunita) */
+.bzh--button .bzh-link { opacity: 0.8; }
+.bzh-cta--button {
+  padding: 0.5rem 0.5rem 0.5rem 1rem;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #2f7350 0%, #2a6647 100%);
+  color: #f3e9dd;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), background 0.2s;
+}
+.bzh-cta--button:hover {
+  text-decoration: none;
+  transform: translateY(-1px);
+  background: linear-gradient(180deg, #2a6647 0%, #0b3d2e 100%);
+}
+.bzh-cta--button .bzh-cta-arrow {
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 0;
+  background: rgba(243, 233, 221, 0.16);
+  color: #f3e9dd;
+}
+@media (max-width: 639px) {
+  .bzh-cta--button { padding: 0.45rem 0.45rem 0.45rem 0.875rem; font-size: 0.875rem; }
+}
+
+/* tenká linka priebehu čítania na hornej hrane lišty */
+.bzh-progress {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  width: 100%;
+  height: 2px;
+  background: #2a6647;
+  transform-origin: left center;
+  transform: scaleX(0);
+  pointer-events: none;
+}
+
 /* mobil: hamburger a rozbalený panel pod lištou */
 .bzh-toggle {
   display: inline-flex;

@@ -27,6 +27,10 @@ type BonusyHeaderProps = {
   ctaHref?: string;
   ctaUmamiEvent?: string;
   ctaUmamiEventSection?: string;
+  /** „button“ = plné zelené tlačidlo namiesto textového odkazu (predajné stránky). */
+  ctaVariant?: "link" | "button";
+  /** Tenká zelená linka priebehu čítania na hornej hrane lišty. */
+  progress?: boolean;
 };
 
 const BonusyHeader = ({
@@ -40,11 +44,14 @@ const BonusyHeader = ({
   ctaHref,
   ctaUmamiEvent,
   ctaUmamiEventSection,
+  ctaVariant = "link",
+  progress = false,
 }: BonusyHeaderProps) => {
   const [openGroup, setOpenGroup] = useState<number | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileGroup, setMobileGroup] = useState<number | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [read, setRead] = useState(0);
   const pathname = typeof window !== "undefined" ? window.location.pathname : "";
 
   const showGroup = (index: number) => {
@@ -54,6 +61,27 @@ const BonusyHeader = ({
   const scheduleClose = () => {
     closeTimer.current = setTimeout(() => setOpenGroup(null), 160);
   };
+
+  useEffect(() => {
+    if (!progress) return;
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      setRead(max > 0 ? Math.min(1, window.scrollY / max) : 0);
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [progress]);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -94,7 +122,8 @@ const BonusyHeader = ({
     );
 
   return (
-    <header data-js-site-header className="bzh">
+    <header data-js-site-header className={cn("bzh", ctaVariant === "button" && "bzh--button")}>
+      {progress ? <span className="bzh-progress" style={{ transform: `scaleX(${read})` }} aria-hidden /> : null}
       <div className="bzh-bar">
         <a href={logoHref} className="bzh-logo" aria-label={logoAlt}>
           <img src={logoSrc} alt={logoAlt} />
@@ -142,7 +171,7 @@ const BonusyHeader = ({
         </nav>
 
         {ctaHref ? (
-          <a {...ctaProps} className="bzh-cta">
+          <a {...ctaProps} className={cn("bzh-cta", ctaVariant === "button" && "bzh-cta--button")}>
             <span className="bzh-cta-long">{ctaLabel}</span>
             <span className="bzh-cta-short" aria-hidden>
               {ctaShortLabel}
