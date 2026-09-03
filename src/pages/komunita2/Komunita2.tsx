@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import {
   ArrowRight,
   Award,
@@ -125,16 +125,20 @@ function useInView<T extends HTMLElement>(margin = "-60px") {
 }
 
 /** Text s číslom („2000+“, „8 rokov“, „3,5 mil. €+“) – číslo sa napočíta, keď sa objaví na obrazovke. */
+const parseCount = (text: string) => {
+  const match = /^([\d\s\u00a0,]*\d)(.*)$/.exec(text);
+  if (!match) return null;
+  const numeric = match[1].replace(/[\s\u00a0]/g, "").replace(",", ".");
+  return { target: Number(numeric), decimals: match[1].includes(",") ? 1 : 0, rest: match[2] };
+};
+
 const CountUp = ({ text }: { text: string }) => {
   const [ref, seen] = useInView<HTMLSpanElement>();
-  const match = /^([\d\s\u00a0]+(?:,\d+)?)(.*)$/.exec(text);
-  const numeric = match ? match[1].replace(/[\s\u00a0]/g, "").replace(",", ".") : "";
-  const target = numeric ? Number(numeric) : 0;
-  const decimals = match && match[1].includes(",") ? 1 : 0;
-  const rest = match ? match[2] : text;
+  const parsed = useMemo(() => parseCount(text), [text]);
   const [value, setValue] = useState(0);
   useEffect(() => {
-    if (!seen || !match) return;
+    if (!seen || !parsed) return;
+    const { target } = parsed;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setValue(target);
       return;
@@ -149,12 +153,12 @@ const CountUp = ({ text }: { text: string }) => {
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [seen, target, match]);
-  if (!match) return <span ref={ref}>{text}</span>;
+  }, [seen, parsed]);
+  if (!parsed) return <span ref={ref}>{text}</span>;
   return (
     <span ref={ref}>
-      {value.toLocaleString("sk-SK", { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}
-      {rest}
+      {value.toLocaleString("sk-SK", { minimumFractionDigits: parsed.decimals, maximumFractionDigits: parsed.decimals })}
+      {parsed.rest}
     </span>
   );
 };
