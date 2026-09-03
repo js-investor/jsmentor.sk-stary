@@ -115,11 +115,6 @@ const BonusyPageHeader = () => (
     <span className="bz-eyebrow">Bonusy · {KALKULACKY_CALCULATORS.length} nástrojov zadarmo</span>
     <h1 className="bz-h1"><b>Rozhoduj sa s istotou,</b> <em>nie pocitom.</em></h1>
     <p className="bz-lede">Zisti presné čísla skôr, než podpíšeš, investuješ alebo zaplatíš. Každý nástroj tu existuje preto, aby si videl, čo ťa rozhodnutie skutočne stojí a čo ti môže zarobiť.</p>
-    <ul className="bz-well" aria-label="Čísla o bonusoch">
-      <li><b>{KALKULACKY_CALCULATORS.length}</b><span>nástrojov</span></li>
-      <li><b>3 <em>min.</em></b><span>check-up</span></li>
-      <li><b>0 €</b><span>navždy</span></li>
-    </ul>
   </header>
 );
 

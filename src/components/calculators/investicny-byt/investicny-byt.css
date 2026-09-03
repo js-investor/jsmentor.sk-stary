@@ -49,14 +49,6 @@
 #iby-root .iby-kraj { cursor: pointer; stroke: var(--wm-brown); stroke-width: 4; transition: fill 0.25s var(--ease-out); }
 #iby-root .iby-kraj:hover { fill: #efe4d0; }
 #iby-root .iby-kraj.active { fill: #f7efe2; }
-#iby-root .iby-cities { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; max-width: 62rem; margin: 1rem auto 0; }
-@media (min-width: 640px) { #iby-root .iby-cities { grid-template-columns: repeat(4, 1fr); } }
-#iby-root .iby-citybtn { display: flex; flex-direction: column; align-items: flex-start; gap: 0.0625rem; padding: 0.75rem 0.875rem; border: 1px solid transparent; border-radius: 1rem; background: rgba(243, 233, 221, 0.22); color: #f3e9dd; font-family: var(--font-sans); text-align: left; cursor: pointer; transition: background 0.2s, border-color 0.2s, transform 0.25s var(--ease-out); }
-#iby-root .iby-citybtn:hover { background: rgba(243, 233, 221, 0.28); transform: translateY(-2px); }
-#iby-root .iby-citybtn.is-active { background: #e3d5bd; color: var(--wm-brown); }
-#iby-root .iby-citybtn strong { font-family: var(--font-serif); font-size: 1rem; font-weight: 700; }
-#iby-root .iby-citybtn span { font-size: 0.6875rem; color: rgba(243, 233, 221, 0.74); }
-#iby-root .iby-citybtn.is-active span { color: rgba(41, 36, 32, 0.82); }
 #iby-root .iby-city { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem 1rem; max-width: 62rem; margin: 1rem auto 0; padding: 1rem 1.25rem; border-radius: 1.125rem; background: rgba(243, 233, 221, 0.22); border: none; }
 @media (min-width: 640px) { #iby-root .iby-city { grid-template-columns: repeat(4, 1fr); } }
 #iby-root .iby-city > div { display: flex; flex-direction: column; }
@@ -153,4 +145,4 @@
 #iby-root .iby-float-sub { font-size: 0.6875rem; color: rgba(243, 233, 221, 0.69); }
 #iby-root .iby-float .is-neg { color: #e9a27e !important; } #iby-root .iby-float .is-pos { color: #d9b15c !important; }
 @media (max-width: 640px) { #iby-root .iby-float { left: 1rem; right: 1rem; align-items: center; text-align: center; } }
-@media (prefers-reduced-motion: reduce) { #iby-root .iby-citybtn:hover, #iby-root .iby-float:hover { transform: none !important; } }
+@media (prefers-reduced-motion: reduce) { #iby-root .iby-float:hover { transform: none !important; } }

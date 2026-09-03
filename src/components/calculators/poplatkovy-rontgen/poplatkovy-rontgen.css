@@ -1,8 +1,8 @@
 /**
  * Poplatkový röntgen — jazyk /bonusy 2.0 („živý minimalizmus“), scoped pod #pr-root.
- * Krémové plátno, ivory panely s hairline (vstupy vľavo, graf vpravo), jeden plochý
- * hnedý panel s výsledkom (zlatý kicker, obrie Calvino číslo, porovnanie mint vs. lososová),
- * SVG graf v brandovej palete. Bez tieňov, gradientových textúr, čiernej a zlatej na svetlom.
+ * Tok zhora nadol: 1) cez koho investuješ + vstupy (ivory panel), 2) výsledok (jeden plochý
+ * hnedý panel so zlatým kickerom a obrím Calvino číslom), 3) graf. Bez tieňov, gradientových
+ * textúr, čiernej a zlatej na svetlom.
  */
 
 #pr-root *, #pr-root *::before, #pr-root *::after { box-sizing: border-box; }
@@ -11,7 +11,56 @@
 @media (min-width: 768px) { .pr-outer { padding-bottom: 7rem; } }
 @media (min-width: 1024px) { .pr-outer { padding-bottom: 8rem; } }
 
-/* ------------------------------ Výsledok: jeden plochý hnedý panel ------------------------------ */
+/* ------------------------------ 1. Nastavenie: jeden ivory panel, zhora nadol ------------------------------ */
+#pr-root .pr-setup { margin-bottom: 1.25rem; padding: 1.5rem 1.375rem 1.375rem; }
+@media (min-width: 768px) { #pr-root .pr-setup { padding: 1.75rem 2rem 1.75rem; } }
+#pr-root .pr-kick { margin: 0 0 0.375rem; font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; color: var(--wm-green); }
+#pr-root .pr-panel-title { margin: 0 0 0.875rem; font-size: 1.25rem; }
+#pr-root .pr-setup-2 { margin-top: 1.5rem; padding-top: 1.375rem; border-top: 1px solid var(--hair); }
+
+/* poskytovatelia: tri ivory karty vedľa seba, aktívna hnedá */
+#pr-root .pr-provs { display: grid; grid-template-columns: 1fr; gap: 0.5rem; }
+@media (min-width: 640px) { #pr-root .pr-provs { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem; } }
+#pr-root .pr-prov { display: flex; align-items: center; gap: 0.75rem; width: 100%; padding: 0.875rem 0.875rem; border: 1px solid var(--hair-2); border-radius: 1rem; background: #fff; font-family: var(--font-sans); text-align: left; color: var(--wm-brown); cursor: pointer; transition: transform 0.3s var(--ease-out), border-color 0.2s, background 0.2s, color 0.2s; }
+#pr-root .pr-prov:hover { transform: translateY(-2px); border-color: rgba(41, 36, 32, 0.4); }
+#pr-root .pr-prov:focus-visible { outline: 2px solid var(--wm-green); outline-offset: 2px; }
+#pr-root .pr-prov.is-active { background: var(--wm-brown); border-color: var(--wm-brown); color: #f3e9dd; }
+#pr-root .pr-prov-icon { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 2.25rem; height: 2.25rem; border-radius: 9999px; background: var(--wm-green); color: #f3e9dd; transition: background 0.2s, color 0.2s; }
+#pr-root .pr-prov.is-active .pr-prov-icon { background: rgba(243, 233, 221, 0.26); color: #f3e9dd; }
+#pr-root .pr-prov-body { display: flex; flex: 1; flex-direction: column; gap: 0.0625rem; min-width: 0; }
+#pr-root .pr-prov-body strong { font-size: 0.9375rem; font-weight: 600; line-height: 1.25; }
+#pr-root .pr-prov-body span { font-size: 0.75rem; color: var(--fg3); }
+#pr-root .pr-prov.is-active .pr-prov-body span { color: rgba(243, 233, 221, 0.76); }
+#pr-root .pr-prov-ter { flex-shrink: 0; font-family: var(--font-serif); font-size: 1rem; font-weight: 600; color: var(--wm-red); font-variant-numeric: tabular-nums; white-space: nowrap; }
+#pr-root .pr-prov.is-active .pr-prov-ter { color: #e9a27e; }
+@keyframes pr-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+#pr-root .pr-tax { display: flex; align-items: flex-start; gap: 0.625rem; margin: 0.75rem 0 0; padding: 0.75rem 0.875rem; border-radius: 1rem; background: var(--tone-blush); font-size: 0.8125rem; line-height: 1.5; color: var(--fg2); animation: pr-in 0.35s var(--ease-out) both; }
+#pr-root .pr-tax svg { flex-shrink: 0; margin-top: 0.125rem; color: var(--wm-red); }
+#pr-root .pr-tax strong { font-weight: 600; color: var(--wm-brown); }
+#pr-root .pr-tax b { font-family: var(--font-serif); font-size: 1rem; font-weight: 700; color: var(--wm-red); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* vstupy: tri „výrokové“ polia vedľa seba s veľkým serifovým číslom (vzor Výnosnosť bytu) */
+#pr-root .pr-group { display: grid; grid-template-columns: 1fr; gap: 0.25rem 2rem; }
+@media (min-width: 768px) { #pr-root .pr-group { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+#pr-root .pr-field { margin-bottom: 1rem; min-width: 0; }
+#pr-root .pr-field .calc-label { margin-bottom: 0.125rem; font-size: 0.8125rem; }
+#pr-root .pr-lg-row { display: flex; align-items: baseline; gap: 0.375rem; padding-bottom: 0.375rem; border-bottom: 1.5px solid var(--hair-2); transition: border-color 0.2s; }
+#pr-root .pr-lg-row:focus-within { border-bottom-color: var(--wm-green); }
+#pr-root .pr-lg-row input { width: 100%; min-width: 0; padding: 0; border: none; background: transparent; font-family: var(--font-serif); font-size: 1.875rem; line-height: 1.1; font-weight: 600; color: var(--wm-brown); font-variant-numeric: tabular-nums; appearance: textfield; -moz-appearance: textfield; }
+#pr-root .pr-lg-row input::-webkit-outer-spin-button, #pr-root .pr-lg-row input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+#pr-root .pr-lg-row input:focus { outline: none; }
+#pr-root .pr-lg-unit { font-size: 0.8125rem; font-weight: 700; color: var(--fg3); white-space: nowrap; }
+#pr-root .pr-range-head { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; }
+#pr-root .pr-range-head .calc-label { margin: 0; }
+#pr-root .pr-range-val { font-family: var(--font-serif); font-size: 1.375rem; font-weight: 700; color: var(--wm-brown); font-variant-numeric: tabular-nums; white-space: nowrap; }
+#pr-root .calc-slider-scale { color: var(--fg3); }
+#pr-root .pr-notes { display: grid; grid-template-columns: 1fr; gap: 0 2rem; margin-top: 0.25rem; padding-top: 0.25rem; border-top: 1px solid var(--hair); }
+@media (min-width: 768px) { #pr-root .pr-notes { grid-template-columns: 1fr 1fr; } }
+#pr-root .pr-notes p { display: flex; align-items: flex-start; gap: 0.625rem; margin: 0; padding: 0.75rem 0 0; font-size: 0.8125rem; line-height: 1.5; color: var(--fg3); }
+#pr-root .pr-notes svg { flex-shrink: 0; margin-top: 0.125rem; color: var(--wm-green); }
+#pr-root .pr-notes strong { font-weight: 600; color: var(--wm-brown); }
+
+/* ------------------------------ 2. Výsledok: jeden plochý hnedý panel ------------------------------ */
 #pr-root .pr-hero { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 1.25rem; padding: 1.75rem 1.5rem; border-radius: 1.75rem; background: var(--wm-brown); color: #f3e9dd; }
 @media (min-width: 900px) { #pr-root .pr-hero { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); align-items: center; gap: 2.5rem; padding: 2rem 2.25rem; } }
 #pr-root .pr-kicker { margin: 0 0 0.75rem; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--wm-gold); }
@@ -34,57 +83,9 @@
 #pr-root .pr-vcard-sm { margin-top: 0.375rem; font-size: 0.75rem; line-height: 1.6; color: rgba(243, 233, 221, 0.76); }
 #pr-root .pr-vcard-sm strong { font-weight: 500; color: #f3e9dd; }
 
-/* ------------------------------ Rozloženie: vstupy vľavo, graf vpravo ------------------------------ */
-#pr-root .pr-layout { display: grid; grid-template-columns: 1fr; gap: 1.25rem; align-items: start; }
-@media (min-width: 1024px) {
-  #pr-root .pr-layout { grid-template-columns: minmax(19rem, 22rem) minmax(0, 1fr); gap: 1.5rem; }
-  #pr-root .pr-inputs { position: sticky; top: 6rem; }
-}
-#pr-root .pr-inputs { padding: 1.375rem 1.375rem 1.25rem; }
+/* ------------------------------ 3. Graf ------------------------------ */
 #pr-root .pr-chart { padding: 1.5rem 1.25rem 1.25rem; }
 @media (min-width: 768px) { #pr-root .pr-chart { padding: 1.75rem 2rem 1.5rem; } }
-#pr-root .pr-panel-title { margin: 0 0 0.875rem; font-size: 1.25rem; }
-
-/* poskytovatelia: ivory karty s hairline, aktívna hnedá */
-#pr-root .pr-provs { display: flex; flex-direction: column; gap: 0.5rem; }
-#pr-root .pr-prov { display: flex; align-items: center; gap: 0.75rem; width: 100%; padding: 0.75rem 0.875rem; border: 1px solid var(--hair-2); border-radius: 1rem; background: #fff; font-family: var(--font-sans); text-align: left; color: var(--wm-brown); cursor: pointer; transition: transform 0.3s var(--ease-out), border-color 0.2s, background 0.2s, color 0.2s; }
-#pr-root .pr-prov:hover { transform: translateY(-2px); border-color: rgba(41, 36, 32, 0.4); }
-#pr-root .pr-prov:focus-visible { outline: 2px solid var(--wm-green); outline-offset: 2px; }
-#pr-root .pr-prov.is-active { background: var(--wm-brown); border-color: var(--wm-brown); color: #f3e9dd; }
-#pr-root .pr-prov-icon { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 2.25rem; height: 2.25rem; border-radius: 9999px; background: var(--wm-green); color: #f3e9dd; transition: background 0.2s, color 0.2s; }
-#pr-root .pr-prov.is-active .pr-prov-icon { background: rgba(243, 233, 221, 0.26); color: #f3e9dd; }
-#pr-root .pr-prov-body { display: flex; flex: 1; flex-direction: column; gap: 0.0625rem; min-width: 0; }
-#pr-root .pr-prov-body strong { font-size: 0.9375rem; font-weight: 600; line-height: 1.25; }
-#pr-root .pr-prov-body span { font-size: 0.75rem; color: var(--fg3); }
-#pr-root .pr-prov.is-active .pr-prov-body span { color: rgba(243, 233, 221, 0.76); }
-#pr-root .pr-prov-ter { flex-shrink: 0; font-family: var(--font-serif); font-size: 1rem; font-weight: 600; color: var(--wm-red); font-variant-numeric: tabular-nums; white-space: nowrap; }
-#pr-root .pr-prov.is-active .pr-prov-ter { color: #e9a27e; }
-@keyframes pr-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-#pr-root .pr-tax { display: flex; align-items: flex-start; gap: 0.625rem; margin: 0.75rem 0 0; padding: 0.75rem 0.875rem; border-radius: 1rem; background: var(--tone-blush); font-size: 0.8125rem; line-height: 1.5; color: var(--fg2); animation: pr-in 0.35s var(--ease-out) both; }
-#pr-root .pr-tax svg { flex-shrink: 0; margin-top: 0.125rem; color: var(--wm-red); }
-#pr-root .pr-tax strong { font-weight: 600; color: var(--wm-brown); }
-#pr-root .pr-tax b { font-family: var(--font-serif); font-size: 1rem; font-weight: 700; color: var(--wm-red); font-variant-numeric: tabular-nums; white-space: nowrap; }
-
-/* vstupy: „výrokové“ polia s veľkým serifovým číslom (vzor Výnosnosť bytu) */
-#pr-root .pr-group { margin-top: 1.125rem; padding-top: 1rem; border-top: 1px solid var(--hair); }
-#pr-root .pr-field { margin-bottom: 1rem; }
-#pr-root .pr-field .calc-label { margin-bottom: 0.125rem; font-size: 0.8125rem; }
-#pr-root .pr-lg-row { display: flex; align-items: baseline; gap: 0.375rem; padding-bottom: 0.375rem; border-bottom: 1.5px solid var(--hair-2); transition: border-color 0.2s; }
-#pr-root .pr-lg-row:focus-within { border-bottom-color: var(--wm-green); }
-#pr-root .pr-lg-row input { width: 100%; min-width: 0; padding: 0; border: none; background: transparent; font-family: var(--font-serif); font-size: 1.875rem; line-height: 1.1; font-weight: 600; color: var(--wm-brown); font-variant-numeric: tabular-nums; appearance: textfield; -moz-appearance: textfield; }
-#pr-root .pr-lg-row input::-webkit-outer-spin-button, #pr-root .pr-lg-row input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-#pr-root .pr-lg-row input:focus { outline: none; }
-#pr-root .pr-lg-unit { font-size: 0.8125rem; font-weight: 700; color: var(--fg3); white-space: nowrap; }
-#pr-root .pr-range-head { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; }
-#pr-root .pr-range-head .calc-label { margin: 0; }
-#pr-root .pr-range-val { font-family: var(--font-serif); font-size: 1.375rem; font-weight: 700; color: var(--wm-brown); font-variant-numeric: tabular-nums; white-space: nowrap; }
-#pr-root .calc-slider-scale { color: var(--fg3); }
-#pr-root .pr-notes { margin-top: 0.25rem; padding-top: 0.25rem; border-top: 1px solid var(--hair); }
-#pr-root .pr-notes p { display: flex; align-items: flex-start; gap: 0.625rem; margin: 0; padding: 0.75rem 0 0; font-size: 0.8125rem; line-height: 1.5; color: var(--fg3); }
-#pr-root .pr-notes svg { flex-shrink: 0; margin-top: 0.125rem; color: var(--wm-green); }
-#pr-root .pr-notes strong { font-weight: 600; color: var(--wm-brown); }
-
-/* ------------------------------ Graf ------------------------------ */
 #pr-root .pr-chart-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.25rem 1rem; margin-bottom: 0.75rem; }
 #pr-root .pr-chart-head .calc-panel-title { margin: 0; font-size: 1.25rem; }
 #pr-root .pr-chart-sub { font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; color: var(--fg3); }

@@ -172,93 +172,48 @@ export default function PoplatkovyRontgenCalculator() {
               </p>
             </header>
 
-            {/* ═══ VÝSLEDOK: jeden plochý hnedý panel ═══ */}
-            <section className="pr-hero calc-reveal" aria-label="Výsledok röntgenu" style={st(1)}>
-              <div className="pr-hero-main">
-                <p className="pr-kicker">Výsledok röntgenu</p>
-                <p className="pr-hero-value">
-                  <span>{fmt(Math.abs(diff))}</span>
-                  <em>o toľko prichádzaš za {years}&nbsp;rokov</em>
-                </p>
-                <p className="pr-hero-sub">
-                  Pri vklade <strong>{fmt(v0)}</strong> + <strong>{fmt(monthly)}&nbsp;mesačne</strong> si
-                  poplatky{taxOn ? " a daň" : ""} vezmú{" "}
-                  <strong>{fmtPct(Math.max(0, eaten))} z tvojho možného zisku</strong>.
-                </p>
+            {/* ═══ 1. NASTAVENIE: cez koho investuješ → koľko a ako dlho (zhora nadol) ═══ */}
+            <section className="pr-setup calc-panel calc-reveal" aria-label="Nastavenie" style={st(1)}>
+              <p className="pr-kick">Krok 1</p>
+              <h2 className="calc-panel-title pr-panel-title">Cez koho investuješ?</h2>
+
+              {/* provider cards */}
+              <div className="pr-provs" role="group" aria-label="Poskytovateľ">
+                {(Object.keys(PROVIDERS) as ProvKey[]).map((key) => {
+                  const l = PROV_UI[key];
+                  const active = prov === key;
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      className={`pr-prov${active ? " is-active" : ""}`}
+                      aria-pressed={active}
+                      onClick={() => setProv(key)}
+                    >
+                      <span className="pr-prov-icon"><l.Icon className="h-4 w-4" strokeWidth={1.75} aria-hidden /></span>
+                      <span className="pr-prov-body">
+                        <strong>{l.title}</strong>
+                        <span>{l.sub}</span>
+                      </span>
+                      <span className="pr-prov-ter">{PROVIDERS[key].ter.toLocaleString("sk-SK", { minimumFractionDigits: 1 })}&nbsp;% p.&nbsp;a.</span>
+                    </button>
+                  );
+                })}
               </div>
 
-              {/* porovnanie: oddelené hairline, nie box v boxe */}
-              <div className="pr-versus">
-                <div className="pr-vcard">
-                  <span className="pr-tag is-good">Lepšie riešenie</span>
-                  <span className="pr-vcard-nm">Nízkonákladové ETF portfólio</span>
-                  <span className="pr-vcard-big is-good">{fmt(E.end)}</span>
-                  <span className="pr-vcard-sm">
-                    poplatky spolu <strong>{fmt(E.fees)}</strong> · daň pri predaji{" "}
-                    <strong>0&nbsp;€</strong> (časový test)
-                    <br />
-                    ročný poplatok: <strong>0,35&nbsp;%</strong>
+              {taxOn && (
+                <p className="pr-tax">
+                  <Receipt className="h-4 w-4" strokeWidth={1.75} aria-hidden />
+                  <span>
+                    Pri fondoch banky ťa čaká pri predaji aj <strong>19&nbsp;% daň z výnosu</strong>.
+                    V tvojom prípade: <b>{fmt(taxPaid)}</b>
                   </span>
-                </div>
-                <div className="pr-vcard">
-                  <span className="pr-tag is-bad">Tvoje súčasné</span>
-                  <span className="pr-vcard-nm">{stripEmoji(PROVIDERS[prov].name)}</span>
-                  <span className="pr-vcard-big is-bad">{fmt(fEndNet)}</span>
-                  <span className="pr-vcard-sm">
-                    poplatky spolu <strong>{fmt(F.fees)}</strong>
-                    {taxOn ? (
-                      <>
-                        {" "}· daň z výnosu 19&nbsp;% <strong>{fmt(taxPaid)}</strong>
-                      </>
-                    ) : null}
-                    <br />
-                    priemerný ročný poplatok:{" "}
-                    <strong>
-                      {PROVIDERS[prov].ter.toLocaleString("sk-SK", { minimumFractionDigits: 2 })}&nbsp;%
-                    </strong>
-                  </span>
-                </div>
-              </div>
-            </section>
+                </p>
+              )}
 
-            <div className="pr-layout">
-              {/* ═══ VSTUPY ═══ */}
-              <aside className="pr-inputs calc-panel calc-reveal" aria-label="Vstupy" style={st(2)}>
-                <h2 className="calc-panel-title pr-panel-title">Cez koho investuješ?</h2>
-
-                {/* provider cards */}
-                <div className="pr-provs" role="group" aria-label="Poskytovateľ">
-                  {(Object.keys(PROVIDERS) as ProvKey[]).map((key) => {
-                    const l = PROV_UI[key];
-                    const active = prov === key;
-                    return (
-                      <button
-                        key={key}
-                        type="button"
-                        className={`pr-prov${active ? " is-active" : ""}`}
-                        aria-pressed={active}
-                        onClick={() => setProv(key)}
-                      >
-                        <span className="pr-prov-icon"><l.Icon className="h-4 w-4" strokeWidth={1.75} aria-hidden /></span>
-                        <span className="pr-prov-body">
-                          <strong>{l.title}</strong>
-                          <span>{l.sub}</span>
-                        </span>
-                        <span className="pr-prov-ter">{PROVIDERS[key].ter.toLocaleString("sk-SK", { minimumFractionDigits: 1 })}&nbsp;% p.&nbsp;a.</span>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {taxOn && (
-                  <p className="pr-tax">
-                    <Receipt className="h-4 w-4" strokeWidth={1.75} aria-hidden />
-                    <span>
-                      Pri fondoch banky ťa čaká pri predaji aj <strong>19&nbsp;% daň z výnosu</strong>.
-                      V tvojom prípade: <b>{fmt(taxPaid)}</b>
-                    </span>
-                  </p>
-                )}
+              <div className="pr-setup-2">
+                <p className="pr-kick">Krok 2</p>
+                <h2 className="calc-panel-title pr-panel-title">Koľko investuješ a ako dlho</h2>
 
                 {/* inputs */}
                 <div className="pr-group">
@@ -329,144 +284,193 @@ export default function PoplatkovyRontgenCalculator() {
                     </span>
                   </p>
                 </div>
-              </aside>
+              </div>
+            </section>
 
-              {/* ═══ GRAF ═══ */}
-              <section className="pr-chart calc-panel calc-reveal" aria-label="Graf" style={st(3)}>
-                <div className="pr-chart-head">
-                  <h2 className="calc-panel-title">Ako sa nožnice roztvárajú</h2>
-                  <span className="pr-chart-sub">prejdi prstom po grafe</span>
+            {/* ═══ 2. VÝSLEDOK: jeden plochý hnedý panel ═══ */}
+            <section className="pr-hero calc-reveal" aria-label="Výsledok röntgenu" style={st(2)}>
+              <div className="pr-hero-main">
+                <p className="pr-kicker">Výsledok röntgenu</p>
+                <p className="pr-hero-value">
+                  <span>{fmt(Math.abs(diff))}</span>
+                  <em>o toľko prichádzaš za {years}&nbsp;rokov</em>
+                </p>
+                <p className="pr-hero-sub">
+                  Pri vklade <strong>{fmt(v0)}</strong> + <strong>{fmt(monthly)}&nbsp;mesačne</strong> si
+                  poplatky{taxOn ? " a daň" : ""} vezmú{" "}
+                  <strong>{fmtPct(Math.max(0, eaten))} z tvojho možného zisku</strong>.
+                </p>
+              </div>
+
+              {/* porovnanie: oddelené hairline, nie box v boxe */}
+              <div className="pr-versus">
+                <div className="pr-vcard">
+                  <span className="pr-tag is-good">Lepšie riešenie</span>
+                  <span className="pr-vcard-nm">Nízkonákladové ETF portfólio</span>
+                  <span className="pr-vcard-big is-good">{fmt(E.end)}</span>
+                  <span className="pr-vcard-sm">
+                    poplatky spolu <strong>{fmt(E.fees)}</strong> · daň pri predaji{" "}
+                    <strong>0&nbsp;€</strong> (časový test)
+                    <br />
+                    ročný poplatok: <strong>0,35&nbsp;%</strong>
+                  </span>
                 </div>
-
-                <div
-                  className="pr-chart-wrap"
-                  ref={chartWrapRef}
-                  onMouseMove={(e) => onMove(e.clientX, e.clientY)}
-                  onMouseLeave={onLeave}
-                  onTouchMove={(e) => {
-                    e.preventDefault();
-                    onMove(e.touches[0].clientX, e.touches[0].clientY);
-                  }}
-                  onTouchEnd={onLeave}
-                >
-                  <svg
-                    viewBox={`0 0 ${W} ${H}`}
-                    className="pr-chart-svg"
-                    aria-hidden
-                  >
-                    <defs>
-                      <linearGradient id="pr-keep" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0" stopColor="rgb(42,102,71)" stopOpacity="0.24" />
-                        <stop offset="1" stopColor="rgb(42,102,71)" stopOpacity="0" />
-                      </linearGradient>
-                    </defs>
-
-                    {gridLines}
-                    {xLabels}
-
-                    {/* čo ti ostane: zelený gradient pod krivkou fondu */}
-                    <path d={toArea(sB, baseline, maxV)} fill="url(#pr-keep)" />
-                    {/* medzera medzi krivkami = strata (červený tint) */}
-                    <path d={toArea(sA, sB, maxV)} fill="rgba(171,65,50,0.16)" />
-
-                    {/* fund line */}
-                    <path
-                      d={toPath(sB, maxV)}
-                      fill="none"
-                      stroke="#ab4132"
-                      strokeWidth={2.5}
-                      strokeLinejoin="round"
-                      strokeLinecap="round"
-                    />
-                    {/* ETF line */}
-                    <path
-                      d={toPath(sA, maxV)}
-                      fill="none"
-                      stroke="#2a6647"
-                      strokeWidth={3}
-                      strokeLinejoin="round"
-                      strokeLinecap="round"
-                    />
-
-                    {/* hover cursor */}
-                    {tip !== null && (
+                <div className="pr-vcard">
+                  <span className="pr-tag is-bad">Tvoje súčasné</span>
+                  <span className="pr-vcard-nm">{stripEmoji(PROVIDERS[prov].name)}</span>
+                  <span className="pr-vcard-big is-bad">{fmt(fEndNet)}</span>
+                  <span className="pr-vcard-sm">
+                    poplatky spolu <strong>{fmt(F.fees)}</strong>
+                    {taxOn ? (
                       <>
-                        <line
-                          x1={cursorX}
-                          x2={cursorX}
-                          y1={PAD.t}
-                          y2={H - PAD.b}
-                          stroke="rgba(41,36,32,0.35)"
-                          strokeWidth={1.5}
-                          strokeDasharray="5 4"
-                        />
-                        <circle
-                          cx={cursorX}
-                          cy={cy(sA[tip.i], maxV)}
-                          r={6}
-                          fill="#2a6647"
-                          stroke="#fffcf7"
-                          strokeWidth={2.5}
-                        />
-                        <circle
-                          cx={cursorX}
-                          cy={cy(sB[tip.i], maxV)}
-                          r={6}
-                          fill="#ab4132"
-                          stroke="#fffcf7"
-                          strokeWidth={2.5}
-                        />
+                        {" "}· daň z výnosu 19&nbsp;% <strong>{fmt(taxPaid)}</strong>
                       </>
-                    )}
-                  </svg>
+                    ) : null}
+                    <br />
+                    priemerný ročný poplatok:{" "}
+                    <strong>
+                      {PROVIDERS[prov].ter.toLocaleString("sk-SK", { minimumFractionDigits: 2 })}&nbsp;%
+                    </strong>
+                  </span>
+                </div>
+              </div>
+            </section>
 
-                  {/* tooltip */}
+            {/* ═══ 3. GRAF ═══ */}
+            <section className="pr-chart calc-panel calc-reveal" aria-label="Graf" style={st(3)}>
+              <div className="pr-chart-head">
+                <h2 className="calc-panel-title">Ako sa nožnice roztvárajú</h2>
+                <span className="pr-chart-sub">prejdi prstom po grafe</span>
+              </div>
+
+              <div
+                className="pr-chart-wrap"
+                ref={chartWrapRef}
+                onMouseMove={(e) => onMove(e.clientX, e.clientY)}
+                onMouseLeave={onLeave}
+                onTouchMove={(e) => {
+                  e.preventDefault();
+                  onMove(e.touches[0].clientX, e.touches[0].clientY);
+                }}
+                onTouchEnd={onLeave}
+              >
+                <svg
+                  viewBox={`0 0 ${W} ${H}`}
+                  className="pr-chart-svg"
+                  aria-hidden
+                >
+                  <defs>
+                    <linearGradient id="pr-keep" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0" stopColor="rgb(42,102,71)" stopOpacity="0.24" />
+                      <stop offset="1" stopColor="rgb(42,102,71)" stopOpacity="0" />
+                    </linearGradient>
+                  </defs>
+
+                  {gridLines}
+                  {xLabels}
+
+                  {/* čo ti ostane: zelený gradient pod krivkou fondu */}
+                  <path d={toArea(sB, baseline, maxV)} fill="url(#pr-keep)" />
+                  {/* medzera medzi krivkami = strata (červený tint) */}
+                  <path d={toArea(sA, sB, maxV)} fill="rgba(171,65,50,0.16)" />
+
+                  {/* fund line */}
+                  <path
+                    d={toPath(sB, maxV)}
+                    fill="none"
+                    stroke="#ab4132"
+                    strokeWidth={2.5}
+                    strokeLinejoin="round"
+                    strokeLinecap="round"
+                  />
+                  {/* ETF line */}
+                  <path
+                    d={toPath(sA, maxV)}
+                    fill="none"
+                    stroke="#2a6647"
+                    strokeWidth={3}
+                    strokeLinejoin="round"
+                    strokeLinecap="round"
+                  />
+
+                  {/* hover cursor */}
                   {tip !== null && (
-                    <div
-                      className="pr-tooltip"
-                      style={{
-                        left: tip.x > (chartWrapRef.current?.offsetWidth ?? 0) - 200
-                          ? tip.x - 190
-                          : tip.x + 16,
-                        top: Math.max(0, tip.y - 70),
-                      }}
-                    >
-                      <div className="pr-tt-d">
-                        {tip.i === 0 ? "dnes" : `o ${tip.i} r.`}
-                      </div>
-                      <div className="pr-tt-green">● ETF: {fmt(sA[tip.i])}</div>
-                      <div className="pr-tt-red">● Fond: {fmt(sB[tip.i])}</div>
-                      <div className="pr-tt-amber">Δ {fmt(sA[tip.i] - sB[tip.i])}</div>
-                    </div>
+                    <>
+                      <line
+                        x1={cursorX}
+                        x2={cursorX}
+                        y1={PAD.t}
+                        y2={H - PAD.b}
+                        stroke="rgba(41,36,32,0.35)"
+                        strokeWidth={1.5}
+                        strokeDasharray="5 4"
+                      />
+                      <circle
+                        cx={cursorX}
+                        cy={cy(sA[tip.i], maxV)}
+                        r={6}
+                        fill="#2a6647"
+                        stroke="#fffcf7"
+                        strokeWidth={2.5}
+                      />
+                      <circle
+                        cx={cursorX}
+                        cy={cy(sB[tip.i], maxV)}
+                        r={6}
+                        fill="#ab4132"
+                        stroke="#fffcf7"
+                        strokeWidth={2.5}
+                      />
+                    </>
                   )}
-                </div>
+                </svg>
 
-                <div className="calc-legend pr-legend">
-                  <span className="calc-legend-item">
-                    <span className="calc-legend-dot" style={{ background: "#2a6647" }} />
-                    Nízkonákladové ETF portfólio
-                  </span>
-                  <span className="calc-legend-item">
-                    <span className="calc-legend-dot" style={{ background: "#ab4132" }} />
-                    Tvoje súčasné investovanie
-                  </span>
-                  <span className="calc-legend-item">
-                    <span className="calc-legend-dot pr-legend-area" />
-                    medzera = tvoja strata
-                  </span>
-                </div>
+                {/* tooltip */}
+                {tip !== null && (
+                  <div
+                    className="pr-tooltip"
+                    style={{
+                      left: tip.x > (chartWrapRef.current?.offsetWidth ?? 0) - 200
+                        ? tip.x - 190
+                        : tip.x + 16,
+                      top: Math.max(0, tip.y - 70),
+                    }}
+                  >
+                    <div className="pr-tt-d">
+                      {tip.i === 0 ? "dnes" : `o ${tip.i} r.`}
+                    </div>
+                    <div className="pr-tt-green">● ETF: {fmt(sA[tip.i])}</div>
+                    <div className="pr-tt-red">● Fond: {fmt(sB[tip.i])}</div>
+                    <div className="pr-tt-amber">Δ {fmt(sA[tip.i] - sB[tip.i])}</div>
+                  </div>
+                )}
+              </div>
 
-                <div className="pr-why">
-                  <span className="pr-why-icon"><Lightbulb className="h-4 w-4" strokeWidth={1.75} aria-hidden /></span>
-                  <p>
-                    <strong>Prečo to robí taký rozdiel?</strong> Poplatok sa strháva každý rok z{" "}
-                    <strong>celej hodnoty</strong> portfólia — nielen z toho, čo si vložil. A každé euro,
-                    ktoré odíde na poplatkoch, ti zároveň prestane zarábať. Strata sa tak úročí rovnako ako
-                    majetok — z pár percent ročne vyrastú za 20 rokov desaťtisíce eur.
-                  </p>
-                </div>
-              </section>
-            </div>
+              <div className="calc-legend pr-legend">
+                <span className="calc-legend-item">
+                  <span className="calc-legend-dot" style={{ background: "#2a6647" }} />
+                  Nízkonákladové ETF portfólio
+                </span>
+                <span className="calc-legend-item">
+                  <span className="calc-legend-dot" style={{ background: "#ab4132" }} />
+                  Tvoje súčasné investovanie
+                </span>
+                <span className="calc-legend-item">
+                  <span className="calc-legend-dot pr-legend-area" />
+                  medzera = tvoja strata
+                </span>
+              </div>
+
+              <div className="pr-why">
+                <span className="pr-why-icon"><Lightbulb className="h-4 w-4" strokeWidth={1.75} aria-hidden /></span>
+                <p>
+                  <strong>Prečo to robí taký rozdiel?</strong> Poplatok sa strháva každý rok z{" "}
+                  <strong>celej hodnoty</strong> portfólia — nielen z toho, čo si vložil. A každé euro,
+                  ktoré odíde na poplatkoch, ti zároveň prestane zarábať. Strata sa tak úročí rovnako ako
+                  majetok — z pár percent ročne vyrastú za 20 rokov desaťtisíce eur.
+                </p>
+              </div>
+            </section>
 
             {/* ═══ CTA ═══ */}
             <div className="pr-cta calc-reveal" style={st(4)}>

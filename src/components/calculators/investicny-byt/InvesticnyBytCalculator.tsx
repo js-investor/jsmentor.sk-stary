@@ -225,7 +225,7 @@ const InvesticnyBytCalculator = () => {
             <div className="iby-section-head">
               <span className="iby-stepbadge">Krok 1</span>
               <h3 className="iby-section-title">Klikni na <em>svoj kraj</em></h3>
-              <p className="iby-section-sub">Pri každom kraji je priemerná cena za m² v krajskom meste. Klikni na kraj alebo vyber mesto nižšie.</p>
+              <p className="iby-section-sub">Klikni na kraj. Cenu za m², nájom aj rast krajského mesta doplníme za teba.</p>
             </div>
             <div className="iby-map-wrap">
               <svg viewBox="0 0 1000 498" className="iby-map" role="img" aria-label="Mapa krajov Slovenska">
@@ -233,21 +233,9 @@ const InvesticnyBytCalculator = () => {
                   <path key={k} d={d} className={`iby-kraj${k === kraj ? " active" : ""}`} fill={k === kraj ? "#f7efe2" : "#e3d5bd"} onClick={() => handleKrajClick(k)} />
                 ))}
                 {Object.entries(MAP_LABELS).map(([k, pos]) => (
-                  <g key={k} pointerEvents="none">
-                    <text fontFamily="Gilroy, sans-serif" fontSize="28" fontWeight="800" fill="#292420" textAnchor="middle" x={pos.x} y={pos.y}>{k}</text>
-                    <text fontFamily="Gilroy, sans-serif" fontSize="18" fontWeight="600" fill={KRAJE[k].m2 > 3400 ? "rgba(255,255,255,0.85)" : "rgba(28,28,28,0.7)"} textAnchor="middle" x={pos.x} y={pos.y + 26}>{KRAJE[k].m2.toLocaleString("sk-SK")} €/m²</text>
-                  </g>
+                  <text key={k} pointerEvents="none" fontFamily="Matter, Gilroy, sans-serif" fontSize="30" fontWeight="700" fill="#292420" textAnchor="middle" x={pos.x} y={pos.y + 12}>{k}</text>
                 ))}
               </svg>
-              
-            </div>
-            <div className="iby-cities" role="group" aria-label="Krajské mestá">
-              {Object.entries(KRAJE).map(([k, kd]) => (
-                <button key={k} type="button" className={`iby-citybtn${k === kraj ? " is-active" : ""}`} aria-pressed={k === kraj} onClick={() => handleKrajClick(k)}>
-                  <strong>{kd.name}</strong>
-                  <span>{kd.m2.toLocaleString("sk-SK")} €/m² · rast {pctFmt(kd.hist)}</span>
-                </button>
-              ))}
             </div>
             <div className="iby-city">
               <div><span className="calc-stat-label">Zvolené mesto</span><strong>{K.name}</strong></div>

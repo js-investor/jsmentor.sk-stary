@@ -22,12 +22,6 @@
 .bonusy .bz-h1 b { font-weight: 800; }
 .bonusy .bz-h1 em { font-style: italic; font-weight: 700; color: var(--bz-forest); }
 .bonusy .bz-lede { max-width: 36rem; margin: 1.25rem auto 0; font-size: 1.125rem; line-height: 1.6; color: var(--bz-fg2); text-wrap: pretty; }
-.bonusy .bz-well { display: grid; grid-template-columns: repeat(3, 1fr); max-width: 34rem; margin: 2.25rem auto 0; padding: 1.125rem 0.5rem; border-radius: 1.25rem; background: var(--bz-well); list-style: none; }
-.bonusy .bz-well li { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem; border-left: 1px solid var(--bz-hair-2); }
-.bonusy .bz-well li:first-child { border-left: none; }
-.bonusy .bz-well b { font-family: var(--font-serif); font-size: clamp(1.625rem, 3.6vw, 2.125rem); line-height: 1; font-weight: 700; letter-spacing: -0.015em; color: var(--bz-ink); white-space: nowrap; font-variant-numeric: tabular-nums; }
-.bonusy .bz-well b em { font-style: italic; color: var(--bz-forest); }
-.bonusy .bz-well span { font-size: 0.75rem; color: var(--bz-fg3); }
 
 /* ------------------------------ Tri kroky: tónované, s veľkým číslom ------------------------------ */
 .bonusy .bz-steps { display: grid; grid-template-columns: 1fr; gap: 0.875rem; max-width: 72rem; margin: 3rem auto 0; padding: 0; list-style: none; }
