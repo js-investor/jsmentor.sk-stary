@@ -16,9 +16,14 @@ export type BonusyHeaderGroup = {
 
 type BonusyHeaderProps = {
   logoHref?: string;
+  /** Iné logo než WealthMap (napr. JS Mentor na /komunita). */
+  logoSrc?: string;
+  logoAlt?: string;
   leadingLinks?: { label: string; href: string }[];
   groups?: BonusyHeaderGroup[];
   ctaLabel?: string;
+  /** Kratší text pre úzke displeje (predvolene „Konzultácia“). */
+  ctaShortLabel?: string;
   ctaHref?: string;
   ctaUmamiEvent?: string;
   ctaUmamiEventSection?: string;
@@ -26,9 +31,12 @@ type BonusyHeaderProps = {
 
 const BonusyHeader = ({
   logoHref = "/bonusy",
+  logoSrc = logo,
+  logoAlt = "WealthMap bonuses",
   leadingLinks = [],
   groups = [],
   ctaLabel = "Konzultácia s Ivanom",
+  ctaShortLabel = "Konzultácia",
   ctaHref,
   ctaUmamiEvent,
   ctaUmamiEventSection,
@@ -88,8 +96,8 @@ const BonusyHeader = ({
   return (
     <header data-js-site-header className="bzh">
       <div className="bzh-bar">
-        <a href={logoHref} className="bzh-logo" aria-label="WealthMap bonusy – prehľad">
-          <img src={logo} alt="WealthMap bonuses" />
+        <a href={logoHref} className="bzh-logo" aria-label={logoAlt}>
+          <img src={logoSrc} alt={logoAlt} />
         </a>
 
         <nav className="bzh-nav" aria-label="Navigácia stránky">
@@ -137,7 +145,7 @@ const BonusyHeader = ({
           <a {...ctaProps} className="bzh-cta">
             <span className="bzh-cta-long">{ctaLabel}</span>
             <span className="bzh-cta-short" aria-hidden>
-              Konzultácia
+              {ctaShortLabel}
             </span>
             <span className="bzh-cta-arrow" aria-hidden>
               →

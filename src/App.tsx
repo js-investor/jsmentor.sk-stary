@@ -53,6 +53,7 @@ const ScrollToTop = () => {
 };
 import Index from "./pages/Index.tsx";
 import Komunita from "./pages/Komunita.tsx";
+import Komunita2 from "./pages/komunita2/Komunita2.tsx";
 import { KOMUNITA_PATH } from "./lib/cennikCta.ts";
 import Konzultacia from "./pages/Konzultacia.tsx";
 import Gdpr from "./pages/Gdpr.tsx";
@@ -98,7 +99,9 @@ const App = () => (
     <ScrollToTop />
     <Routes>
       <Route path="/" element={<Index />} />
-      <Route path={KOMUNITA_PATH} element={<Komunita />} />
+      <Route path={KOMUNITA_PATH} element={<Komunita2 />} />
+      {/* pôvodná verzia na porovnanie, len lokálne */}
+      <Route path="/komunita-stara" element={<Komunita />} />
       <Route path="/konzultacia" element={<Konzultacia />} />
       <Route path="/gdpr" element={<Gdpr />} />
       <Route path={BONUSY_BASE_PATH} element={<KalkulackyCategoryPage />} />

@@ -1,0 +1,245 @@
+/**
+ * Komunita 2.0 — jazyk Bonusov (Wealthsimple / Munro): krémové plátno, atrament, hairline,
+ * jedna zelená na akcie, jeden hnedý blok na stránku, tonálne dlaždice (piesok, kameň, zelená).
+ * Referencie (Refero): Wealthsimple, Munro Partners, Medium (editoriál + jedno tmavé tlačidlo),
+ * Delphi (parchment, expert-led brand, plávajúce recenzie), Kit / Monarch (jeden plán, skúšobné obdobie).
+ */
+
+.km { --km-ink: #292420; --km-fg2: #4a4239; --km-fg3: #6b625a; --km-cream: #f3eee8; --km-ivory: #fffcf7; --km-sand: #f0e3cf; --km-stone: #e9e4dc; --km-green: #2a6647; --km-green-dark: #0b3d2e; --km-gold: #d9b15c; --km-hair: rgba(41, 36, 32, 0.1); --km-hair-2: rgba(41, 36, 32, 0.18); --km-ease: cubic-bezier(0.22, 1, 0.36, 1); --font-serif: 'Calvino', 'Recoleta', serif; --font-sans: 'Matter', 'Gilroy', sans-serif; position: relative; isolation: isolate; font-family: var(--font-sans); color: var(--km-ink); background: var(--km-cream); -webkit-font-smoothing: antialiased; }
+.km *, .km *::before, .km *::after { box-sizing: border-box; }
+.km-wrap { max-width: 1200px; margin: 0 auto; padding: 0 1.25rem; }
+@media (min-width: 768px) { .km-wrap { padding: 0 2rem; } }
+.km-section { padding: 4.5rem 0; }
+@media (min-width: 768px) { .km-section { padding: 6.5rem 0; } }
+.km-section + .km-section { padding-top: 0; }
+
+/* typografia */
+.km-eyebrow { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.375rem 0.875rem; border-radius: 9999px; background: var(--km-green); color: #f3e9dd; font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+.km-h1 { margin: 1.25rem 0 1rem; font-family: var(--font-serif); font-size: clamp(2.5rem, 6.2vw, 4.5rem); line-height: 1.02; font-weight: 700; letter-spacing: -0.025em; color: var(--km-ink); text-wrap: balance; }
+.km-h1 em { font-style: italic; color: var(--km-green); }
+.km-h2 { margin: 0 0 0.75rem; font-family: var(--font-serif); font-size: clamp(1.875rem, 4.2vw, 3rem); line-height: 1.08; font-weight: 700; letter-spacing: -0.02em; color: var(--km-ink); text-wrap: balance; }
+.km-h2 em { font-style: italic; color: var(--km-green); }
+.km-h3 { margin: 0; font-family: var(--font-serif); font-size: 1.375rem; line-height: 1.2; font-weight: 700; color: var(--km-ink); }
+.km-lede { margin: 0; font-size: 1.0625rem; line-height: 1.6; color: var(--km-fg2); text-wrap: pretty; }
+@media (min-width: 768px) { .km-lede { font-size: 1.1875rem; } }
+.km-sub { margin: 0; font-size: 1rem; line-height: 1.6; color: var(--km-fg3); text-wrap: pretty; }
+.km-center { text-align: center; }
+.km-center .km-lede, .km-center .km-sub { margin-left: auto; margin-right: auto; }
+.km-head { max-width: 44rem; margin: 0 auto 2.5rem; }
+@media (min-width: 768px) { .km-head { margin-bottom: 3.5rem; } }
+
+/* tlačidlá a odkazy */
+.km-btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.875rem 1.5rem; border-radius: 9999px; border: none; background: var(--km-green); color: #f3e9dd; font-family: var(--font-sans); font-size: 1rem; font-weight: 600; text-decoration: none; cursor: pointer; transition: background 0.2s, transform 0.3s var(--km-ease); }
+.km-btn:hover { background: var(--km-green-dark); transform: translateY(-1px); }
+.km-btn svg { transition: transform 0.22s var(--km-ease); }
+.km-btn:hover svg { transform: translateX(3px); }
+.km-btn--ink { background: var(--km-ink); color: #f3e9dd; }
+.km-btn--ink:hover { background: #3a332d; }
+.km-btn--light { background: #f3e9dd; color: var(--km-ink); }
+.km-btn--light:hover { background: #fffcf7; }
+.km-link { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 1rem; font-weight: 600; color: var(--km-green); text-decoration: none; }
+.km-link:hover { text-decoration: underline; text-underline-offset: 4px; }
+.km-link svg { transition: transform 0.22s var(--km-ease); }
+.km-link:hover svg { transform: translateX(3px); }
+.km-btn:focus-visible, .km-link:focus-visible { outline: 2px solid var(--km-green); outline-offset: 3px; }
+
+/* ------------------------------ Hero ------------------------------ */
+.km-hero { padding: 3rem 0 4rem; }
+@media (min-width: 1024px) { .km-hero { padding: 4.5rem 0 5.5rem; } }
+.km-hero-grid { display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: center; }
+@media (min-width: 1024px) { .km-hero-grid { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 4rem; } }
+.km-hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; margin-top: 1.75rem; }
+.km-hero-proof { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; margin: 1.75rem 0 0; padding: 1.25rem 0 0; border-top: 1px solid var(--km-hair); list-style: none; font-size: 0.875rem; color: var(--km-fg3); }
+.km-hero-proof b { font-family: var(--font-serif); font-size: 1.125rem; font-weight: 700; color: var(--km-ink); margin-right: 0.25rem; }
+.km-hero-visual { position: relative; }
+.km-hero-photo { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 1.75rem; background: var(--km-sand); }
+@media (min-width: 1024px) { .km-hero-photo { aspect-ratio: 5 / 6; } }
+.km-hero-float { position: absolute; left: -0.75rem; bottom: 1.5rem; max-width: 17rem; padding: 1rem 1.125rem; border-radius: 1.125rem; background: var(--km-ivory); border: 1px solid var(--km-hair); }
+@media (min-width: 1024px) { .km-hero-float { left: -2.5rem; bottom: 2.5rem; } }
+.km-hero-float b { display: block; font-family: var(--font-serif); font-size: 1.375rem; font-weight: 700; color: var(--km-ink); line-height: 1.1; }
+.km-hero-float span { display: block; margin-top: 0.25rem; font-size: 0.8125rem; line-height: 1.45; color: var(--km-fg3); }
+
+/* ------------------------------ Chyby: číslované hairline riadky (Munro) ------------------------------ */
+.km-rows { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--km-hair-2); }
+.km-row { display: grid; grid-template-columns: 3rem 1fr; gap: 1rem; padding: 1.25rem 0; border-bottom: 1px solid var(--km-hair); }
+@media (min-width: 768px) { .km-row { grid-template-columns: 4.5rem minmax(0, 18rem) 1fr; gap: 1.5rem 2rem; padding: 1.5rem 0; align-items: baseline; } }
+.km-row-n { font-family: var(--font-serif); font-size: 1.5rem; font-weight: 700; color: var(--km-green); line-height: 1; }
+.km-row-t { font-family: var(--font-serif); font-size: 1.25rem; line-height: 1.2; font-weight: 700; color: var(--km-ink); }
+.km-row-d { margin: 0.375rem 0 0; font-size: 0.9375rem; line-height: 1.55; color: var(--km-fg2); }
+@media (min-width: 768px) { .km-row-d { margin: 0; grid-column: 3; } .km-row-t { grid-column: 2; } }
+@media (max-width: 767px) { .km-row-d { grid-column: 2; } }
+
+/* ------------------------------ Čo získaš: tonálne dlaždice ------------------------------ */
+.km-tiles { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+@media (min-width: 640px) { .km-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .km-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; } }
+.km-tile { position: relative; display: flex; flex-direction: column; gap: 0.5rem; min-height: 11.5rem; padding: 1.375rem 1.375rem 1.25rem; border-radius: 1.5rem; background: var(--km-sand); color: var(--km-ink); transition: transform 0.35s var(--km-ease); }
+.km-tile:hover { transform: translateY(-3px); }
+.km-tile--stone { background: var(--km-stone); }
+.km-tile--green { background: var(--km-green); color: #f3e9dd; }
+.km-tile--green .km-tile-text { color: rgba(243, 233, 221, 0.88); }
+.km-tile--green .km-tile-icon { background: rgba(243, 233, 221, 0.18); color: #f3e9dd; }
+.km-tile-icon { display: inline-flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: 9999px; background: var(--km-ink); color: #f3e9dd; margin-bottom: 0.5rem; }
+.km-tile-title { font-family: var(--font-serif); font-size: 1.25rem; line-height: 1.2; font-weight: 700; margin-top: auto; }
+.km-tile-text { font-size: 0.9375rem; line-height: 1.5; color: var(--km-fg2); }
+
+/* ------------------------------ Hnedý blok: manifest ------------------------------ */
+.km-dark { padding: 3rem 1.75rem; border-radius: 2rem; background: var(--km-ink); color: #f3e9dd; }
+@media (min-width: 768px) { .km-dark { padding: 4rem 3.5rem; } }
+.km-dark-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; align-items: center; }
+@media (min-width: 1024px) { .km-dark-grid { grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr); gap: 4rem; } }
+.km-dark .km-kicker { display: block; margin-bottom: 1rem; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--km-gold); }
+.km-dark h2 { margin: 0 0 1rem; font-family: var(--font-serif); font-size: clamp(1.875rem, 4vw, 2.75rem); line-height: 1.1; font-weight: 700; letter-spacing: -0.02em; color: #f3e9dd; text-wrap: balance; }
+.km-dark h2 em { font-style: italic; color: var(--km-gold); }
+.km-dark p { margin: 0; font-size: 1.0625rem; line-height: 1.6; color: rgba(243, 233, 221, 0.88); }
+.km-dark p + p { margin-top: 0.875rem; }
+.km-dark-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.km-dark-list li { padding: 0.875rem 0; border-top: 1px solid rgba(243, 233, 221, 0.24); font-size: 1rem; line-height: 1.5; color: rgba(243, 233, 221, 0.88); }
+.km-dark-list li b { color: #f3e9dd; font-weight: 600; }
+.km-dark .km-btn { margin-top: 1.5rem; }
+
+/* ------------------------------ Recenzie: ivory karty ------------------------------ */
+.km-quotes { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+@media (min-width: 640px) { .km-quotes { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .km-quotes { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; } }
+.km-quote { display: flex; flex-direction: column; gap: 1rem; padding: 1.5rem; border-radius: 1.5rem; background: var(--km-ivory); border: 1px solid var(--km-hair); }
+.km-quote p { margin: 0; font-size: 1rem; line-height: 1.6; color: var(--km-fg2); }
+.km-quote p::before { content: "„"; font-family: var(--font-serif); font-size: 1.5rem; line-height: 0; color: var(--km-green); margin-right: 0.125rem; }
+.km-quote footer { display: flex; align-items: center; gap: 0.75rem; margin-top: auto; font-size: 0.875rem; color: var(--km-fg3); }
+.km-quote footer b { display: block; font-weight: 600; color: var(--km-ink); }
+.km-avatar { width: 2.5rem; height: 2.5rem; border-radius: 9999px; background: var(--km-sand); color: var(--km-ink); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-weight: 700; font-size: 1rem; flex-shrink: 0; object-fit: cover; }
+
+/* ------------------------------ Cena: jeden plán ------------------------------ */
+.km-price { display: grid; grid-template-columns: 1fr; gap: 0; overflow: hidden; border-radius: 2rem; border: 1px solid var(--km-hair-2); background: var(--km-ivory); }
+@media (min-width: 900px) { .km-price { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.km-price-main { padding: 2rem 1.75rem; }
+@media (min-width: 900px) { .km-price-main { padding: 3rem; } }
+.km-price-kicker { display: block; margin-bottom: 1rem; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--km-green); }
+.km-price-value { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem 0.75rem; margin: 0.5rem 0 0.25rem; }
+.km-price-value b { font-family: var(--font-serif); font-size: clamp(3rem, 7vw, 4.75rem); line-height: 1; font-weight: 700; letter-spacing: -0.02em; color: var(--km-ink); }
+.km-price-value span { font-family: var(--font-serif); font-style: italic; font-size: 1.25rem; font-weight: 600; color: var(--km-green); }
+.km-price-trial { margin: 0 0 1.5rem; font-size: 1.0625rem; color: var(--km-fg2); }
+.km-price-trial b { color: var(--km-ink); font-weight: 600; }
+.km-price-terms { margin: 1rem 0 0; font-size: 0.8125rem; line-height: 1.5; color: var(--km-fg3); }
+.km-price-side { padding: 2rem 1.75rem; background: var(--km-sand); }
+@media (min-width: 900px) { .km-price-side { padding: 3rem; } }
+.km-price-side h3 { margin: 0 0 1rem; font-family: var(--font-serif); font-size: 1.25rem; font-weight: 700; color: var(--km-ink); }
+.km-checks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.km-checks li { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.625rem 0; border-top: 1px solid rgba(41, 36, 32, 0.12); font-size: 0.9375rem; line-height: 1.5; color: var(--km-fg2); }
+.km-checks li:first-child { border-top: none; padding-top: 0; }
+.km-checks svg { flex-shrink: 0; margin-top: 0.1875rem; color: var(--km-green); }
+
+/* ------------------------------ Citát ------------------------------ */
+.km-pull { max-width: 52rem; margin: 0 auto; text-align: center; }
+.km-pull blockquote { margin: 0; font-family: var(--font-serif); font-size: clamp(1.5rem, 3.6vw, 2.375rem); line-height: 1.25; font-weight: 700; letter-spacing: -0.015em; color: var(--km-ink); text-wrap: balance; }
+.km-pull blockquote em { font-style: italic; color: var(--km-green); }
+.km-pull figcaption { margin-top: 1.25rem; font-size: 0.9375rem; color: var(--km-fg3); }
+
+/* ------------------------------ Ivan ------------------------------ */
+.km-bio { display: grid; grid-template-columns: 1fr; gap: 2rem; align-items: center; }
+@media (min-width: 900px) { .km-bio { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: 4rem; } }
+.km-bio-photo { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 28%; border-radius: 1.75rem; background: var(--km-stone); }
+.km-bio p { margin: 0; font-size: 1.0625rem; line-height: 1.65; color: var(--km-fg2); }
+.km-bio p + p { margin-top: 1rem; }
+.km-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.75rem 0 0; padding: 1.25rem 0 0; border-top: 1px solid var(--km-hair); list-style: none; }
+.km-stats b { display: block; font-family: var(--font-serif); font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 700; color: var(--km-ink); line-height: 1; }
+.km-stats span { display: block; margin-top: 0.25rem; font-size: 0.8125rem; color: var(--km-fg3); }
+
+/* ------------------------------ FAQ ------------------------------ */
+.km-faq { max-width: 46rem; margin: 0 auto; border-top: 1px solid var(--km-hair-2); }
+.km-faq details { border-bottom: 1px solid var(--km-hair); }
+.km-faq summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.125rem 0; list-style: none; cursor: pointer; font-family: var(--font-serif); font-size: 1.125rem; font-weight: 700; color: var(--km-ink); }
+.km-faq summary::-webkit-details-marker { display: none; }
+.km-faq summary svg { flex-shrink: 0; color: var(--km-green); transition: transform 0.25s var(--km-ease); }
+.km-faq details[open] summary svg { transform: rotate(45deg); }
+.km-faq .km-faq-a { margin: 0; padding: 0 0 1.25rem; font-size: 1rem; line-height: 1.6; color: var(--km-fg2); max-width: 40rem; }
+
+/* ------------------------------ Porovnanie ------------------------------ */
+.km-compare { width: 100%; border-collapse: collapse; }
+.km-compare th, .km-compare td { padding: 0.875rem 0.75rem; text-align: left; vertical-align: top; border-bottom: 1px solid var(--km-hair); font-size: 0.9375rem; line-height: 1.5; }
+.km-compare th { font-family: var(--font-serif); font-size: 1.125rem; font-weight: 700; color: var(--km-ink); border-bottom: 1px solid var(--km-hair-2); }
+.km-compare th.is-good, .km-compare td.is-good { color: var(--km-green); }
+.km-compare td { color: var(--km-fg2); }
+.km-compare td.is-good { color: var(--km-ink); font-weight: 500; }
+.km-compare td:first-child { color: var(--km-fg3); }
+.km-compare-wrap { overflow-x: auto; border-radius: 1.5rem; border: 1px solid var(--km-hair); background: var(--km-ivory); padding: 0.5rem 1.25rem; }
+
+/* ------------------------------ Galéria recenzií ------------------------------ */
+.km-gallery { columns: 1; column-gap: 1rem; }
+@media (min-width: 640px) { .km-gallery { columns: 2; } }
+@media (min-width: 1024px) { .km-gallery { columns: 3; column-gap: 1.25rem; } }
+.km-gallery img { display: block; width: 100%; height: auto; margin: 0 0 1rem; border-radius: 1.125rem; border: 1px solid var(--km-hair); background: var(--km-ivory); break-inside: avoid; }
+
+/* ------------------------------ Záverečné CTA ------------------------------ */
+.km-final { text-align: center; padding: 3rem 1.5rem; border-radius: 2rem; background: var(--km-sand); }
+@media (min-width: 768px) { .km-final { padding: 4rem 2rem; } }
+.km-final .km-h2 { max-width: 34rem; margin-left: auto; margin-right: auto; }
+.km-final .km-sub { max-width: 32rem; margin: 0.5rem auto 1.75rem; }
+
+/* ------------------------------ Pohyb ------------------------------ */
+@keyframes km-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.km-reveal { animation: km-in 0.7s var(--km-ease) both; animation-delay: calc(var(--i, 0) * 70ms); }
+@media (prefers-reduced-motion: reduce) { .km-reveal, .km-tile, .km-btn { animation: none !important; transition: none !important; } }
+
+/* ------------------------------ Doplnky: hlavička, video, chyby, ukážky, benefity ------------------------------ */
+.km { --background: 33 31% 93%; }
+.km .km-muted { color: var(--km-fg3); }
+.km-video { max-width: 56rem; margin: 2.5rem auto 0; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 1.5rem; border: 1px solid var(--km-hair); background: var(--km-ivory); }
+.km-video iframe { display: block; width: 100%; height: 100%; border: 0; }
+.km-hero .km-hero-proof { justify-content: center; max-width: 56rem; margin-left: auto; margin-right: auto; }
+.km-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; margin-top: 1.75rem; }
+.km-actions.km-center { justify-content: center; }
+
+.km-chyby { display: grid; grid-template-columns: 1fr; gap: 2rem; align-items: start; }
+@media (min-width: 1024px) { .km-chyby { grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr); gap: 4rem; } .km-chyby-media { position: sticky; top: 5.5rem; } }
+.km-chyby-photo { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 1.75rem; background: var(--km-sand); }
+.km-chyby-body .km-h2 { margin-bottom: 1rem; }
+.km-chyby-body .km-h2 strong { font-weight: 700; }
+.km-rows--chyby { margin-top: 1.75rem; }
+.km-rows--chyby .km-row { grid-template-columns: 3rem 1fr; }
+.km-row-t--wide { margin: 0; font-family: var(--font-sans); font-size: 1.0625rem; line-height: 1.5; font-weight: 400; color: var(--km-fg2); }
+.km-row-t--wide strong { font-weight: 600; color: var(--km-ink); }
+
+.km-videos { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 1.75rem; }
+@media (min-width: 640px) { .km-videos { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; } }
+.km-video-card { display: flex; flex-direction: column; gap: 0.5rem; padding: 0; border: none; background: transparent; color: inherit; text-align: left; cursor: pointer; font-family: var(--font-sans); }
+.km-video-thumb { position: relative; display: block; overflow: hidden; border-radius: 1rem; aspect-ratio: 16 / 10; background: rgba(243, 233, 221, 0.08); }
+.km-video-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--km-ease); }
+.km-video-card:hover .km-video-thumb img { transform: scale(1.04); }
+.km-video-play { position: absolute; left: 0.75rem; bottom: 0.75rem; display: inline-flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: 9999px; background: rgba(41, 36, 32, 0.85); color: #f3e9dd; }
+.km-video-title { font-family: var(--font-serif); font-size: 1.0625rem; line-height: 1.3; font-weight: 700; color: #f3e9dd; }
+.km-video-dur { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--km-gold); }
+.km-video-card:focus-visible { outline: 2px solid var(--km-gold); outline-offset: 4px; border-radius: 1rem; }
+.km-dark-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(243, 233, 221, 0.24); }
+.km-dark-foot .km-btn { margin-top: 0; }
+.km-dark-foot p { font-size: 0.9375rem; color: rgba(243, 233, 221, 0.88); }
+.km-dark-foot p strong { color: #f3e9dd; font-weight: 600; }
+
+.km-bonusy #bonusy-kalkulacky { background: transparent !important; padding-top: 0 !important; }
+.km-bonusy #bonusy-kalkulacky .bg-dot-grid { display: none; }
+.km-bonusy .headline-landing-section { font-family: var(--font-serif); letter-spacing: -0.02em; }
+
+.km-stats--wide { grid-template-columns: 1fr; margin: 0 0 1.75rem; padding: 0; border-top: none; }
+@media (min-width: 640px) { .km-stats--wide { grid-template-columns: repeat(3, 1fr); } }
+.km-stats--wide li { padding: 1.125rem 1.25rem; border-radius: 1.25rem; background: var(--km-ivory); border: 1px solid var(--km-hair); }
+.km-stats--wide span { font-size: 0.9375rem; color: var(--km-fg2); }
+.km-stats--wide span strong { color: var(--km-ink); font-weight: 600; }
+
+.km-checks--price { margin-top: 1.25rem; padding-top: 0.5rem; border-top: 1px solid var(--km-hair); }
+.km-checks--price li:first-child { border-top: none; padding-top: 0.625rem; }
+.km-price-main .km-actions { margin-top: 1.5rem; }
+.km-benefits { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.km-benefits li { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.75rem 0; border-top: 1px solid rgba(41, 36, 32, 0.12); }
+.km-benefits li:first-child { border-top: none; padding-top: 0; }
+.km-benefits b { display: block; font-family: var(--font-serif); font-size: 1rem; font-weight: 700; color: var(--km-ink); line-height: 1.25; }
+.km-benefits small { display: block; margin-top: 0.125rem; font-size: 0.8125rem; line-height: 1.45; color: var(--km-fg2); }
+.km-benefit-icon { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 2rem; height: 2rem; border-radius: 9999px; background: var(--km-ink); color: #f3e9dd; margin-top: 0.0625rem; }
+
+.km-compare td b { display: block; font-family: var(--font-serif); font-size: 1.0625rem; font-weight: 700; color: var(--km-ink); margin-bottom: 0.125rem; }
+.km-compare td span { display: block; color: var(--km-fg2); font-weight: 400; }
+.km-compare td.is-good b { color: var(--km-green); }
+.km-mark { display: inline-flex; align-items: center; justify-content: center; width: 1.375rem; height: 1.375rem; margin-right: 0.5rem; border-radius: 9999px; vertical-align: middle; }
+.km-mark--bad { background: rgba(41, 36, 32, 0.1); color: var(--km-fg3); }
+.km-mark--good { background: var(--km-green); color: #f3e9dd; }
+.km-final .km-btn { margin-top: 0.25rem; }
+.km-final .km-price-terms { margin-top: 1rem; }
