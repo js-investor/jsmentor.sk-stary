@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { scrollToAnchorId, isScrolledNearAnchor } from "@/lib/scrollToFormular";
 
@@ -62,7 +62,7 @@ import {
   BONUSY_BASE_PATH,
   KALKULACKY_CALCULATORS,
 } from "./pages/kalkulacky/kalkulackyConfig.ts";
-import HypotekarnaCalculator from "./components/calculators/hypotekarna/HypotekarnaCalculator.tsx";
+import InteligentnaHypotekaCalculator from "./components/calculators/inteligentna-hypoteka/InteligentnaHypotekaCalculator.tsx";
 import InvesticnaCalculator from "./components/calculators/investicna/InvesticnaCalculator.tsx";
 import MzdovaCalculator from "./components/calculators/mzdova/MzdovaCalculator.tsx";
 import PodlaPrijmuCalculator from "./components/calculators/podlaprijmu/PodlaPrijmuCalculator.tsx";
@@ -78,7 +78,7 @@ import NotFound from "./pages/NotFound.tsx";
 import type { ReactNode } from "react";
 
 const calculatorBySlug: Record<string, ReactNode> = {
-  "hypo-kalkulacka": <HypotekarnaCalculator />,
+  "inteligentna-hypoteka": <InteligentnaHypotekaCalculator />,
   "investicna-kalkulacka": <InvesticnaCalculator />,
   "mzdova-kalkulacka": <MzdovaCalculator />,
   "uverova-kalkulacka": <PodlaPrijmuCalculator />,
@@ -102,6 +102,8 @@ const App = () => (
       <Route path="/konzultacia" element={<Konzultacia />} />
       <Route path="/gdpr" element={<Gdpr />} />
       <Route path={BONUSY_BASE_PATH} element={<KalkulackyCategoryPage />} />
+      {/* Hypotéka vs. investovanie nahradila Inteligentná hypotéka – stará URL presmeruje */}
+      <Route path={`${BONUSY_BASE_PATH}/hypo-kalkulacka`} element={<Navigate to={`${BONUSY_BASE_PATH}/inteligentna-hypoteka`} replace />} />
       {KALKULACKY_CALCULATORS.map((c) => {
         const calculator = calculatorBySlug[c.slug];
         return (

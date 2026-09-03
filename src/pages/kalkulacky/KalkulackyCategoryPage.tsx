@@ -35,7 +35,7 @@ const TOOL_META: Record<string, { category: string; tone: ToneId; glyph: Glyph }
   "financny-checkup": { category: "Začni tu", tone: "sage", glyph: "ring" },
   "etf-semafor": { category: "Investovanie", tone: "sage", glyph: "dots" },
   "skoring-bytov": { category: "Nehnuteľnosti", tone: "sand", glyph: "ring" },
-  "hypo-kalkulacka": { category: "Hypotéka", tone: "sand", glyph: "venn" },
+  "inteligentna-hypoteka": { category: "Hypotéka", tone: "sand", glyph: "venn" },
   "investicna-kalkulacka": { category: "Investovanie", tone: "green", glyph: "arcs" },
   "mzdova-kalkulacka": { category: "Mzda", tone: "stone", glyph: "coins" },
   "uverova-kalkulacka": { category: "Úvery", tone: "sand", glyph: "gauge" },
@@ -46,7 +46,7 @@ const TOOL_META: Record<string, { category: string; tone: ToneId; glyph: Glyph }
   "vynosnost-bytu": { category: "Nehnuteľnosti", tone: "green", glyph: "steps" },
 };
 
-const NEW_SLUGS = new Set(["financny-checkup", "skoring-bytov", "vynosnost-bytu"]);
+const NEW_SLUGS = new Set(["financny-checkup", "skoring-bytov", "vynosnost-bytu", "inteligentna-hypoteka"]);
 const FAVORITE_SLUGS = new Set(["rentova-kalkulacka"]);
 const FEATURED = ["financny-checkup", "etf-semafor", "skoring-bytov"];
 const focusClass = "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";

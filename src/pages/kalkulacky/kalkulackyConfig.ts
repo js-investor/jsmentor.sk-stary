@@ -20,11 +20,11 @@ export type KalkulackaCalculatorMeta = {
 /** Zodpovedá súborom: Hypo Smart, Investičná, Mzdová kalkulačka, Podľa príjmu, Rentová kalkulačka. */
 export const KALKULACKY_CALCULATORS: KalkulackaCalculatorMeta[] = [
   {
-    slug: "hypo-kalkulacka",
-    title: "Hypotéka vs. investovanie",
-    menuLabel: "Hypotéka vs. investovanie",
+    slug: "inteligentna-hypoteka",
+    title: "Inteligentná hypotéka",
+    menuLabel: "Inteligentná hypotéka",
     description:
-      "Porovnaj, či je pre teba výhodnejšie skoršie splácanie hypotéky alebo pravidelné investovanie.",
+      "Plať banke minimum a rozdiel posielaj do úverovej rezervy. Zisti, v ktorom roku rezerva dobehne hypotéku a môžeš ju doplatiť skôr.",
     Icon: House,
   },
   {
@@ -143,7 +143,7 @@ export const KALKULACKY_HEADER_GROUPS: NavGroup[] = [
   {
     label: "Kalkulačky",
     items: [
-      { label: "Hypotéka vs. investovanie", href: `${BONUSY_BASE_PATH}/hypo-kalkulacka` },
+      { label: "Inteligentná hypotéka", href: `${BONUSY_BASE_PATH}/inteligentna-hypoteka` },
       { label: "Investičná kalkulačka", href: `${BONUSY_BASE_PATH}/investicna-kalkulacka` },
       { label: "Mzdová kalkulačka", href: `${BONUSY_BASE_PATH}/mzdova-kalkulacka` },
       { label: "Úverová kalkulačka", href: `${BONUSY_BASE_PATH}/uverova-kalkulacka` },

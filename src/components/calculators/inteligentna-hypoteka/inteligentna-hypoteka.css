@@ -1,0 +1,156 @@
+/**
+ * Inteligentná hypotéka — jazyk /bonusy 2.0, scoped pod #ih-root.
+ * Krémové plátno, jeden plochý hnedý panel s prognózou (zlatý kicker, obrie Calvino číslo), ivory panely
+ * s hairline, výrokové vstupy so slidermi, SVG graf v brandovej palete. Bez tieňov a gradientových textúr,
+ * bez zlatej na svetlom.
+ */
+
+#ih-root *, #ih-root *::before, #ih-root *::after { box-sizing: border-box; }
+#ih-root { position: relative; isolation: isolate; font-family: var(--font-sans); color: var(--wm-brown-text); width: 100%; --ih-hair: rgba(41, 36, 32, 0.1); --ih-hair-2: rgba(41, 36, 32, 0.16); --ih-muted: #6b625a; --ih-taupe: #8f8467; }
+
+/* ------------------------------ Prognóza: hnedý panel + ivory porovnanie ------------------------------ */
+#ih-root .ih-hero { display: grid; grid-template-columns: 1fr; gap: 1.25rem; margin-bottom: 1.25rem; padding: 1.75rem 1.5rem; border-radius: 1.75rem; background: var(--wm-brown); color: #f3e9dd; }
+@media (min-width: 900px) { #ih-root .ih-hero { grid-template-columns: minmax(0, 1fr) 19rem; align-items: center; gap: 2.5rem; padding: 2rem 2.25rem; } }
+#ih-root .ih-kicker { margin: 0 0 0.75rem; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--wm-gold); }
+#ih-root .ih-hero-label { margin: 0; font-size: 1.0625rem; line-height: 1.5; color: rgba(243, 233, 221, 0.88); max-width: 32rem; }
+#ih-root .ih-hero-label strong { font-weight: 500; color: #f3e9dd; }
+#ih-root .ih-hero-value { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem 0.875rem; margin: 0.25rem 0 0; }
+#ih-root .ih-hero-value span { font-family: var(--font-serif); font-size: clamp(3rem, 6.6vw, 5rem); line-height: 1; font-weight: 700; letter-spacing: -0.02em; color: #f3e9dd; font-variant-numeric: tabular-nums; white-space: nowrap; }
+#ih-root .ih-hero-value em { font-family: var(--font-serif); font-style: italic; font-size: 1.25rem; font-weight: 600; color: var(--wm-gold); }
+#ih-root .ih-hero-metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.875rem 1.5rem; margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px solid rgba(243, 233, 221, 0.28); }
+@media (min-width: 640px) { #ih-root .ih-hero-metrics { grid-template-columns: repeat(3, 1fr); } }
+#ih-root .ih-hero-metrics > div { display: flex; flex-direction: column; gap: 0.0625rem; min-width: 0; }
+#ih-root .ih-hero-metrics span { font-size: 0.75rem; color: rgba(243, 233, 221, 0.72); }
+#ih-root .ih-hero-metrics strong { font-family: var(--font-serif); font-size: clamp(1.25rem, 3.4vw, 1.5rem); font-weight: 600; color: #f3e9dd; font-variant-numeric: tabular-nums; white-space: nowrap; }
+#ih-root .ih-hero-metrics small { font-size: 0.75rem; color: rgba(243, 233, 221, 0.76); }
+
+#ih-root .ih-compare { display: flex; flex-direction: column; gap: 0.25rem; padding: 1.25rem 1.375rem 1.125rem; border-radius: 1.25rem; background: var(--wm-ivory); color: var(--wm-brown-text); }
+#ih-root .ih-compare-kicker { font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ih-muted); }
+#ih-root .ih-compare-value { font-family: var(--font-serif); font-size: clamp(2rem, 4.4vw, 2.5rem); line-height: 1.05; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--wm-green); }
+#ih-root .ih-compare.is-neg .ih-compare-value { color: var(--wm-red); }
+#ih-root .ih-compare-text { font-size: 0.8125rem; line-height: 1.45; color: var(--ih-muted); }
+#ih-root .ih-compare-rows { display: flex; flex-direction: column; gap: 0.375rem; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--ih-hair-2); }
+#ih-root .ih-compare-rows > div { display: flex; justify-content: space-between; align-items: baseline; gap: 0.75rem; font-size: 0.8125rem; color: var(--ih-muted); }
+#ih-root .ih-compare-rows b { font-family: var(--font-serif); font-size: 1rem; font-weight: 600; color: var(--wm-brown); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* ------------------------------ Rozloženie ------------------------------ */
+#ih-root .ih-layout { display: grid; grid-template-columns: 1fr; gap: 1.25rem; align-items: start; }
+@media (min-width: 1024px) {
+  #ih-root .ih-layout { grid-template-columns: minmax(19rem, 22rem) minmax(0, 1fr); gap: 1.5rem; }
+  #ih-root .ih-inputs { position: sticky; top: 5.5rem; }
+}
+#ih-root .ih-inputs, #ih-root .ih-result { min-width: 0; background: var(--wm-ivory); border: 1px solid var(--ih-hair); border-radius: 1.5rem; }
+#ih-root .ih-inputs { padding: 1.375rem 1.375rem 1rem; }
+#ih-root .ih-result { padding: 1.5rem 1.25rem 1.25rem; }
+@media (min-width: 768px) { #ih-root .ih-result { padding: 1.75rem 2rem 1.5rem; } }
+
+/* ------------------------------ Vstupy: výrok + slider ------------------------------ */
+#ih-root .ih-inputs-head { margin-bottom: 0.5rem; }
+#ih-root .ih-inputs-head .calc-panel-title { margin-bottom: 0.125rem; font-size: 1.375rem; font-weight: 700; color: var(--wm-brown); }
+#ih-root .ih-inputs-head .calc-panel-sub { margin: 0; color: var(--ih-muted); }
+#ih-root .ih-group { padding: 1rem 0 0.375rem; border-top: 1px solid var(--ih-hair); }
+#ih-root .ih-group:first-of-type { border-top: none; padding-top: 0.5rem; }
+#ih-root .ih-group-title { display: block; margin: 0 0 0.875rem; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--wm-green) !important; }
+#ih-root .ih-field { margin-bottom: 1.125rem; }
+#ih-root .ih-field-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.25rem; }
+#ih-root .ih-field .calc-label { display: flex; flex-direction: column; gap: 0.0625rem; margin: 0; font-size: 0.875rem; color: var(--wm-brown); }
+#ih-root .ih-field .calc-label-hint { font-size: 0.75rem; color: var(--ih-muted); }
+#ih-root .ih-val { display: flex; align-items: baseline; gap: 0.3rem; flex-shrink: 0; }
+#ih-root .ih-val input { width: 7.25rem; padding: 0; border: none; border-bottom: 1.5px solid var(--ih-hair-2); background: transparent; font-family: var(--font-serif); font-size: 1.5rem; line-height: 1.15; font-weight: 600; color: var(--wm-brown); text-align: right; font-variant-numeric: tabular-nums; transition: border-color 0.2s; }
+#ih-root .ih-val input:focus { outline: none; border-bottom-color: var(--wm-green); }
+#ih-root .ih-unit { font-size: 0.75rem; font-weight: 700; color: var(--ih-muted); white-space: nowrap; }
+#ih-root .ih-slider { --p: 0%; margin-top: 0.125rem; }
+#ih-root .ih-note { margin: 0.125rem 0 0.5rem; font-size: 0.8125rem; line-height: 1.5; color: var(--ih-muted); }
+#ih-root .ih-note strong { font-weight: 600; color: var(--wm-brown); }
+#ih-root .ih-reset { margin-top: 0.5rem; padding: 0.25rem 0; border: none; background: transparent; font-family: var(--font-sans); font-size: 0.75rem; color: var(--ih-muted); text-decoration: underline; cursor: pointer; }
+
+/* ------------------------------ Graf ------------------------------ */
+#ih-root .ih-chart-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.25rem 1rem; margin-bottom: 0.5rem; }
+#ih-root .ih-chart-head .calc-panel-title { margin: 0; font-size: 1.25rem; }
+#ih-root .ih-chart-sub { font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; color: var(--ih-muted); }
+#ih-root .ih-legend { margin-bottom: 0.5rem; font-size: 0.8125rem; color: var(--ih-muted); }
+#ih-root .ih-dot-dash { background: repeating-linear-gradient(90deg, var(--ih-taupe) 0 4px, transparent 4px 7px); width: 1.125rem; border-radius: 0; height: 3px; }
+#ih-root .ih-chart-host { position: relative; margin-top: 0.25rem; }
+#ih-root .ih-chart { display: block; width: 100%; height: auto; overflow: visible; touch-action: none; cursor: crosshair; }
+#ih-root .ih-grid { stroke: rgba(41, 36, 32, 0.08); stroke-width: 1; }
+#ih-root .ih-ax { font-family: Matter, sans-serif; font-size: 12px; fill: rgba(41, 36, 32, 0.55); }
+#ih-root .ih-axlab { font-family: Matter, sans-serif; font-size: 11px; font-weight: 600; text-transform: uppercase; fill: rgba(41, 36, 32, 0.45); }
+#ih-root .ih-end-b { font-family: Calvino, serif; font-size: 15px; font-weight: 700; }
+#ih-root .ih-end-s { font-family: Matter, sans-serif; font-size: 10.5px; fill: rgba(41, 36, 32, 0.55); }
+#ih-root .ih-pill-s { font-family: Matter, sans-serif; font-size: 10.5px; font-weight: 600; fill: rgba(243, 233, 221, 0.88); }
+#ih-root .ih-pill-b { font-family: Calvino, serif; font-size: 15px; font-weight: 700; fill: #f3e9dd; }
+@media (max-width: 640px) {
+  #ih-root .ih-ax { font-size: 20px; }
+  #ih-root .ih-axlab { font-size: 18px; }
+  #ih-root .ih-end-b { font-size: 22px; }
+  #ih-root .ih-end-s { font-size: 16px; }
+}
+@keyframes ih-pulse { 0% { r: 6; opacity: 1; } 70% { r: 17; opacity: 0; } 100% { r: 17; opacity: 0; } }
+#ih-root .ih-pulse { animation: ih-pulse 2s ease-out infinite; }
+
+#ih-root .ih-tooltip { position: absolute; z-index: 5; padding: 0.625rem 0.875rem; border-radius: 0.75rem; background: rgba(41, 36, 32, 0.96); color: #f3e9dd; font-size: 0.8125rem; font-weight: 500; line-height: 1.55; text-align: left; white-space: nowrap; pointer-events: none; }
+#ih-root .ih-tooltip > div { display: flex; align-items: center; gap: 0.375rem; }
+#ih-root .ih-tooltip b { font-weight: 600; color: #f3e9dd; margin-left: 0.25rem; }
+#ih-root .ih-tt-d { margin-bottom: 0.25rem; font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; color: rgba(243, 233, 221, 0.74); }
+#ih-root .ih-tt-dot { display: inline-block; width: 0.5rem; height: 0.5rem; border-radius: 50%; }
+#ih-root .ih-tt-diff { margin-top: 0.25rem; padding-top: 0.25rem; border-top: 1px solid rgba(243, 233, 221, 0.24); color: #e9a27e; }
+#ih-root .ih-tt-diff.is-pos { color: #d9b15c; }
+
+/* KPI pás */
+#ih-root .ih-kpis { display: grid; grid-template-columns: repeat(2, 1fr); margin-top: 1rem; border-top: 1px solid var(--ih-hair); border-bottom: 1px solid var(--ih-hair); }
+@media (min-width: 768px) { #ih-root .ih-kpis { grid-template-columns: repeat(4, 1fr); } }
+#ih-root .ih-kpi { display: flex; flex-direction: column; gap: 0.125rem; padding: 0.875rem 1rem 0.875rem 1rem; border-left: 1px solid var(--ih-hair); background: transparent; }
+#ih-root .ih-kpi:first-child { border-left: none; padding-left: 0; }
+@media (max-width: 767px) { #ih-root .ih-kpi:nth-child(3) { border-left: none; padding-left: 0; } #ih-root .ih-kpi:nth-child(n+3) { border-top: 1px solid var(--ih-hair); } }
+#ih-root .ih-kpi .calc-stat-label { color: var(--ih-muted); }
+#ih-root .ih-kpi .calc-stat-value { font-size: 1.25rem; font-weight: 700; color: var(--wm-brown); }
+#ih-root .ih-kpi .calc-stat-sub { color: var(--ih-muted); }
+#ih-root .ih-kpi--accent .calc-stat-value { color: var(--wm-green); }
+#ih-root .ih-pos { color: var(--wm-green) !important; }
+#ih-root .ih-neg { color: var(--wm-red) !important; }
+
+/* Porovnanie */
+#ih-root .ih-cmp { margin-top: 1.25rem; }
+#ih-root .ih-cmp-head h3 { margin: 0 0 0.25rem; font-family: var(--font-serif); font-size: 1.25rem; font-weight: 700; color: var(--wm-brown); }
+#ih-root .ih-cmp-head p { margin: 0 0 1rem; font-size: 0.875rem; line-height: 1.5; color: var(--ih-muted); }
+#ih-root .ih-cmp-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; padding: 1rem 0; border-top: 1px solid var(--ih-hair); border-bottom: 1px solid var(--ih-hair); }
+@media (min-width: 720px) { #ih-root .ih-cmp-row { grid-template-columns: 1fr 1fr auto; align-items: end; } }
+#ih-root .ih-cmp-col, #ih-root .ih-cmp-diff { display: flex; flex-direction: column; gap: 0.125rem; min-width: 0; }
+#ih-root .ih-cmp-lab { font-size: 0.75rem; color: var(--ih-muted); }
+#ih-root .ih-cmp-amt { font-family: var(--font-serif); font-size: clamp(1.375rem, 3vw, 1.75rem); line-height: 1.1; font-weight: 700; color: var(--wm-brown); font-variant-numeric: tabular-nums; white-space: nowrap; }
+#ih-root .ih-cmp-col.is-alt .ih-cmp-amt { color: var(--ih-muted); }
+#ih-root .ih-cmp-col small, #ih-root .ih-cmp-diff small { font-size: 0.75rem; line-height: 1.4; color: var(--ih-muted); }
+#ih-root .ih-cmp-diff { text-align: left; }
+@media (min-width: 720px) { #ih-root .ih-cmp-diff { text-align: right; padding-left: 1rem; border-left: 1px solid var(--ih-hair); } }
+@media (max-width: 719px) { #ih-root .ih-cmp-diff { grid-column: 1 / -1; padding-top: 0.75rem; border-top: 1px solid var(--ih-hair); } }
+#ih-root .ih-cmp-diff.is-pos .ih-cmp-amt { color: var(--wm-green); }
+#ih-root .ih-cmp-diff.is-neg .ih-cmp-amt { color: var(--wm-red); }
+
+/* Poznámky: odrážka + hairline (Munro) */
+#ih-root .ih-insights { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+#ih-root .ih-insights li { position: relative; padding: 0.75rem 0 0.75rem 1.25rem; border-bottom: 1px solid var(--ih-hair); font-size: 0.875rem; line-height: 1.55; color: var(--ih-muted); }
+#ih-root .ih-insights li:last-child { border-bottom: none; }
+#ih-root .ih-insights li::before { content: ""; position: absolute; left: 0; top: 1.1875rem; width: 0.5rem; height: 0.5rem; border-radius: 9999px; background: var(--ih-taupe); }
+#ih-root .ih-insights li.is-good::before { background: var(--wm-green); }
+#ih-root .ih-insights li.is-warn::before { background: var(--wm-red); }
+#ih-root .ih-insights li b { font-weight: 600; color: var(--wm-brown); }
+
+/* Rozpis po rokoch */
+#ih-root .ih-table-block { margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--ih-hair); }
+#ih-root .ih-collapse { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; width: 100%; padding: 0.25rem 0 0.5rem; border: none; background: transparent; font-family: var(--font-sans); font-size: 0.9375rem; font-weight: 700; color: var(--wm-brown); cursor: pointer; text-align: left; }
+#ih-root .ih-collapse-action { display: inline-flex; align-items: center; gap: 0.375rem; font-size: 0.8125rem; font-weight: 600; color: var(--wm-green); }
+#ih-root .ih-collapse-action svg { transition: transform 0.25s ease; }
+#ih-root .ih-table-wrap { margin-top: 0.5rem; max-height: 24rem; overflow: auto; border: 1px solid var(--ih-hair); border-radius: 0.75rem; }
+#ih-root .ih-table { width: 100%; border-collapse: collapse; font-size: 0.8125rem; font-variant-numeric: tabular-nums; }
+#ih-root .ih-table th { position: sticky; top: 0; padding: 0.5rem 0.75rem; text-align: right; font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ih-muted); background: var(--wm-beige); border-bottom: 1px solid var(--ih-hair-2); white-space: nowrap; }
+#ih-root .ih-table th:first-child, #ih-root .ih-table td:first-child { text-align: left; }
+#ih-root .ih-table td { padding: 0.4375rem 0.75rem; text-align: right; border-bottom: 1px solid var(--ih-hair); white-space: nowrap; color: var(--wm-brown-text); }
+#ih-root .ih-table tr.is-current td { background: var(--wm-beige); }
+#ih-root .ih-table tbody tr:last-child td { border-bottom: none; }
+
+#ih-root .ih-foot { margin-top: 1.5rem; color: #4a4239; }
+
+@media (prefers-reduced-motion: reduce) {
+  #ih-root .ih-pulse { animation: none !important; }
+  #ih-root .ih-collapse-action svg { transition: none !important; }
+}

@@ -351,7 +351,7 @@ const T = {
   mzdova: { label: "Mzdová kalkulačka", href: `${B}/mzdova-kalkulacka` },
   investicna: { label: "Investičná kalkulačka", href: `${B}/investicna-kalkulacka` },
   uverova: { label: "Úverová kalkulačka", href: `${B}/uverova-kalkulacka` },
-  hypo: { label: "Hypotéka vs. investovanie", href: `${B}/hypo-kalkulacka` },
+  hypo: { label: "Inteligentná hypotéka", href: `${B}/inteligentna-hypoteka` },
   rentova: { label: "Rentová kalkulačka", href: `${B}/rentova-kalkulacka` },
   rontgen: { label: "Poplatkový röntgen", href: `${B}/poplatkovy-rontgen` },
   semafor: { label: "ETF semafor", href: `${B}/etf-semafor` },
