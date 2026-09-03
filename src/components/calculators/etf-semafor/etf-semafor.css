@@ -1,99 +1,147 @@
-/* ===== ETF Semafor — custom animations & interactive elements ===== */
+/**
+ * ETF semafor — jazyk /bonusy 2.0 („živý minimalizmus“), scoped pod #etfs-root.
+ * Krémové plátno, ivory a tónované karty s hairline, jeden plochý hnedý panel
+ * s výsledkom (zlatý kicker, Calvino Bold verdikt, mint/zlatá/lososová podľa
+ * semafora), Matter na UI. Bez tieňov, gradientov, čiernej a zlatej na svetlom.
+ */
 
-/* Question card slide-in */
-@keyframes etfs-slideIn {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: none; }
-}
-.etfs-qcard {
-  animation: etfs-slideIn 0.35s ease;
+#etfs-root *, #etfs-root *::before, #etfs-root *::after { box-sizing: border-box; }
+#etfs-root { font-family: var(--font-sans); color: var(--wm-brown-text); width: 100%; }
+#etfs-root .etfs-page { max-width: 48rem; }
+
+/* ------------------------------ Úvod ------------------------------ */
+#etfs-root .etfs-intro { display: flex; flex-direction: column; align-items: center; text-align: center; }
+#etfs-root .etfs-lights { display: flex; gap: 0.875rem; margin: 0 0 1.75rem; }
+#etfs-root .etfs-light { position: relative; width: 3.25rem; height: 3.25rem; border-radius: 9999px; background: var(--wm-ivory); border: 1px solid var(--hair); }
+#etfs-root .etfs-light::after { content: ""; position: absolute; inset: 0.8125rem; border-radius: 9999px; background: var(--wm-taupe); }
+#etfs-root .etfs-light--r::after { background: var(--wm-red); }
+#etfs-root .etfs-light--g::after { background: var(--wm-green); }
+#etfs-root .etfs-btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.875rem 1.5rem; font-size: 1rem; }
+#etfs-root .etfs-btn svg { transition: transform 0.22s var(--ease-out); }
+#etfs-root .etfs-btn:hover svg { transform: translateX(3px); }
+#etfs-root .etfs-micro { display: block; margin-top: 0.75rem; font-size: 0.8125rem; color: var(--fg3); }
+#etfs-root .etfs-areas { list-style: none; margin: 2.5rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
+@media (min-width: 640px) { #etfs-root .etfs-areas { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.875rem; } }
+#etfs-root .etfs-area { display: flex; flex-direction: column; gap: 0.375rem; min-height: 9rem; padding: 1.125rem 1.125rem 1rem; border-radius: 1.25rem; color: var(--wm-brown); }
+#etfs-root .etfs-area-icon { display: inline-flex; align-items: center; justify-content: center; width: 2.25rem; height: 2.25rem; margin-bottom: auto; border-radius: 9999px; background: var(--wm-green); color: #f3e9dd; }
+#etfs-root .calc-tone--sand .etfs-area-icon, #etfs-root .calc-tone--stone .etfs-area-icon { background: rgba(41, 36, 32, 0.08); color: var(--wm-brown); }
+#etfs-root .etfs-area-name { padding-top: 0.75rem; font-family: var(--font-serif); font-size: 1.125rem; line-height: 1.15; font-weight: 700; }
+#etfs-root .etfs-area-n { font-size: 0.8125rem; color: var(--fg2); }
+
+/* ------------------------------ Kvíz ------------------------------ */
+#etfs-root .etfs-quiz { max-width: 40rem; margin: 0 auto; }
+#etfs-root .etfs-quiz-top { display: flex; justify-content: center; margin-bottom: 1.5rem; }
+#etfs-root .etfs-progress { height: 0.375rem; border-radius: 9999px; background: rgba(41, 36, 32, 0.1); overflow: hidden; }
+#etfs-root .etfs-progress-fill { display: block; height: 100%; border-radius: 9999px; background: var(--wm-green); transition: width 0.45s var(--ease-out); }
+#etfs-root .etfs-meta { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: 0.75rem 0 1.25rem; font-size: 0.8125rem; color: var(--fg3); }
+#etfs-root .etfs-meta strong { font-weight: 600; color: var(--wm-brown); }
+#etfs-root .etfs-meta-cat { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.25rem 0.625rem; border-radius: 9999px; background: var(--wm-green); font-size: 0.75rem; font-weight: 600; color: #f3e9dd; white-space: nowrap; }
+@keyframes etfs-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+#etfs-root .etfs-qcard { padding: 1.5rem 1.25rem; border-radius: 1.5rem; animation: etfs-in 0.45s var(--ease-out) both; }
+@media (min-width: 640px) { #etfs-root .etfs-qcard { padding: 2rem 2.25rem; } }
+#etfs-root .etfs-qtxt { margin: 0 0 1.25rem; font-family: var(--font-serif); font-size: clamp(1.375rem, 3.4vw, 1.75rem); line-height: 1.22; font-weight: 700; color: var(--wm-brown); text-wrap: balance; }
+#etfs-root .etfs-ans { display: flex; flex-direction: column; gap: 0.5rem; }
+#etfs-root .etfs-ans-btn { display: flex; align-items: center; gap: 0.875rem; width: 100%; padding: 0.875rem 1rem; border: 1px solid var(--hair-2); border-radius: 1rem; background: var(--wm-ivory); font-family: var(--font-sans); font-size: 0.9375rem; font-weight: 500; line-height: 1.4; color: var(--wm-brown); text-align: left; cursor: pointer; transition: transform 0.3s var(--ease-out), border-color 0.2s, background 0.2s, color 0.2s; }
+#etfs-root .etfs-ans-btn:hover { transform: translateY(-2px); border-color: rgba(41, 36, 32, 0.4); background: #fff; }
+#etfs-root .etfs-ans-btn:focus-visible { outline: 2px solid var(--wm-green); outline-offset: 2px; }
+#etfs-root .etfs-ans-btn.is-chosen { background: var(--wm-brown); border-color: var(--wm-brown); color: #f3e9dd; }
+#etfs-root .etfs-ans-key { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 1.75rem; height: 1.75rem; border-radius: 9999px; background: var(--wm-taupe-soft); font-size: 0.75rem; font-weight: 600; color: var(--fg2); font-variant-numeric: tabular-nums; transition: background 0.2s, color 0.2s; }
+#etfs-root .etfs-ans-btn.is-chosen .etfs-ans-key { background: rgba(243, 233, 221, 0.3); color: #f3e9dd; }
+#etfs-root .etfs-ans-text { flex: 1; min-width: 0; }
+#etfs-root .etfs-back { display: inline-flex; align-items: center; gap: 0.375rem; margin-top: 1.125rem; padding: 0.375rem 0.75rem 0.375rem 0.5rem; border: none; border-radius: 9999px; background: transparent; font-family: var(--font-sans); font-size: 0.875rem; font-weight: 500; color: var(--fg3); cursor: pointer; transition: color 0.2s, background 0.2s; }
+#etfs-root .etfs-back:hover { color: var(--wm-green); background: rgba(41, 36, 32, 0.06); }
+
+/* ------------------------------ Výsledok: jeden plochý hnedý panel ------------------------------ */
+#etfs-root .etfs-hero { display: grid; grid-template-columns: 1fr; gap: 1.5rem; padding: 1.75rem 1.5rem; border-radius: 1.75rem; background: var(--wm-brown); color: #f3e9dd; }
+@media (min-width: 720px) { #etfs-root .etfs-hero { grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 2.5rem; padding: 2rem 2.25rem; } }
+#etfs-root .etfs-kicker { margin: 0 0 0.75rem; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--wm-gold); }
+#etfs-root .etfs-verdict { margin: 0; font-family: var(--font-serif); font-size: clamp(1.875rem, 4.6vw, 2.75rem); line-height: 1.08; font-weight: 700; color: #f3e9dd; text-wrap: balance; }
+#etfs-root .etfs-verdict em { font-style: italic; color: var(--wm-gold); }
+#etfs-root .etfs-flags { display: flex; align-items: flex-start; gap: 0.5rem; margin: 0.875rem 0 0; font-size: 0.9375rem; line-height: 1.45; color: #e9a27e; }
+#etfs-root .etfs-flags svg { flex-shrink: 0; margin-top: 0.1875rem; }
+#etfs-root .etfs-hero-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.875rem 1.5rem; margin-top: 1.5rem; padding-top: 1.125rem; border-top: 1px solid rgba(243, 233, 221, 0.28); }
+@media (min-width: 640px) { #etfs-root .etfs-hero-metrics { grid-template-columns: auto auto minmax(0, 1fr); gap: 0.875rem 2rem; } }
+#etfs-root .etfs-hero-metrics > div { display: flex; flex-direction: column; gap: 0.0625rem; min-width: 0; }
+#etfs-root .etfs-hero-metrics > .is-wide { grid-column: 1 / -1; }
+@media (min-width: 640px) { #etfs-root .etfs-hero-metrics > .is-wide { grid-column: auto; } }
+#etfs-root .etfs-metric-label { font-size: 0.75rem; color: rgba(243, 233, 221, 0.69); }
+#etfs-root .etfs-hero-metrics strong { font-family: var(--font-serif); font-size: 1.375rem; line-height: 1.2; font-weight: 600; color: #f3e9dd; font-variant-numeric: tabular-nums; white-space: nowrap; }
+#etfs-root .etfs-hero-metrics .is-wide strong { font-size: 1.1875rem; white-space: normal; }
+#etfs-root .etfs-hero-metrics strong.is-neg { color: #e9a27e; }
+#etfs-root .etfs-hero-metrics strong.is-pos { color: #d9b15c; }
+#etfs-root .etfs-hero-metrics small { font-size: 0.75rem; color: rgba(243, 233, 221, 0.76); }
+#etfs-root .etfs-hero-side { display: flex; flex-direction: column; align-items: center; gap: 0.875rem; }
+#etfs-root .etfs-ring { position: relative; width: 8.75rem; height: 8.75rem; }
+#etfs-root .etfs-ring svg { display: block; width: 100%; height: 100%; }
+@keyframes etfs-ring { from { stroke-dashoffset: var(--c); } to { stroke-dashoffset: var(--o); } }
+#etfs-root .etfs-ring-arc { animation: etfs-ring 1.2s var(--ease-out) 0.3s both; }
+#etfs-root .etfs-ring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+#etfs-root .etfs-ring-val { font-family: var(--font-serif); font-size: 2.25rem; line-height: 1; font-weight: 700; color: #f3e9dd; font-variant-numeric: tabular-nums; white-space: nowrap; }
+#etfs-root .etfs-ring-val small { margin-left: 0.125rem; font-size: 1rem; font-weight: 600; }
+#etfs-root .etfs-ring-cap { margin-top: 0.3125rem; font-size: 0.625rem; font-weight: 600; text-transform: uppercase; color: rgba(243, 233, 221, 0.69); }
+#etfs-root .etfs-semafor { display: flex; gap: 0.5rem; padding: 0.375rem; border-radius: 9999px; background: rgba(243, 233, 221, 0.22); }
+#etfs-root .etfs-semafor span { width: 0.875rem; height: 0.875rem; border-radius: 9999px; background: rgba(243, 233, 221, 0.28); transition: background 0.4s var(--ease-out); }
+#etfs-root .etfs-semafor span.is-on { background: var(--etfs-tone); }
+
+/* tónované bloky pod panelom (šalvia / piesok / kameň / ružovkastá) */
+#etfs-root .etfs-shock, #etfs-root .etfs-reco { margin-top: 1rem; padding: 1.375rem 1.5rem; border-radius: 1.5rem; color: var(--wm-brown); }
+#etfs-root .etfs-shock-big { margin: 0; font-family: var(--font-serif); font-size: clamp(1.25rem, 3vw, 1.5rem); line-height: 1.2; font-weight: 700; }
+#etfs-root .etfs-shock-big em { font-style: italic; color: var(--wm-green); }
+#etfs-root .etfs-shock-text { margin: 0.5rem 0 0; font-size: 0.9375rem; line-height: 1.55; color: var(--fg2); }
+#etfs-root .etfs-shock-text strong { font-weight: 600; color: var(--wm-brown); }
+#etfs-root .etfs-reco-lbl { margin: 0 0 0.5rem; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--etfs-reco); }
+#etfs-root .etfs-reco-text { margin: 0; font-size: 1rem; line-height: 1.6; color: var(--wm-brown); }
+#etfs-root .etfs-reco-text b { font-weight: 600; color: var(--wm-green); }
+
+/* ivory panely: oblasti a tipy — vnútri oddelené hairline čiarami, nie boxmi */
+#etfs-root .etfs-panel { --px: 1.25rem; margin-top: 1rem; padding: 1.375rem var(--px) 0.5rem; }
+@media (min-width: 640px) { #etfs-root .etfs-panel { --px: 1.75rem; padding: 1.5rem var(--px) 0.625rem; } }
+#etfs-root .etfs-h3 { margin: 0 0 0.375rem; font-family: var(--font-serif); font-size: 1.25rem; line-height: 1.2; font-weight: 700; color: var(--wm-brown); }
+#etfs-root .etfs-cat { padding: 0.875rem 0; }
+#etfs-root .etfs-cat + .etfs-cat { border-top: 1px solid var(--hair); }
+#etfs-root .etfs-cat-top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 0.5rem; font-size: 0.9375rem; }
+#etfs-root .etfs-cat-name { display: inline-flex; align-items: center; gap: 0.5rem; min-width: 0; font-weight: 500; color: var(--wm-brown); }
+#etfs-root .etfs-cat-name svg { flex-shrink: 0; color: var(--wm-green); }
+#etfs-root .etfs-cat-score { font-family: var(--font-serif); font-size: 1.0625rem; font-weight: 600; color: var(--wm-brown); font-variant-numeric: tabular-nums; white-space: nowrap; }
+#etfs-root .etfs-cat-bar { height: 0.5rem; border-radius: 9999px; background: rgba(41, 36, 32, 0.08); overflow: hidden; }
+@keyframes etfs-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+#etfs-root .etfs-cat-fill { display: block; height: 100%; border-radius: 9999px; transform-origin: left center; animation: etfs-grow 0.8s var(--ease-out) 0.2s both; }
+#etfs-root .etfs-tip { display: flex; align-items: flex-start; gap: 0.875rem; padding: 0.875rem 0; font-size: 0.9375rem; line-height: 1.55; color: var(--fg2); }
+#etfs-root .etfs-tip + .etfs-tip { border-top: 1px solid var(--hair); }
+#etfs-root .etfs-tip b, #etfs-root .etfs-tip strong { font-weight: 600; color: var(--wm-brown); }
+#etfs-root .etfs-tip-icon { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 2rem; height: 2rem; margin-top: 0.0625rem; border-radius: 9999px; background: var(--wm-green); color: #f3e9dd; }
+#etfs-root .etfs-tip.is-flag .etfs-tip-icon { background: var(--wm-red-soft); color: var(--wm-red); }
+#etfs-root .etfs-tip.is-cta { margin: 0.625rem calc(-1 * var(--px)) -0.5rem; padding: 1rem var(--px) 1.125rem; border-top: none; border-radius: 0 0 calc(1.5rem - 1px) calc(1.5rem - 1px); background: var(--tone-sage); }
+@media (min-width: 640px) { #etfs-root .etfs-tip.is-cta { margin-bottom: -0.625rem; } }
+#etfs-root .etfs-tip.is-cta .etfs-tip-icon { background: var(--wm-green); color: #fff; }
+
+/* CTA a poznámka */
+#etfs-root .etfs-cta { display: flex; flex-direction: column; align-items: center; margin-top: 1.75rem; text-align: center; }
+#etfs-root .etfs-ghost { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 1rem; padding: 0.5rem 1rem; border: 1px solid var(--hair-2); border-radius: 9999px; background: transparent; font-family: var(--font-sans); font-size: 0.875rem; font-weight: 500; color: var(--wm-brown); cursor: pointer; transition: background 0.2s, border-color 0.2s; }
+#etfs-root .etfs-ghost:hover { background: var(--wm-taupe-soft); border-color: rgba(41, 36, 32, 0.35); }
+#etfs-root .etfs-foot { margin-top: 2rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  #etfs-root .etfs-qcard, #etfs-root .etfs-ring-arc, #etfs-root .etfs-cat-fill { animation: none !important; }
+  #etfs-root .etfs-ans-btn, #etfs-root .etfs-ans-btn:hover, #etfs-root .etfs-btn svg, #etfs-root .etfs-btn:hover svg, #etfs-root .etfs-progress-fill, #etfs-root .etfs-semafor span { transform: none !important; transition: none !important; }
 }
 
-/* Semaphore circle pop */
-@keyframes etfs-pop {
-  from { transform: scale(0.4); opacity: 0; }
-  to   { transform: scale(1);   opacity: 1; }
-}
-.etfs-sem {
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  margin: 10px auto 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 64px;
-  animation: etfs-pop 0.5s cubic-bezier(0.2, 1.6, 0.4, 1);
-}
+/* zelené plochy s krémovým textom (svetlá D odstránená) */
+#etfs-root .etfs-tip.is-cta, #etfs-root .etfs-tip.is-cta b, #etfs-root .etfs-tip.is-cta a, #etfs-root .etfs-tip.is-cta strong { color: #f3e9dd; }
+#etfs-root .etfs-tip.is-cta .etfs-tip-icon { background: rgba(243, 233, 221, 0.28); color: #f3e9dd; }
+#etfs-root .etfs-area-icon svg, #etfs-root .etfs-meta-cat svg { color: #f3e9dd; }
 
-/* Answer buttons */
-.etfs-ans-btn {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  width: 100%;
-  text-align: left;
-  background: rgba(245, 237, 224, 0.05);
-  border: 2px solid rgba(245, 237, 224, 0.14);
-  border-radius: 12px;
-  padding: 16px 18px;
-  font-family: inherit;
-  font-size: 14.5px;
-  font-weight: 600;
-  color: #F5EDE0;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-.etfs-ans-btn:hover {
-  border-color: #3E9A68;
-  background: rgba(43, 107, 74, 0.18);
-  transform: translateX(4px);
-}
+/* kontrast na zelených plochách: krémový text, viditeľné ikony (oprava po QA) */
+#etfs-root .calc-tone--sage .etfs-qtxt, #etfs-root .calc-tone--sage .etfs-back, #etfs-root .calc-tone--sage .etfs-back:hover,
+#etfs-root .etfs-area.calc-tone--sage, #etfs-root .etfs-area.calc-tone--sage .etfs-area-name, #etfs-root .etfs-area.calc-tone--sage .etfs-area-n { color: #f3e9dd; }
+#etfs-root .calc-tone--sage .etfs-back:hover { background: rgba(243, 233, 221, 0.26); }
+#etfs-root .etfs-area.calc-tone--sage .etfs-area-icon { background: rgba(243, 233, 221, 0.3); color: #f3e9dd; }
+#etfs-root .calc-tone--sand .etfs-area-icon, #etfs-root .calc-tone--stone .etfs-area-icon { background: var(--wm-green); color: #f3e9dd; }
+#etfs-root .calc-tone--sage .etfs-ans-btn:not(.is-chosen), #etfs-root .calc-tone--sage .etfs-ans-btn:not(.is-chosen) .etfs-ans-text { color: var(--wm-brown); }
+#etfs-root .calc-tone--sage .calc-input, #etfs-root .calc-tone--sage .calc-label, #etfs-root .calc-tone--sage .calc-label-hint { color: var(--wm-brown); }
+#etfs-root .calc-tone--sage .calc-label, #etfs-root .calc-tone--sage .calc-label-hint { color: #f3e9dd; }
 
-/* Back button */
-.etfs-back-btn {
-  margin-top: 18px;
-  background: none;
-  border: none;
-  color: #B8B2A4;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  display: block;
-}
-.etfs-back-btn:hover { color: #F5EDE0; }
-
-/* Category bar fill */
-.etfs-bar-fill {
-  display: block;
-  height: 100%;
-  border-radius: 4px;
-  transition: width 0.8s ease;
-}
-
-/* Tips */
-.etfs-tip {
-  display: flex;
-  gap: 14px;
-  background: #1A1B18;
-  border: 1px solid rgba(245, 237, 224, 0.14);
-  border-radius: 12px;
-  padding: 16px 18px;
-  margin-bottom: 10px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #B8B2A4;
-  align-items: flex-start;
-  line-height: 1.65;
-}
-.etfs-tip b { color: #F5EDE0; }
-.etfs-tip .etfs-tip-icon {
-  font-style: normal;
-  flex-shrink: 0;
-  font-size: 17px;
-  margin-top: 1px;
-}
-.etfs-tip.ok   { border-color: rgba(91,199,138,.3); }
-.etfs-tip.flag { border-color: rgba(217, 96, 75, .35); }
-.etfs-tip.cta  { border-color: rgba(91,199,138,.4); background: rgba(43,107,74,.16); }
+/* odporúčanie na zelenej ploche: krémový text, odkazy krémové podčiarknuté (oprava po QA) */
+#etfs-root .calc-tone--sage .etfs-reco-lbl, #etfs-root .calc-tone--sage .etfs-reco-text, #etfs-root .calc-tone--sage .etfs-reco-text b, #etfs-root .calc-tone--sage .etfs-reco-text strong { color: #f3e9dd; }
+#etfs-root .calc-tone--sage .etfs-reco-text a { color: #f3e9dd; text-decoration: underline; text-underline-offset: 3px; }
+#etfs-root .calc-tone--sage .etfs-reco-lbl { opacity: 0.85; }

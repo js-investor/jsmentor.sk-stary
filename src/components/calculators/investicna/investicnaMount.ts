@@ -11,7 +11,14 @@ type InvestFormData = {
   duration: number;
   rate: number;
   inflation: number;
+  entryFee: number;
+  annualFee: number;
+  perfFee: number;
+  tax: boolean;
 };
+
+/** Sadzba dane z kapitálového výnosu (SR). */
+const TAX_RATE = 0.19;
 
 type Variant = {
   id: string;
@@ -30,6 +37,23 @@ type ScenarioResult = {
   labels: string[];
   dataInvested: number[];
   dataTotal: number[];
+  /** Vývoj bez akýchkoľvek poplatkov — referenčná krivka. */
+  dataGross: number[];
+  /** Hodnota bez poplatkov a dane. */
+  grossValue: number;
+  /** Hodnota po poplatkoch, pred zdanením. */
+  finalBeforeTax: number;
+  entryPaid: number;
+  annualPaid: number;
+  /** Skutočný dopad ročného poplatku vrátane ušlého zhodnotenia. */
+  annualImpact: number;
+  perfPaid: number;
+  tax: number;
+  /** Celkový skutočný dopad poplatkov a dane (gross − net). */
+  costTotal: number;
+  costPct: number;
+  hasFees: boolean;
+  hasCosts: boolean;
 };
 
 declare global {
@@ -73,6 +97,19 @@ export function mountInvesticnaCalculator(): () => void {
   };
   toggleBtn?.addEventListener("click", advancedToggleHandler);
 
+  const feesToggle = document.getElementById("inv-fees-toggle");
+  const feesContent = document.getElementById("inv-fees-content");
+  const feesToggleHandler = () => {
+    if (!feesContent) return;
+    const isHidden = window.getComputedStyle(feesContent).display === "none";
+    feesContent.style.display = isHidden ? "block" : "none";
+    const arrow = document.getElementById("inv-fees-arrow");
+    if (arrow) arrow.style.transform = isHidden ? "rotate(180deg)" : "rotate(0deg)";
+    setText("fees-toggle-label", isHidden ? "Skryť rozpis" : "Zobraziť rozpis");
+    feesToggle?.setAttribute("aria-expanded", String(isHidden));
+  };
+  feesToggle?.addEventListener("click", feesToggleHandler);
+
   const modalBackdropHandler = (e: MouseEvent) => {
     if (e.target === comparisonModal) window.invCloseComparison?.();
   };
@@ -103,6 +140,10 @@ export function mountInvesticnaCalculator(): () => void {
       duration: Math.max(1, Math.min(50, Math.round(n(data?.duration, 20)))),
       rate: Math.max(0, n(data?.rate, 8)),
       inflation: Math.max(0, n(data?.inflation, 2)),
+      entryFee: Math.max(0, Math.min(100, n(data?.entryFee, 0))),
+      annualFee: Math.max(0, Math.min(100, n(data?.annualFee, 0))),
+      perfFee: Math.max(0, Math.min(100, n(data?.perfFee, 0))),
+      tax: Boolean(data?.tax),
     };
   }
 
@@ -115,6 +156,10 @@ export function mountInvesticnaCalculator(): () => void {
       duration: getVal("duration"),
       rate: getVal("rate"),
       inflation: getVal("inflation"),
+      entryFee: getVal("entryFee"),
+      annualFee: getVal("annualFee"),
+      perfFee: getVal("perfFee"),
+      tax: Boolean((document.getElementById("inv-tax") as HTMLInputElement | null)?.checked),
     });
   }
 
@@ -129,6 +174,11 @@ export function mountInvesticnaCalculator(): () => void {
     setVal("duration", d.duration);
     setVal("rate", d.rate);
     setVal("inflation", d.inflation);
+    setVal("entryFee", d.entryFee);
+    setVal("annualFee", d.annualFee);
+    setVal("perfFee", d.perfFee);
+    const taxEl = document.getElementById("inv-tax") as HTMLInputElement | null;
+    if (taxEl) taxEl.checked = d.tax;
     if (rateSlider) rateSlider.value = String(Math.min(15, Math.max(1, d.rate)));
   }
 
@@ -204,38 +254,85 @@ export function mountInvesticnaCalculator(): () => void {
     });
   }
 
+  type FeeSet = { entry: number; annual: number; perf: number };
+
+  type SimResult = {
+    final: number;
+    series: number[];
+    entryPaid: number;
+    annualPaid: number;
+    perfPaid: number;
+  };
+
+  /**
+   * Mesačná simulácia portfólia s poplatkami.
+   * - vstupný poplatok sa strháva z každého reálne vloženého eura (aj z počiatočného vkladu),
+   * - výkonnostný poplatok z každého kladného mesačného zhodnotenia,
+   * - ročný poplatok z aktuálnej hodnoty majetku (rozložený na 12 mesiacov).
+   * Bez poplatkov dáva rovnaký výsledok ako pôvodný vzorec zloženého úročenia.
+   */
+  function simulate(d: InvestFormData, fees: FeeSet): SimResult {
+    const monthlyRate = (d.rate / 100) / 12;
+    const entry = fees.entry / 100;
+    const annualM = fees.annual / 100 / 12;
+    const perf = fees.perf / 100;
+
+    let value = d.initial * (1 - entry);
+    let entryPaid = d.initial * entry;
+    let annualPaid = 0;
+    let perfPaid = 0;
+    const series: number[] = [value];
+
+    for (let m = 1; m <= d.duration * 12; m++) {
+      const gain = value * monthlyRate;
+      const perfFee = gain > 0 ? gain * perf : 0;
+      value += gain - perfFee;
+      perfPaid += perfFee;
+
+      const annualFee = value * annualM;
+      value -= annualFee;
+      annualPaid += annualFee;
+
+      value += d.monthly * (1 - entry);
+      entryPaid += d.monthly * entry;
+
+      if (m % 12 === 0) series.push(value);
+    }
+
+    return { final: value, series, entryPaid, annualPaid, perfPaid };
+  }
+
   function calculateScenario(data: InvestFormData | null | undefined): ScenarioResult {
     const d = sanitizeData(data ?? {});
     const months = d.duration * 12;
-    const monthlyRate = (d.rate / 100) / 12;
     const inflationRate = d.inflation / 100;
 
-    const fvLump = d.initial * Math.pow(1 + monthlyRate, months);
-    const fvMonthly =
-      Math.abs(monthlyRate) < 1e-12
-        ? d.monthly * months
-        : d.monthly * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
+    // Postupné pridávanie poplatkov → dopad každého z nich vrátane ušlého zhodnotenia
+    const gross = simulate(d, { entry: 0, annual: 0, perf: 0 });
+    const withEntry = simulate(d, { entry: d.entryFee, annual: 0, perf: 0 });
+    const withAnnual = simulate(d, { entry: d.entryFee, annual: d.annualFee, perf: 0 });
+    const net = simulate(d, { entry: d.entryFee, annual: d.annualFee, perf: d.perfFee });
 
-    const finalValue = fvLump + fvMonthly;
     const totalInvested = d.initial + d.monthly * months;
+    const finalBeforeTax = net.final;
+    const gainBeforeTax = finalBeforeTax - totalInvested;
+    const tax = d.tax && gainBeforeTax > 0 ? gainBeforeTax * TAX_RATE : 0;
+    const finalValue = finalBeforeTax - tax;
+
     const totalInterest = finalValue - totalInvested;
     const realValue = finalValue / Math.pow(1 + inflationRate, d.duration);
     const interestPercent = finalValue > 0 ? (totalInterest / finalValue) * 100 : 0;
     const roi = totalInvested > 0 ? finalValue / totalInvested : 0;
 
+    const costTotal = gross.final - finalValue;
+    const costPct = gross.final > 0 ? (costTotal / gross.final) * 100 : 0;
+    const hasFees = d.entryFee > 0 || d.annualFee > 0 || d.perfFee > 0;
+
     const labels: string[] = [];
     const dataInvested: number[] = [];
-    const dataTotal: number[] = [];
-    let currentInvested = d.initial;
-    let currentTotal = d.initial;
     for (let i = 0; i <= d.duration; i++) {
       labels.push("Rok " + i);
-      dataInvested.push(currentInvested);
-      dataTotal.push(currentTotal);
-      currentInvested += d.monthly * 12;
-      for (let m = 0; m < 12; m++) {
-        currentTotal = currentTotal * (1 + monthlyRate) + d.monthly;
-      }
+      dataInvested.push(d.initial + d.monthly * 12 * i);
     }
 
     return {
@@ -248,7 +345,19 @@ export function mountInvesticnaCalculator(): () => void {
       roi,
       labels,
       dataInvested,
-      dataTotal,
+      dataTotal: net.series,
+      dataGross: gross.series,
+      grossValue: gross.final,
+      finalBeforeTax,
+      entryPaid: net.entryPaid,
+      annualPaid: withAnnual.annualPaid,
+      annualImpact: withEntry.final - withAnnual.final,
+      perfPaid: net.perfPaid,
+      tax,
+      costTotal,
+      costPct,
+      hasFees,
+      hasCosts: hasFees || tax > 0,
     };
   }
 
@@ -267,7 +376,7 @@ export function mountInvesticnaCalculator(): () => void {
       c.lineTo(x, bottom);
       c.lineWidth = 1;
       c.setLineDash([4, 4]);
-      c.strokeStyle = "rgba(41, 97, 74, 0.35)";
+      c.strokeStyle = "rgba(41, 36, 32, 0.35)";
       c.stroke();
       c.restore();
     },
@@ -276,6 +385,16 @@ export function mountInvesticnaCalculator(): () => void {
   /** Koncový bod série zvýrazníme — posledná hodnota je pointa grafu. */
   const lastPointRadius = (ctx: ScriptableContext<"line">) =>
     ctx.dataIndex === ctx.dataset.data.length - 1 ? 5 : 0;
+
+  /** Zvislý gradient výplne od farby série (alpha `top`) do priehľadna cez aktuálnu plochu grafu — drží aj po resize. */
+  const areaGradient = (rgb: string, top: number) => (c2: ScriptableContext<"line">) => {
+    const area = c2.chart.chartArea;
+    if (!area) return "transparent";
+    const g = c2.chart.ctx.createLinearGradient(0, area.top, 0, area.bottom);
+    g.addColorStop(0, `rgba(${rgb}, ${top})`);
+    g.addColorStop(1, `rgba(${rgb}, 0)`);
+    return g;
+  };
 
   function updateChart(s: ScenarioResult | null): void {
     const canvas = document.getElementById("inv-chart") as HTMLCanvasElement | null;
@@ -292,14 +411,14 @@ export function mountInvesticnaCalculator(): () => void {
       chartInstance.data.labels = s.labels;
       chartInstance.data.datasets[0].data = s.dataTotal;
       chartInstance.data.datasets[1].data = s.dataInvested;
+      chartInstance.data.datasets[2].data = s.dataGross;
+      chartInstance.data.datasets[2].hidden = !s.hasFees;
       chartInstance.update();
       return;
     }
 
-    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.clientHeight || 400);
-    gradient.addColorStop(0, "rgba(41, 97, 74, 0.28)");
-    gradient.addColorStop(0.65, "rgba(41, 97, 74, 0.08)");
-    gradient.addColorStop(1, "rgba(41, 97, 74, 0)");
+    // Gradientová výplň podľa aktuálnej plochy grafu (vzor Výnosnosť bytu).
+    const gradient = areaGradient("47, 107, 78", 0.28);
 
     chartInstance = new Chart(ctx, {
       type: "line",
@@ -310,22 +429,22 @@ export function mountInvesticnaCalculator(): () => void {
             type: "line",
             label: "Hodnota portfólia",
             data: s.dataTotal,
-            borderColor: "#29614A",
+            borderColor: "#2a6647",
             backgroundColor: gradient,
             borderWidth: 2.5,
             fill: true,
             tension: 0.4,
             pointRadius: lastPointRadius,
             pointHoverRadius: 6,
-            pointBackgroundColor: "#29614A",
-            pointBorderColor: "#FFF9F5",
+            pointBackgroundColor: "#2a6647",
+            pointBorderColor: "#fffcf7",
             pointBorderWidth: 2,
           },
           {
             type: "line",
             label: "Vklady",
             data: s.dataInvested,
-            borderColor: "rgba(168, 149, 110, 0.75)",
+            borderColor: "rgb(169, 157, 126)",
             backgroundColor: "transparent",
             borderWidth: 2,
             borderDash: [5, 5],
@@ -333,8 +452,25 @@ export function mountInvesticnaCalculator(): () => void {
             tension: 0.4,
             pointRadius: 0,
             pointHoverRadius: 4,
-            pointBackgroundColor: "#A8956E",
-            pointBorderColor: "#FFF9F5",
+            pointBackgroundColor: "#a99d7e",
+            pointBorderColor: "#fffcf7",
+            pointBorderWidth: 2,
+          },
+          {
+            type: "line",
+            label: "Bez poplatkov",
+            data: s.dataGross,
+            hidden: !s.hasFees,
+            borderColor: "rgb(41, 36, 32)",
+            backgroundColor: "transparent",
+            borderWidth: 1.5,
+            borderDash: [2, 4],
+            fill: false,
+            tension: 0.4,
+            pointRadius: 0,
+            pointHoverRadius: 4,
+            pointBackgroundColor: "#292420",
+            pointBorderColor: "#fffcf7",
             pointBorderWidth: 2,
           },
         ],
@@ -348,20 +484,19 @@ export function mountInvesticnaCalculator(): () => void {
         plugins: {
           legend: { display: false },
           tooltip: {
-            backgroundColor: "rgba(2, 44, 34, 0.96)",
-            titleColor: "#fdf8f2",
-            bodyColor: "rgba(240, 235, 227, 0.92)",
-            footerColor: "#8fd4b4",
-            borderColor: "rgba(253, 248, 242, 0.15)",
-            borderWidth: 1,
-            padding: 14,
+            backgroundColor: "rgba(41, 36, 32, 0.96)",
+            titleColor: "#f3e9dd",
+            bodyColor: "rgba(243, 233, 221, 0.9)",
+            footerColor: "#d9b15c",
+            borderWidth: 0,
+            padding: 12,
             cornerRadius: 12,
             caretSize: 6,
             usePointStyle: true,
             boxPadding: 5,
-            titleFont: { family: "Recoleta, Georgia, serif", size: 14, weight: "bold" },
-            bodyFont: { family: "Gilroy, sans-serif", size: 13 },
-            footerFont: { family: "Gilroy, sans-serif", size: 13, weight: "bold" },
+            titleFont: { family: "Matter, sans-serif", size: 13, weight: 600 },
+            bodyFont: { family: "Matter, sans-serif", size: 13 },
+            footerFont: { family: "Matter, sans-serif", size: 13, weight: 600 },
             callbacks: {
               label: (context) => {
                 let label = context.dataset.label || "";
@@ -382,11 +517,11 @@ export function mountInvesticnaCalculator(): () => void {
           y: {
             beginAtZero: true,
             border: { display: false },
-            grid: { color: "rgba(0, 0, 0, 0.05)" },
+            grid: { color: "rgba(41, 36, 32, 0.08)" },
             ticks: {
               maxTicksLimit: 5,
-              color: "rgba(0, 0, 0, 0.4)",
-              font: { family: "Gilroy, sans-serif", size: 12 },
+              color: "rgba(41, 36, 32, 0.5)",
+              font: { family: "Matter, sans-serif", size: 12 },
               callback(value) {
                 const v = Number(value);
                 return v >= 1_000_000 ? (v / 1_000_000).toFixed(1) + "M €" : (v / 1000).toFixed(0) + "k €";
@@ -398,8 +533,8 @@ export function mountInvesticnaCalculator(): () => void {
             grid: { display: false },
             ticks: {
               maxTicksLimit: 8,
-              color: "rgba(0, 0, 0, 0.4)",
-              font: { family: "Gilroy, sans-serif", size: 12 },
+              color: "rgba(41, 36, 32, 0.5)",
+              font: { family: "Matter, sans-serif", size: 12 },
             },
           },
         },
@@ -415,10 +550,53 @@ export function mountInvesticnaCalculator(): () => void {
     setText("realValue", formatCurrency(s.realValue));
     setText("interestPercent", Math.max(0, s.interestPercent).toFixed(0) + "%");
     setText("roi", (Number.isFinite(s.roi) ? s.roi : 0).toFixed(1) + "x");
+    updateFeesUi(s);
     if (rateSlider && document.activeElement !== rateSlider && document.activeElement !== rateInput) {
       rateSlider.value = String(Math.min(15, Math.max(1, s.input.rate)));
     }
     updateChart(s);
+  }
+
+  const fmtPct = (v: number, digits = 1) => v.toFixed(digits).replace(".", ",") + " %";
+
+  const show = (idSuffix: string, visible: boolean, display = "") => {
+    const el = document.getElementById("inv-" + idSuffix);
+    if (el) el.style.display = visible ? display : "none";
+  };
+
+  function updateFeesUi(s: ScenarioResult): void {
+    const d = s.input;
+    show("fees-panel", s.hasCosts);
+    show("cost-chip", s.hasCosts);
+    show("hero-suffix", s.hasCosts);
+    show("legend-gross", s.hasFees);
+    if (!s.hasCosts) return;
+
+    setText("grossValue", formatCurrency(s.grossValue));
+    setText("costTotalChip", formatCurrency(s.costTotal));
+    setText("costTotal", formatCurrency(s.costTotal));
+    setText("costTotalHead", formatCurrency(s.costTotal));
+    setText("costPctHead", `${fmtPct(s.costPct)} z portfólia bez poplatkov a dane`);
+    setText("costHint", `${fmtPct(s.costPct)} z portfólia bez poplatkov a dane`);
+
+    show("row-entry", d.entryFee > 0);
+    setText("entryFeeVal", formatCurrency(s.entryPaid));
+    setText("entryHint", `${fmtPct(d.entryFee)} z ${formatCurrency(s.totalInvested)}, ktoré reálne vložíš`);
+
+    show("row-annual", d.annualFee > 0);
+    setText("annualFeeVal", formatCurrency(s.annualImpact));
+    setText(
+      "annualHint",
+      `${fmtPct(d.annualFee)} p. a.: zaplatené ${formatCurrency(s.annualPaid)} + ušlé zhodnotenie ${formatCurrency(Math.max(0, s.annualImpact - s.annualPaid))}`,
+    );
+
+    show("row-perf", d.perfFee > 0);
+    setText("perfFeeVal", formatCurrency(s.perfPaid));
+    setText("perfHint", `${fmtPct(d.perfFee, 0)} z každého kladného zhodnotenia`);
+
+    show("row-tax", s.tax > 0);
+    setText("taxVal", formatCurrency(s.tax));
+    setText("taxHint", `19 % zo zisku ${formatCurrency(Math.max(0, s.finalBeforeTax - s.totalInvested))} po poplatkoch`);
   }
 
   function inv_calculate(): ScenarioResult | null {
@@ -452,7 +630,12 @@ export function mountInvesticnaCalculator(): () => void {
       ["Doba investovania", (s) => `${s.input.duration} rokov`],
       ["Ročný výnos", (s) => `${s.input.rate.toFixed(1).replace(".", ",")} %`],
       ["Inflácia", (s) => `${s.input.inflation.toFixed(1).replace(".", ",")} %`],
+      ["Vstupný poplatok", (s) => fmtPct(s.input.entryFee)],
+      ["Ročný poplatok", (s) => fmtPct(s.input.annualFee)],
+      ["Výkonnostný poplatok", (s) => fmtPct(s.input.perfFee, 0)],
+      ["Daň 19 %", (s) => (s.input.tax ? "áno" : "nie")],
       ["Celkový vklad", (s) => formatCurrency(s.totalInvested)],
+      ["Poplatky a daň spolu", (s) => formatCurrency(s.costTotal)],
       ["Hodnota portfólia", (s) => formatCurrency(s.finalValue)],
       ["Čistý výnos", (s) => formatCurrency(s.totalInterest)],
       ["Reálna hodnota", (s) => formatCurrency(s.realValue)],
@@ -483,9 +666,17 @@ export function mountInvesticnaCalculator(): () => void {
       body += `- Mesačný vklad: ${formatCurrency(s.input.monthly)}\n`;
       body += `- Doba investovania: ${s.input.duration} rokov\n`;
       body += `- Ročný výnos: ${s.input.rate.toFixed(1).replace(".", ",")} %\n`;
-      body += `- Inflácia: ${s.input.inflation.toFixed(1).replace(".", ",")} %\n\n`;
+      body += `- Inflácia: ${s.input.inflation.toFixed(1).replace(".", ",")} %\n`;
+      body += `- Vstupný poplatok: ${fmtPct(s.input.entryFee)}\n`;
+      body += `- Ročný poplatok: ${fmtPct(s.input.annualFee)}\n`;
+      body += `- Výkonnostný poplatok: ${fmtPct(s.input.perfFee, 0)}\n`;
+      body += `- Daň 19 % z výnosu: ${s.input.tax ? "áno" : "nie"}\n\n`;
       body += `VÝSLEDKY\n`;
       body += `- Celkový vklad: ${formatCurrency(s.totalInvested)}\n`;
+      if (s.hasCosts) {
+        body += `- Hodnota bez poplatkov a dane: ${formatCurrency(s.grossValue)}\n`;
+        body += `- Poplatky a daň spolu (skutočný dopad): ${formatCurrency(s.costTotal)}\n`;
+      }
       body += `- Hodnota portfólia: ${formatCurrency(s.finalValue)}\n`;
       body += `- Čistý výnos: ${formatCurrency(s.totalInterest)}\n`;
       body += `- Reálna hodnota (po inflácii): ${formatCurrency(s.realValue)}\n`;
@@ -666,7 +857,17 @@ export function mountInvesticnaCalculator(): () => void {
     }
   };
 
-  const inputIds = ["inv-initial", "inv-monthly", "inv-duration", "inv-rate", "inv-inflation"];
+  const inputIds = [
+    "inv-initial",
+    "inv-monthly",
+    "inv-duration",
+    "inv-rate",
+    "inv-inflation",
+    "inv-entryFee",
+    "inv-annualFee",
+    "inv-perfFee",
+    "inv-tax",
+  ];
   const inputHandlers: Array<{ el: Element; fn: () => void }> = [];
   inputIds.forEach((id) => {
     const el = document.getElementById(id);
@@ -675,6 +876,7 @@ export function mountInvesticnaCalculator(): () => void {
     };
     if (el) {
       el.addEventListener("input", fn);
+      el.addEventListener("change", fn);
       inputHandlers.push({ el, fn });
     }
   });
@@ -697,9 +899,13 @@ export function mountInvesticnaCalculator(): () => void {
   return () => {
     disposed = true;
     toggleBtn?.removeEventListener("click", advancedToggleHandler);
+    feesToggle?.removeEventListener("click", feesToggleHandler);
     comparisonModal?.removeEventListener("click", modalBackdropHandler);
     document.removeEventListener("click", docClickCloseDropdowns);
-    inputHandlers.forEach(({ el, fn }) => el.removeEventListener("input", fn));
+    inputHandlers.forEach(({ el, fn }) => {
+      el.removeEventListener("input", fn);
+      el.removeEventListener("change", fn);
+    });
     rateSlider?.removeEventListener("input", rateSliderHandler);
     rateInput?.removeEventListener("input", rateInputHandler);
     chartInstance?.destroy();

@@ -45,13 +45,13 @@ export function initCalcSliders(rootId: string): () => void {
 /** Brandové farby grafov — jednotná téma Chart.js naprieč kalkulačkami. */
 export const CALC_CHART_COLORS = {
   /** Lesná zelená — primárna séria (rast, hodnota, výsledok). */
-  primary: "#29614A",
+  primary: "#2a6647",
   primaryFill: "rgba(41, 97, 74, 0.16)",
   /** Piesková — vklady, vstupy, sekundárna séria (čiarkovaná). */
-  sand: "#A8956E",
+  sand: "#a99d7e",
   sandFill: "rgba(168, 149, 110, 0.12)",
   /** Terakota — dlh, náklady, negatívna séria. */
-  terra: "#C1533C",
+  terra: "#ab4132",
   terraFill: "rgba(193, 83, 60, 0.12)",
   grid: "rgba(0, 0, 0, 0.06)",
   tick: "rgba(0, 0, 0, 0.45)",

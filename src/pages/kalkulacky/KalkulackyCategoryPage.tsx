@@ -1,194 +1,208 @@
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import type { CSSProperties } from "react";
+import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import BonusyKonzultaciaSection from "@/components/sections/BonusyKonzultaciaSection";
 import KalkulackyShell from "@/pages/kalkulacky/KalkulackyShell";
-import brandPattern from "@/assets/logo/js-brand-pattern.svg";
-import brandPatternDark from "@/assets/logo/js-brand-pattern-black.svg";
-import {
-  BONUSY_BASE_PATH,
-  BONUSY_PDF_CARD,
-  KALKULACKY_CALCULATORS,
-} from "@/pages/kalkulacky/kalkulackyConfig";
-import { NOISE_TEXTURE } from "@/lib/noiseTexture";
+import { BONUSY_BASE_PATH, BONUSY_PDF_CARD, KALKULACKY_CALCULATORS, KONZULTACIA_URL } from "@/pages/kalkulacky/kalkulackyConfig";
+import { MAP_PATHS } from "@/components/calculators/shared/slovakiaMap";
 import { cn } from "@/lib/utils";
 import type { KalkulackaCalculatorMeta } from "@/pages/kalkulacky/kalkulackyConfig";
+import "./bonusy-dashboard.css";
 
 /* ---------------------------------------------------------------------------
- * Rozdelenie nástrojov: 3 vlajkové interaktívne nástroje hore (featured),
- * zvyšné kalkulačky v knižnici nižšie. Čisto prezentačné — config ostáva
- * jediným zdrojom dát (title, description, Icon, slug).
+ * Prehľad bonusov — živý minimalizmus (Wealthsimple / Monarch): každá karta má
+ * svoj tón a jeden veľký abstraktný tvar v rohu; text sedí dole. Málo prvkov,
+ * veľa charakteru. Tvary sú kód (SVG), farby len z brandu.
  * ------------------------------------------------------------------------- */
 
-const FEATURED: { slug: string; category: string }[] = [
-  { slug: "etf-semafor", category: "Investovanie" },
-  { slug: "poplatkovy-rontgen", category: "Poplatky" },
-  { slug: "bytovy-semafor", category: "Nehnuteľnosti" },
-];
+type ToneId = "sage" | "lime" | "green" | "sand" | "stone" | "rust" | "clay" | "forest" | "brown";
+type Glyph = "venn" | "arcs" | "coins" | "gauge" | "pie" | "map" | "crescent" | "semafor" | "steps" | "dots" | "ring";
 
-const featuredSlugs = new Set(FEATURED.map((f) => f.slug));
+/* tón: povrch karty, hlavná farba tvaru, sekundárna farba tvaru, text, tlmený text */
+const TONES: Record<ToneId, { bg: string; fg: string; fg2: string; text?: string; muted?: string }> = {
+  sage: { bg: "#2a6647", fg: "#f3e9dd", fg2: "rgba(243,233,221, 0.44)", text: "#f3e9dd", muted: "rgba(243,233,221, 0.88)" },
+  lime: { bg: "#f0e3cf", fg: "#292420", fg2: "rgba(169,157,126,0.55)" },
+  green: { bg: "#2a6647", fg: "#f3e9dd", fg2: "rgba(243,233,221, 0.44)", text: "#f3e9dd", muted: "rgba(243,233,221, 0.88)" },
+  sand: { bg: "#f0e3cf", fg: "#292420", fg2: "rgba(169,157,126,0.55)" },
+  stone: { bg: "#e9e4dc", fg: "#292420", fg2: "rgba(41,36,32,0.22)" },
+  rust: { bg: "#ab4132", fg: "#f6d9c8", fg2: "rgba(246,217,200,0.32)", text: "#f8ebe0", muted: "rgba(248,235,224, 0.88)" },
+  clay: { bg: "#b35a4d", fg: "#ffffff", fg2: "rgba(255,255,255,0.32)", text: "#ffffff", muted: "#ffffff" },
+  forest: { bg: "#0b3d2e", fg: "#f3e9dd", fg2: "rgba(243,233,221, 0.42)", text: "#f3e9dd", muted: "rgba(243,233,221, 0.88)" },
+  brown: { bg: "#292420", fg: "#d9b15c", fg2: "rgba(217,177,92,0.3)", text: "#f3e9dd", muted: "rgba(243,233,221, 0.88)" },
+};
 
-const featuredTools = FEATURED.map(({ slug, category }) => {
-  const meta = KALKULACKY_CALCULATORS.find((c) => c.slug === slug);
-  return meta ? { meta, category } : null;
-}).filter((tool): tool is { meta: KalkulackaCalculatorMeta; category: string } => tool !== null);
+const TOOL_META: Record<string, { category: string; tone: ToneId; glyph: Glyph }> = {
+  "financny-checkup": { category: "Začni tu", tone: "sage", glyph: "ring" },
+  "etf-semafor": { category: "Investovanie", tone: "sage", glyph: "dots" },
+  "skoring-bytov": { category: "Nehnuteľnosti", tone: "sand", glyph: "ring" },
+  "hypo-kalkulacka": { category: "Hypotéka", tone: "sand", glyph: "venn" },
+  "investicna-kalkulacka": { category: "Investovanie", tone: "green", glyph: "arcs" },
+  "mzdova-kalkulacka": { category: "Mzda", tone: "stone", glyph: "coins" },
+  "uverova-kalkulacka": { category: "Úvery", tone: "sand", glyph: "gauge" },
+  "rentova-kalkulacka": { category: "Renta", tone: "brown", glyph: "pie" },
+  "investicny-byt": { category: "Nehnuteľnosti", tone: "forest", glyph: "map" },
+  "poplatkovy-rontgen": { category: "Poplatky", tone: "clay", glyph: "crescent" },
+  "bytovy-semafor": { category: "Nehnuteľnosti", tone: "stone", glyph: "semafor" },
+  "vynosnost-bytu": { category: "Nehnuteľnosti", tone: "green", glyph: "steps" },
+};
 
-const libraryTools = KALKULACKY_CALCULATORS.filter((c) => !featuredSlugs.has(c.slug));
+const NEW_SLUGS = new Set(["financny-checkup", "skoring-bytov", "vynosnost-bytu"]);
+const FAVORITE_SLUGS = new Set(["rentova-kalkulacka"]);
+const FEATURED = ["financny-checkup", "etf-semafor", "skoring-bytov"];
+const focusClass = "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
+const toneStyle = (t: ToneId, i = 0) => ({ "--i": i, "--tone-bg": TONES[t].bg, "--tone-fg": TONES[t].fg, "--tone-fg2": TONES[t].fg2, "--tone-text": TONES[t].text ?? "#292420", "--tone-muted": TONES[t].muted ?? "#4a4239" } as CSSProperties);
 
-/** Fokus viditeľný cez outline — ring utility sú box-shadow a globálny reset ich nuluje. */
-const cardFocusClass =
-  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
+/* ------------------------------ Tvary (poster, dvojtón) ------------------------------ */
+
+const GlyphArt = ({ glyph, tone }: { glyph: Glyph; tone: ToneId }) => {
+  const { fg, fg2, bg } = TONES[tone];
+  switch (glyph) {
+    case "venn":
+      return (
+        <svg viewBox="0 0 120 120" aria-hidden><circle className="g-a" cx="46" cy="62" r="36" fill={fg2} /><circle className="g-b" cx="78" cy="62" r="36" fill={fg} fillOpacity="0.9" /></svg>
+      );
+    case "arcs":
+      return (
+        <svg viewBox="0 0 120 120" aria-hidden><circle className="g-1" cx="30" cy="94" r="13" fill={fg2} /><circle className="g-2" cx="60" cy="68" r="21" fill={fg2} /><circle className="g-3" cx="94" cy="34" r="30" fill={fg} /></svg>
+      );
+    case "coins":
+      return (
+        <svg viewBox="0 0 120 120" aria-hidden><rect className="g-1" x="28" y="72" width="64" height="18" rx="9" fill={fg2} /><rect className="g-2" x="28" y="50" width="64" height="18" rx="9" fill={fg} fillOpacity="0.6" /><rect className="g-3" x="28" y="28" width="64" height="18" rx="9" fill={fg} /></svg>
+      );
+    case "gauge":
+      return (
+        <svg viewBox="0 0 120 120" aria-hidden><path d="M18 84 A 42 42 0 0 1 102 84" fill="none" stroke={fg2} strokeWidth="16" strokeLinecap="round" /><path className="g-arc" d="M18 84 A 42 42 0 0 1 102 84" pathLength={100} fill="none" stroke={fg} strokeWidth="16" strokeLinecap="round" strokeDasharray="100" strokeDashoffset="42" /><circle cx="60" cy="84" r="8" fill={fg} /></svg>
+      );
+    case "pie":
+      return (
+        <svg viewBox="0 0 120 120" aria-hidden><circle cx="60" cy="60" r="42" fill={fg2} /><g className="g-spin"><path d="M60 60 L60 18 A 42 42 0 0 1 102 60 Z" fill={fg} /><path d="M60 60 L102 60 A 42 42 0 0 1 89.7 89.7 Z" fill={fg} fillOpacity="0.55" /></g></svg>
+      );
+    case "map":
+      return (
+        <svg viewBox="0 0 1000 498" aria-hidden style={{ overflow: "visible" }}>
+          {Object.entries(MAP_PATHS).map(([k, d], i) => (
+            <path key={k} className="g-kraj" style={{ transitionDelay: `${i * 55}ms` }} d={d} fill={fg} fillOpacity={k === "BA" || k === "KE" ? 1 : 0.32} stroke={bg} strokeWidth="6" strokeLinejoin="round" />
+          ))}
+        </svg>
+      );
+    case "crescent":
+      return (
+        <svg viewBox="0 0 120 120" aria-hidden><g className="g-spin"><circle cx="60" cy="60" r="42" fill={fg} /><circle cx="82" cy="46" r="34" fill={bg} /><circle cx="82" cy="46" r="34" fill={fg2} /></g></svg>
+      );
+    case "semafor":
+      return (
+        <svg viewBox="0 0 120 120" aria-hidden><rect x="38" y="4" width="44" height="118" rx="22" fill={fg2} /><circle className="g-l1" cx="60" cy="28" r="13" fill={fg} fillOpacity="0.3" /><circle className="g-l2" cx="60" cy="63" r="13" fill={fg} fillOpacity="0.55" /><circle className="g-l3" cx="60" cy="98" r="13" fill={fg} /></svg>
+      );
+    case "steps":
+      return (
+        <svg viewBox="0 0 120 120" aria-hidden>{[26, 44, 66, 92].map((h, i) => <rect key={i} className={`g-${i + 1}`} x={14 + i * 25} y={106 - h} width="18" height={h} rx="6" fill={fg} fillOpacity={0.35 + i * 0.22} />)}</svg>
+      );
+    case "dots":
+      return (
+        <svg viewBox="0 0 120 120" aria-hidden><rect x="4" y="38" width="112" height="44" rx="22" fill={fg2} /><circle className="g-1" cx="28" cy="60" r="12" fill={fg} fillOpacity="0.35" /><circle className="g-2" cx="60" cy="60" r="12" fill={fg} fillOpacity="0.6" /><circle className="g-3" cx="92" cy="60" r="12" fill={fg} /></svg>
+      );
+    case "ring":
+      return (
+        <svg viewBox="0 0 120 120" aria-hidden><circle cx="60" cy="60" r="40" fill="none" stroke={fg2} strokeWidth="12" /><circle className="g-arc g-rot" cx="60" cy="60" r="40" pathLength={100} fill="none" stroke={fg} strokeWidth="12" strokeLinecap="round" strokeDasharray="100" strokeDashoffset="22" /><text x="60" y="70" textAnchor="middle" fontFamily="Calvino, serif" fontWeight="700" fontSize="30" fill={fg}>84</text></svg>
+      );
+  }
+};
 
 /* ------------------------------- Hlavička ------------------------------- */
 
 const BonusyPageHeader = () => (
-  <div className="mx-auto max-w-3xl text-center">
-    <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/[0.06] px-4 py-1.5 font-sans text-caption font-semibold text-primary">
-      Bonusy · {KALKULACKY_CALCULATORS.length} nástrojov zadarmo
-    </span>
-    <h1 className="headline-serif mt-5 md:mt-6">
-      Rozhoduj sa s istotou, <span className="text-primary">nie pocitom</span>
-    </h1>
-    <p className="mt-4 font-sans text-[18px] leading-relaxed text-muted-foreground md:text-xl">
-      Zisti presné čísla skôr, než podpíšeš, investuješ alebo zaplatíš. Každý nástroj tu
-      existuje preto, aby si videl, čo ťa rozhodnutie skutočne stojí a čo ti môže zarobiť.
-    </p>
-  </div>
+  <header className="bz-hero bz-reveal" style={{ "--i": 0 } as CSSProperties}>
+    <span className="bz-eyebrow">Bonusy · {KALKULACKY_CALCULATORS.length} nástrojov zadarmo</span>
+    <h1 className="bz-h1"><b>Rozhoduj sa s istotou,</b> <em>nie pocitom.</em></h1>
+    <p className="bz-lede">Zisti presné čísla skôr, než podpíšeš, investuješ alebo zaplatíš. Každý nástroj tu existuje preto, aby si videl, čo ťa rozhodnutie skutočne stojí a čo ti môže zarobiť.</p>
+    <ul className="bz-well" aria-label="Čísla o bonusoch">
+      <li><b>{KALKULACKY_CALCULATORS.length}</b><span>nástrojov</span></li>
+      <li><b>3 <em>min.</em></b><span>check-up</span></li>
+      <li><b>0 €</b><span>navždy</span></li>
+    </ul>
+  </header>
 );
+
+/* ------------------------------ Cesta v 3 krokoch ------------------------------ */
+
+const Journey = () => {
+  const steps: { n: string; title: string; text: string; cta: string; href: string; tone: ToneId; external?: boolean }[] = [
+    { n: "01", title: "Zisti svoje skóre", text: "Finančný check-up za 3 minúty, výsledok hneď, bez e-mailu.", cta: "Spustiť check-up", href: `${BONUSY_BASE_PATH}/financny-checkup`, tone: "sage" },
+    { n: "02", title: "Prepočítaj rozhodnutie", text: "Hypotéka, investície, byt alebo renta, každé v presných číslach.", cta: "Vybrať nástroj", href: "#bonusy-library-heading", tone: "sand" },
+    { n: "03", title: "Preber to s Ivanom", text: "Bezplatná konzultácia k tvojmu výsledku, 45 minút online.", cta: "Rezervovať termín", href: KONZULTACIA_URL, tone: "brown", external: true },
+  ];
+  return (
+    <ol className="bz-steps" aria-label="Ako to funguje">
+      {steps.map((s, i) => {
+        const inner = (
+          <>
+            <span className="bz-step-n" aria-hidden>{s.n}</span>
+            <span className="bz-step-title">{s.title}</span>
+            <span className="bz-step-text">{s.text}</span>
+            <span className="bz-step-cta">{s.cta} <ArrowRight className="h-4 w-4" aria-hidden /></span>
+          </>
+        );
+        const cls = cn("bz-step", focusClass);
+        return (
+          <li key={s.n} className="bz-reveal" style={toneStyle(s.tone, i + 1)}>
+            {s.external ? <a href={s.href} target="_blank" rel="noopener noreferrer" className={cls}>{inner}</a> : <Link to={s.href} className={cls}>{inner}</Link>}
+          </li>
+        );
+      })}
+    </ol>
+  );
+};
 
 /* --------------------------- Hlavička sekcie ---------------------------- */
 
-const SectionHeader = ({
-  id,
-  title,
-  subtitle,
-  count,
-}: {
-  id: string;
-  title: string;
-  subtitle?: string;
-  count?: number;
-}) => (
-  <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
-    <div>
-      <h2
-        id={id}
-        className="flex items-center gap-3 [font-family:var(--font-serif)] text-[1.5rem] font-extrabold leading-[1.2] text-foreground md:text-[1.875rem]"
-      >
-        {title}
-        {typeof count === "number" ? (
-          <span className="inline-flex h-7 min-w-7 items-center justify-center rounded-full bg-primary/10 px-2 font-sans text-[0.875rem] font-semibold leading-none text-primary">
-            {count}
-          </span>
-        ) : null}
-      </h2>
-      {subtitle ? (
-        <p className="mt-1.5 font-sans text-[1rem] leading-relaxed text-muted-foreground md:text-[1.0625rem]">
-          {subtitle}
-        </p>
-      ) : null}
-    </div>
+const SectionHeader = ({ id, title, subtitle, count }: { id: string; title: string; subtitle?: string; count?: number }) => (
+  <div>
+    <h2 id={id} className="bz-h2">{title}{typeof count === "number" ? <small>{count}</small> : null}</h2>
+    {subtitle ? <p className="bz-sub">{subtitle}</p> : null}
   </div>
 );
 
-/* --------------------------- Vlajkové nástroje --------------------------- */
+/* --------------------------- Vlajkový check-up --------------------------- */
 
-const FeaturedToolCard = ({
-  meta,
-  category,
-}: {
-  meta: KalkulackaCalculatorMeta;
-  category: string;
-}) => (
-  <Link
-    to={`${BONUSY_BASE_PATH}/${meta.slug}`}
-    className={cn(
-      "group relative isolate flex h-full flex-col overflow-hidden rounded-2xl p-6 md:p-7 lg:min-h-[18rem] lg:p-8",
-      "transition-transform duration-300 ease-out hover:-translate-y-1",
-      cardFocusClass,
-    )}
-    data-umami-event="click_bonus_tool"
-    data-umami-event-slug={meta.slug}
-  >
-    {/* Pozadie: tmavý lesný gradient (spoločný token) + šum + vzor značky */}
-    <div
-      aria-hidden
-      className="pointer-events-none absolute inset-0 -z-10"
-      style={{ background: "var(--btn-primary-gradient)" }}
-    />
-    <div
-      aria-hidden
-      className="pointer-events-none absolute inset-0 -z-10 opacity-[0.12] mix-blend-soft-light"
-      style={{ backgroundImage: NOISE_TEXTURE }}
-    />
-    <img
-      src={brandPatternDark}
-      alt=""
-      aria-hidden
-      className="pointer-events-none absolute -bottom-10 -right-8 -z-10 h-48 w-auto select-none opacity-[0.16] transition-transform duration-500 ease-out group-hover:scale-105 md:h-56"
-    />
-
-    <div className="flex items-start justify-between gap-4">
-      <span className="inline-flex items-center rounded-full border border-[#fdf8f2]/25 bg-[#fdf8f2]/[0.08] px-3 py-1 font-sans text-caption font-semibold text-[#fdf8f2]/85">
-        {category}
-      </span>
-      <span
-        aria-hidden
-        className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#fdf8f2]/20 bg-[#fdf8f2]/[0.06] text-[#fdf8f2]/80 transition-colors duration-300 group-hover:bg-[#fdf8f2] group-hover:text-[#023c2e]"
-      >
-        <ArrowUpRight className="h-4 w-4 stroke-[2.25]" />
-      </span>
-    </div>
-
-    <span className="mt-6 block [font-family:var(--font-serif)] text-[1.55rem] font-bold leading-[1.15] text-[#fdf8f2] md:mt-7 md:text-[1.7rem] lg:text-[1.85rem]">
-      {meta.title}
-    </span>
-    <span className="mt-3 block font-sans text-[1rem] leading-relaxed text-[#f0ebe3]/80 md:text-[1.0625rem]">
-      {meta.description}
-    </span>
-
-    <span className="mt-auto flex items-center gap-2 pt-6 font-sans text-[0.9375rem] font-semibold text-[#fdf8f2]">
-      Spustiť nástroj
-      <ArrowRight className="h-4 w-4 stroke-[2.25] transition-transform duration-300 group-hover:translate-x-1" />
-    </span>
-  </Link>
-);
-
-/* ---------------------------- Knižnica kalkulačiek ----------------------- */
-
-const LibraryToolCard = ({ meta }: { meta: KalkulackaCalculatorMeta }) => {
-  const { Icon } = meta;
+const CheckupHero = ({ meta }: { meta: KalkulackaCalculatorMeta }) => {
+  const c = 2 * Math.PI * 27;
   return (
-    <Link
-      to={`${BONUSY_BASE_PATH}/${meta.slug}`}
-      className={cn(
-        "group relative flex h-full flex-col rounded-2xl border border-border/70 bg-card p-6 md:p-7",
-        "transition-[transform,border-color] duration-300 ease-out",
-        "hover:-translate-y-0.5 hover:border-primary/30",
-        cardFocusClass,
-      )}
-      data-umami-event="click_bonus_tool"
-      data-umami-event-slug={meta.slug}
-    >
-      <div className="flex items-start justify-between gap-4">
-        <span className="relative inline-flex h-11 w-11 shrink-0 items-center justify-center md:h-12 md:w-12" aria-hidden>
-          <img
-            src={brandPattern}
-            alt=""
-            className="pointer-events-none absolute inset-0 h-full w-full object-contain"
-          />
-          <Icon className="relative z-10 h-[1.15rem] w-[1.15rem] -translate-x-[1px] stroke-[2] text-white md:h-5 md:w-5" />
-        </span>
-        <ArrowUpRight
-          className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground/60 transition-[color,transform] duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-primary"
-          aria-hidden
-        />
+    <Link to={`${BONUSY_BASE_PATH}/${meta.slug}`} className={cn("bz-flag bz-reveal", focusClass)} style={{ "--i": 4 } as CSSProperties} data-umami-event="click_bonus_tool" data-umami-event-slug={meta.slug}>
+      <div className="bz-flag-body">
+        <span className="bz-flag-kicker">Nové · začni tu</span>
+        <span className="bz-flag-title"><b>Tvoje financie</b> <em>na jednom čísle.</em></span>
+        <span className="bz-flag-text">{meta.description}</span>
+        <span className="bz-flag-pillars">Míňaš · Šetríš · Dlhy · Chrániš · Rastieš</span>
+        <span className="bz-flag-cta">Spustiť check-up <ArrowRight className="h-4 w-4" aria-hidden /></span>
       </div>
+      <div className="bz-flag-ring" aria-hidden>
+        <svg viewBox="0 0 64 64">
+          <circle cx="32" cy="32" r="27" fill="none" stroke="rgba(243,233,221, 0.24)" strokeWidth="4.5" />
+          <circle className="bz-ring-arc" cx="32" cy="32" r="27" fill="none" stroke="#d9b15c" strokeWidth="4.5" strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c * 0.28} transform="rotate(-90 32 32)" style={{ "--c": c, "--o": c * 0.28 } as CSSProperties} />
+          <text x="32" y="37" textAnchor="middle" fontFamily="Calvino, serif" fontWeight="700" fontSize="19" letterSpacing="-0.6" fill="#f3e9dd">72</text>
+          <text x="32" y="45" textAnchor="middle" fontFamily="Matter, sans-serif" fontWeight="500" fontSize="3.6" letterSpacing="0.4" fill="rgba(243,233,221, 0.69)">SKÓRE ZO 100</text>
+        </svg>
+      </div>
+    </Link>
+  );
+};
 
-      <span className="mt-5 block [font-family:var(--font-serif)] text-[1.25rem] font-bold leading-[1.2] text-foreground md:text-[1.35rem]">
-        {meta.title}
+/* ------------------------------ Karta nástroja ------------------------------ */
+
+const ToolCard = ({ meta, index = 0 }: { meta: KalkulackaCalculatorMeta; index?: number }) => {
+  const info = TOOL_META[meta.slug] ?? { category: "Nástroj", tone: "stone" as ToneId, glyph: "arcs" as Glyph };
+  return (
+    <Link to={`${BONUSY_BASE_PATH}/${meta.slug}`} className={cn("bz-card bz-reveal", focusClass)} style={toneStyle(info.tone, index)} data-umami-event="click_bonus_tool" data-umami-event-slug={meta.slug}>
+      <span className={cn("bz-glyph", info.glyph === "map" && "bz-glyph--map")} aria-hidden><GlyphArt glyph={info.glyph} tone={info.tone} /></span>
+      <span className="bz-card-head">
+        <span className="bz-cat">{info.category}</span>
+        {NEW_SLUGS.has(meta.slug) ? <span className="bz-new">Nové</span> : null}
+        {FAVORITE_SLUGS.has(meta.slug) ? <span className="bz-new bz-fav">Obľúbené</span> : null}
       </span>
-      <span className="mt-2.5 block font-sans text-[0.9375rem] leading-relaxed text-muted-foreground md:text-[1rem]">
-        {meta.description}
+      <span className="bz-card-body">
+        <span className="bz-card-title">{meta.title}</span>
+        <span className="bz-card-text">{meta.description}</span>
+        <span className="bz-card-cta">Otvoriť <ArrowRight className="h-4 w-4" aria-hidden /></span>
       </span>
     </Link>
   );
@@ -199,101 +213,61 @@ const LibraryToolCard = ({ meta }: { meta: KalkulackaCalculatorMeta }) => {
 const PdfBanner = () => {
   const PdfIcon = BONUSY_PDF_CARD.Icon;
   const isReady = Boolean(BONUSY_PDF_CARD.href);
-
   const content = (
     <>
-      <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary" aria-hidden>
-        <PdfIcon className="h-5 w-5 stroke-[2]" />
-      </span>
+      <span className="bz-pdf-icon" aria-hidden><PdfIcon className="h-5 w-5" /></span>
       <div className="min-w-0 flex-1">
-        <h2
-          id="bonusy-pdf-heading"
-          className="flex flex-wrap items-center gap-x-3 gap-y-1.5 [font-family:var(--font-serif)] text-[1.25rem] font-bold leading-[1.2] text-foreground md:text-[1.35rem]"
-        >
+        <h2 id="bonusy-pdf-heading" className="bz-pdf-title">
           {BONUSY_PDF_CARD.title}
-          {!isReady ? (
-            <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-1 font-sans text-caption font-semibold text-primary">
-              Už čoskoro
-            </span>
-          ) : null}
+          {!isReady ? <span className="bz-pdf-soon">Už čoskoro</span> : null}
         </h2>
-        {BONUSY_PDF_CARD.description ? (
-          <p className="mt-1.5 font-sans text-[0.9375rem] leading-relaxed text-muted-foreground md:text-[1rem]">
-            {BONUSY_PDF_CARD.description}
-          </p>
-        ) : null}
+        {BONUSY_PDF_CARD.description ? <p className="bz-pdf-text">{BONUSY_PDF_CARD.description}</p> : null}
       </div>
-      {isReady ? (
-        <ArrowUpRight className="h-5 w-5 shrink-0 text-muted-foreground/60 transition-colors group-hover:text-primary" aria-hidden />
-      ) : null}
+      {isReady ? <ArrowRight className="h-5 w-5 shrink-0" style={{ color: "#2a6647" }} aria-hidden /> : null}
     </>
   );
-
-  const bannerClass =
-    "flex flex-col items-start gap-5 rounded-2xl border bg-cream/60 p-6 sm:flex-row sm:items-center md:p-7";
-
-  if (isReady) {
-    return (
-      <Link
-        to={BONUSY_PDF_CARD.href}
-        className={cn(bannerClass, "group border-border/70 transition-colors hover:border-primary/30", cardFocusClass)}
-      >
-        {content}
-      </Link>
-    );
-  }
-
-  return <div className={cn(bannerClass, "border-dashed border-primary/25")}>{content}</div>;
+  if (isReady) return <Link to={BONUSY_PDF_CARD.href} className={cn("bz-pdf", focusClass)}>{content}</Link>;
+  return <div className="bz-pdf">{content}</div>;
 };
 
 /* --------------------------------- Stránka ------------------------------- */
 
-const KalkulackyCategoryPage = () => (
-  <KalkulackyShell>
-    <div className="section-container px-4 sm:px-6 lg:px-8">
-      <BonusyPageHeader />
+const bySlug = (slug: string) => KALKULACKY_CALCULATORS.find((c) => c.slug === slug);
 
-      {/* Vlajkové nástroje */}
-      <section className="mx-auto mt-10 max-w-6xl md:mt-14" aria-labelledby="bonusy-featured-heading">
-        <SectionHeader
-          id="bonusy-featured-heading"
-          title="Začni tu"
-          subtitle="Tri nástroje, ktoré ti o tvojich peniazoch prezradia najviac."
-        />
-        <ul className="mt-5 grid list-none grid-cols-1 gap-5 p-0 md:mt-6 md:gap-6 lg:grid-cols-3">
-          {featuredTools.map(({ meta, category }) => (
-            <li key={meta.slug} className="h-full">
-              <FeaturedToolCard meta={meta} category={category} />
-            </li>
-          ))}
-        </ul>
-      </section>
+const KalkulackyCategoryPage = () => {
+  const checkup = bySlug("financny-checkup");
+  const featured = FEATURED.slice(1).map(bySlug).filter((m): m is KalkulackaCalculatorMeta => Boolean(m));
+  const library = KALKULACKY_CALCULATORS.filter((c) => !FEATURED.includes(c.slug));
+  return (
+    <KalkulackyShell>
+      <div className="bonusy section-container px-4 sm:px-6 lg:px-8">
+        <BonusyPageHeader />
+        <Journey />
 
-      {/* Knižnica kalkulačiek */}
-      <section className="mx-auto mt-12 max-w-6xl md:mt-16" aria-labelledby="bonusy-library-heading">
-        <SectionHeader
-          id="bonusy-library-heading"
-          title="Kalkulačky"
-          subtitle="Presné prepočty pre hypotéku, investície, mzdu aj rentu."
-          count={libraryTools.length}
-        />
-        <ul className="mt-5 grid list-none grid-cols-1 gap-5 p-0 sm:grid-cols-2 md:mt-6 md:gap-6 lg:grid-cols-3">
-          {libraryTools.map((meta) => (
-            <li key={meta.slug} className="h-full">
-              <LibraryToolCard meta={meta} />
-            </li>
-          ))}
-        </ul>
-      </section>
+        <section className="mx-auto mt-16 max-w-6xl md:mt-24" aria-labelledby="bonusy-featured-heading">
+          <SectionHeader id="bonusy-featured-heading" title="Začni tu" subtitle="Tri nástroje, ktoré ti o tvojich peniazoch prezradia najviac." />
+          <div className="mt-6 grid grid-cols-1 gap-4 md:mt-8 md:gap-5 lg:grid-cols-3">
+            {checkup ? <div className="lg:col-span-2"><CheckupHero meta={checkup} /></div> : null}
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5 lg:grid-cols-1">
+              {featured.map((m, i) => <ToolCard key={m.slug} meta={m} index={5 + i} />)}
+            </div>
+          </div>
+        </section>
 
-      {/* PDF materiály */}
-      <section className="mx-auto mt-8 max-w-6xl md:mt-10" aria-labelledby="bonusy-pdf-heading">
-        <PdfBanner />
-      </section>
+        <section className="mx-auto mt-16 max-w-6xl md:mt-24" aria-labelledby="bonusy-library-heading">
+          <SectionHeader id="bonusy-library-heading" title="Kalkulačky a nástroje" subtitle="Presné prepočty pre hypotéku, investície, mzdu, byt aj rentu." count={library.length} />
+          <ul className="mt-6 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2 md:mt-8 md:gap-5 lg:grid-cols-3">
+            {library.map((meta, i) => (
+              <li key={meta.slug} className="h-full"><ToolCard meta={meta} index={i} /></li>
+            ))}
+          </ul>
+        </section>
 
-      <BonusyKonzultaciaSection />
-    </div>
-  </KalkulackyShell>
-);
+        <section className="mx-auto mt-10 max-w-6xl md:mt-14" aria-labelledby="bonusy-pdf-heading"><PdfBanner /></section>
+        <BonusyKonzultaciaSection />
+      </div>
+    </KalkulackyShell>
+  );
+};
 
 export default KalkulackyCategoryPage;

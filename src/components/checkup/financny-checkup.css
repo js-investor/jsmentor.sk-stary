@@ -1,0 +1,200 @@
+/**
+ * Finančný check-up — scoped pod #fc-root. Jazyk /bonusy 2.0:
+ * jeden plochý hnedý panel (intro + skóre) so zlatou, tónované dlaždice pilierov
+ * (šalvia / piesok / kameň / ružovkastá / les), ivory karty s hairline, Matter + Calvino Bold,
+ * tiché animácie. Bez gradientov, textúr a farebných líšt.
+ */
+
+#fc-root *, #fc-root *::before, #fc-root *::after { box-sizing: border-box; }
+#fc-root { font-family: var(--font-sans); color: var(--wm-brown-text); }
+#fc-root .fc-page { max-width: 60rem; }
+
+@keyframes fc-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes fc-pop { 0% { transform: scale(0.7); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  #fc-root .fc-card, #fc-root .fc-hero, #fc-root .fc-option, #fc-root .fc-tile, #fc-root .fc-option-check, #fc-root .fc-pillars-intro li { animation: none !important; }
+  #fc-root .fc-tile:hover, #fc-root .fc-option:hover { transform: none !important; }
+}
+
+/* ------------------------------ Hlavička ------------------------------ */
+#fc-root .calc-header { margin-bottom: 1.75rem; }
+#fc-root .fc-title { font-family: var(--font-serif); font-size: clamp(2.125rem, 4.4vw, 3rem); line-height: 1.06; font-weight: 700; letter-spacing: -0.02em; color: var(--wm-brown); margin: 1rem 0 0.75rem; text-wrap: balance; }
+#fc-root .fc-title em { font-style: italic; color: var(--wm-green); }
+#fc-root .fc-lede { font-size: 1.0625rem; line-height: 1.55; color: var(--fg2); margin: 0 auto; max-width: 38rem; text-wrap: pretty; }
+
+/* ------------------------------ Hnedý panel (intro + skóre) ------------------------------ */
+#fc-root .fc-hero { position: relative; overflow: hidden; display: grid; grid-template-columns: 1fr; gap: 1.5rem; padding: 2rem 1.5rem; border-radius: 1.75rem; background: var(--wm-brown); color: #f3e9dd; animation: fc-in 0.5s var(--ease-out) both; }
+@media (min-width: 768px) {
+  #fc-root .fc-hero { grid-template-columns: 1fr 15rem; padding: 2.5rem 2.75rem; gap: 2rem 3rem; align-items: center; min-height: 22rem; }
+  #fc-root .fc-hero--result { grid-template-columns: 15rem 1fr; }
+}
+#fc-root .fc-hero-kicker { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--wm-gold); margin: 0 0 0.875rem; }
+#fc-root .fc-hero-title { font-family: var(--font-serif); font-size: clamp(1.75rem, 3.4vw, 2.5rem); line-height: 1.08; font-weight: 700; letter-spacing: -0.015em; color: #f3e9dd; margin: 0; text-wrap: balance; }
+#fc-root .fc-hero-title em { font-style: italic; color: var(--wm-gold); }
+#fc-root .fc-hero--result .fc-hero-title { font-size: clamp(1.5rem, 3vw, 2rem); }
+#fc-root .fc-hero-lede { font-size: 1rem; line-height: 1.6; color: rgba(243, 233, 221, 0.88); margin: 0.875rem 0 0; text-wrap: pretty; }
+#fc-root .fc-hero-src { font-size: 0.8125rem; color: rgba(243, 233, 221, 0.64); }
+#fc-root .fc-hero-actions { margin-top: 1.5rem; display: flex; flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+#fc-root .fc-hero-note { font-size: 0.8125rem; color: rgba(243, 233, 221, 0.64); margin: 0; }
+#fc-root .fc-hero-side { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; }
+#fc-root .fc-hero-ring { width: 12rem; }
+@media (min-width: 768px) { #fc-root .fc-hero-ring { width: 14rem; } }
+#fc-root .fc-hero-side-caption { font-size: 0.75rem; color: rgba(243, 233, 221, 0.64); margin: 0; }
+#fc-root .fc-btn { display: inline-flex; align-items: center; gap: 0.5rem; }
+#fc-root .fc-btn svg { transition: transform 0.22s var(--ease-out); }
+#fc-root .fc-btn:hover svg { transform: translateX(3px); }
+
+/* kruh */
+#fc-root .fc-ring { position: relative; width: 100%; aspect-ratio: 1; }
+#fc-root .fc-ring svg { transform: rotate(-90deg); }
+#fc-root .fc-ring-track { fill: none; stroke-width: 7; }
+#fc-root .fc-ring-fill { fill: none; stroke-width: 7; stroke-linecap: round; transition: stroke-dashoffset 0.12s linear; }
+#fc-root .fc-ring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+#fc-root .fc-ring-value { font-family: var(--font-serif); font-size: 3.5rem; line-height: 1; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+#fc-root .fc-ring-max { font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: rgba(243, 233, 221, 0.69); margin-top: 0.375rem; }
+
+/* pásmo */
+#fc-root .fc-tier { padding: 0.375rem 0.875rem; border-radius: 9999px; font-size: 0.8125rem; font-weight: 600; background: rgba(243, 233, 221, 0.26); color: #f3e9dd; }
+#fc-root .fc-tier--zdrave { background: var(--wm-green); color: #f3e9dd; }
+#fc-root .fc-tier--zvladas { background: var(--wm-gold); color: #3a2c08; }
+#fc-root .fc-tier--zranitelne { background: #e9a27e; color: #4a1b12; }
+
+/* pocit vs. realita */
+#fc-root .fc-feeling { display: flex; flex-direction: column; gap: 0.125rem; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid rgba(243, 233, 221, 0.28); }
+#fc-root .fc-feeling-label { font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--wm-gold); }
+#fc-root .fc-feeling-title { font-family: var(--font-serif); font-size: 1.25rem; line-height: 1.2; font-weight: 700; margin-top: 0.25rem; }
+#fc-root .fc-feeling-text { font-size: 0.8125rem; line-height: 1.5; color: rgba(243, 233, 221, 0.88); }
+
+/* ------------------------------ Dlaždice pilierov (tónované) ------------------------------ */
+#fc-root .fc-pillars-intro, #fc-root .fc-pillars { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; list-style: none; margin: 0.875rem 0 0; padding: 0; }
+@media (min-width: 768px) { #fc-root .fc-pillars-intro, #fc-root .fc-pillars { grid-template-columns: repeat(5, 1fr); } }
+#fc-root .fc-pillars { margin-top: 0; }
+#fc-root .fc-pillars-intro li:last-child:nth-child(odd) { grid-column: 1 / -1; }
+@media (min-width: 768px) { #fc-root .fc-pillars-intro li:last-child:nth-child(odd) { grid-column: auto; } }
+#fc-root .fc-tile { position: relative; display: flex; flex-direction: column; gap: 0.25rem; min-height: 9rem; padding: 1rem 1rem 0.875rem; border-radius: 1.25rem; animation: fc-pop 0.45s var(--ease-out) both; transition: transform 0.3s var(--ease-out); }
+#fc-root .fc-tile svg { width: 1.375rem; height: 1.375rem; stroke-width: 1.75; opacity: 0.9; }
+#fc-root .fc-tile--sand { background: var(--tone-sand); color: var(--wm-brown); }
+#fc-root .fc-tile--mint { background: var(--wm-green); color: #f3e9dd; }
+#fc-root .fc-tile--mint .fc-tile-track { background: rgba(243, 233, 221, 0.34); }
+#fc-root .fc-tile--mint .fc-tile-ind { border-color: rgba(243, 233, 221, 0.34); }
+
+#fc-root .fc-tile--terra { background: #ab4132; color: #f8ebe0; }
+#fc-root .fc-tile--terra .fc-tile-track { background: rgba(248, 235, 224, 0.34); }
+#fc-root .fc-tile--terra .fc-tile-ind { border-color: rgba(248, 235, 224, 0.34); }
+
+#fc-root .fc-tile--ink { background: var(--tone-stone); color: var(--wm-brown); }
+#fc-root .fc-tile--forest { background: var(--tone-forest); color: #f3e9dd; }
+#fc-root .fc-tile-label { font-family: var(--font-serif); font-size: 1.25rem; font-weight: 700; line-height: 1.1; margin-top: auto; }
+#fc-root .fc-tile-q { font-size: 0.75rem; line-height: 1.4; opacity: 0.72; }
+
+/* výsledkové dlaždice */
+#fc-root .fc-tile--score { min-height: 0; padding: 1rem; gap: 0.5rem; }
+#fc-root .fc-tile-head { display: flex; align-items: center; gap: 0.5rem; }
+#fc-root .fc-tile-head .fc-tile-label { margin-top: 0; font-size: 1.0625rem; }
+#fc-root .fc-tile-score { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; }
+#fc-root .fc-tile-num { font-family: var(--font-serif); font-size: 2.25rem; line-height: 1; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+#fc-root .fc-tile-track { height: 0.375rem; border-radius: 9999px; background: rgba(41, 36, 32, 0.1); overflow: hidden; }
+#fc-root .fc-tile--forest .fc-tile-track { background: rgba(243, 233, 221, 0.3); }
+#fc-root .fc-tile-fill { height: 100%; border-radius: 9999px; background: currentColor; opacity: 0.85; transition: width 0.9s var(--ease-out); }
+#fc-root .fc-tile-ind { list-style: none; margin: 0.25rem 0 0; padding: 0.5rem 0 0; border-top: 1px solid rgba(41, 36, 32, 0.12); display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.75rem; line-height: 1.3; }
+#fc-root .fc-tile--forest .fc-tile-ind { border-color: rgba(243, 233, 221, 0.3); }
+#fc-root .fc-tile-ind li { display: flex; justify-content: space-between; gap: 0.5rem; opacity: 0.85; }
+#fc-root .fc-tile-ind strong { font-variant-numeric: tabular-nums; }
+
+/* pásmové štítky */
+#fc-root .fc-band { font-size: 0.6875rem; font-weight: 600; padding: 0.1875rem 0.5rem; border-radius: 9999px; white-space: nowrap; }
+#fc-root .fc-band--slaba { background: rgba(171,65,50, 0.14); color: #7a3a1c; }
+#fc-root .fc-band--priemer { background: rgba(169, 157, 126, 0.28); color: #5c4a26; }
+#fc-root .fc-band--dobra { background: var(--wm-green); color: #f3e9dd; }
+#fc-root .fc-tile--forest .fc-band, #fc-root .fc-tile--mint .fc-band, #fc-root .fc-tile--terra .fc-band { background: #f3e9dd; color: #292420; }
+
+/* ------------------------------ Karta kroku ------------------------------ */
+#fc-root .fc-card { background: var(--wm-ivory); border: 1px solid var(--hair); border-radius: 1.5rem; padding: 1.5rem 1.25rem; max-width: 46rem; margin: 0 auto; animation: fc-in 0.4s var(--ease-out) both; }
+@media (min-width: 640px) { #fc-root .fc-card { padding: 2rem 2.5rem; } }
+#fc-root .fc-progress { height: 0.25rem; border-radius: 9999px; background: rgba(41, 36, 32, 0.1); overflow: hidden; margin-bottom: 1.125rem; }
+#fc-root .fc-progress-fill { height: 100%; border-radius: 9999px; background: var(--wm-green); transition: width 0.5s var(--ease-out); }
+#fc-root .fc-quiz-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+#fc-root .fc-back { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.375rem 0.75rem 0.375rem 0.5rem; border: none; border-radius: 9999px; background: transparent; font-family: var(--font-sans); font-size: 0.875rem; font-weight: 500; color: var(--fg3); cursor: pointer; transition: background 0.2s, color 0.2s; }
+#fc-root .fc-back:hover { color: var(--wm-brown); background: var(--wm-taupe-soft); }
+#fc-root .fc-step { font-size: 0.8125rem; color: var(--fg3); white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+/* pásik pilierov */
+#fc-root .fc-pillars-strip { display: flex; flex-wrap: wrap; gap: 0.375rem; list-style: none; margin: 0 0 1.25rem; padding: 0; }
+#fc-root .fc-pillars-strip li { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.3rem 0.625rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; color: var(--fg3); background: var(--wm-taupe-soft); opacity: 0.75; transition: opacity 0.25s, transform 0.25s var(--ease-out), background 0.25s, color 0.25s; }
+#fc-root .fc-pillars-strip li svg { width: 0.8125rem; height: 0.8125rem; }
+#fc-root .fc-pillars-strip li.is-active { opacity: 1; transform: translateY(-1px); color: #f3e9dd; font-weight: 600; }
+#fc-root .fc-pillars-strip .fc-pill-sand.is-active { background: var(--wm-brown); }
+#fc-root .fc-pillars-strip .fc-pill-mint.is-active { background: var(--wm-green); }
+#fc-root .fc-pillars-strip .fc-pill-terra.is-active { background: var(--wm-red); }
+#fc-root .fc-pillars-strip .fc-pill-ink.is-active { background: var(--wm-brown); }
+#fc-root .fc-pillars-strip .fc-pill-forest.is-active { background: var(--wm-green-dark); }
+#fc-root .fc-pillars-strip .fc-pill-feel.is-active { background: var(--wm-brown); }
+
+#fc-root .fc-lead { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--wm-green); margin: 0 0 0.5rem; }
+#fc-root .fc-question { font-family: var(--font-serif); font-size: clamp(1.5rem, 3.4vw, 1.875rem); line-height: 1.18; font-weight: 700; letter-spacing: -0.01em; color: var(--wm-brown); margin: 0; text-wrap: balance; }
+#fc-root .fc-hint { font-size: 0.9375rem; line-height: 1.55; color: var(--fg2); margin: 0.625rem 0 0; }
+
+/* číselné polia */
+#fc-root .fc-fields { display: grid; grid-template-columns: 1fr; gap: 0.875rem 1.25rem; margin-top: 1.5rem; }
+@media (min-width: 640px) { #fc-root .fc-fields { grid-template-columns: 1fr 1fr; } }
+#fc-root .fc-field .calc-label { margin-bottom: 0.375rem; font-size: 0.875rem; }
+#fc-root .fc-field .calc-input { font-size: 1.0625rem; padding: 0.5625rem 0.875rem; }
+#fc-root .fc-live { display: flex; flex-wrap: wrap; gap: 0.375rem 1.25rem; margin-top: 1.25rem; padding: 0.875rem 1rem; border-radius: 1rem; background: var(--tone-sand); font-size: 0.875rem; color: var(--fg2); }
+#fc-root .fc-live strong { color: var(--wm-brown); font-weight: 600; font-variant-numeric: tabular-nums; }
+#fc-root .fc-live-good strong { color: var(--wm-green); }
+#fc-root .fc-live-bad strong { color: var(--wm-red); }
+#fc-root .fc-quiz-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin-top: 1.25rem; }
+
+/* možnosti */
+#fc-root .fc-options { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1.5rem; }
+#fc-root .fc-option { display: flex; align-items: center; gap: 0.875rem; width: 100%; padding: 0.875rem 1rem; border: 1px solid var(--hair-2); border-radius: 1rem; background: #fff; font-family: var(--font-sans); font-size: 1rem; font-weight: 500; color: var(--wm-brown); text-align: left; cursor: pointer; transition: border-color 0.2s, background 0.2s, color 0.2s, transform 0.25s var(--ease-out); animation: fc-in 0.35s var(--ease-out) both; }
+#fc-root .fc-option:hover { border-color: rgba(41, 36, 32, 0.35); transform: translateY(-2px); }
+#fc-root .fc-option:focus-visible { outline: 2px solid var(--wm-green); outline-offset: 2px; }
+#fc-root .fc-option.is-active { border-color: var(--wm-brown); background: var(--wm-brown); color: #f3e9dd; }
+#fc-root .fc-option-key { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 1.625rem; height: 1.625rem; border-radius: 9999px; background: var(--wm-taupe-soft); font-size: 0.75rem; font-weight: 600; color: var(--fg2); font-variant-numeric: tabular-nums; transition: background 0.2s, color 0.2s; }
+#fc-root .fc-option.is-active .fc-option-key { background: rgba(243, 233, 221, 0.3); color: #f3e9dd; }
+#fc-root .fc-option-label { flex: 1; line-height: 1.35; }
+#fc-root .fc-option-check { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 1.375rem; height: 1.375rem; border-radius: 9999px; border: 1px solid var(--hair-2); color: transparent; transition: background 0.2s, border-color 0.2s, color 0.2s; }
+#fc-root .fc-option.is-active .fc-option-check { background: var(--wm-gold); border-color: var(--wm-gold); color: #292420; animation: fc-pop 0.3s var(--ease-out) both; }
+#fc-root .fc-keys { font-size: 0.75rem; color: var(--fg3); margin: 1rem 0 0; }
+@media (max-width: 640px) { #fc-root .fc-keys-tip { display: none; } }
+
+/* ------------------------------ Výsledok ------------------------------ */
+#fc-root .fc-result { display: flex; flex-direction: column; gap: 1.25rem; }
+#fc-root .fc-kpis { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+@media (min-width: 768px) { #fc-root .fc-kpis { grid-template-columns: repeat(3, 1fr); } }
+#fc-root .fc-kpi { display: flex; flex-direction: column; gap: 0.125rem; align-items: flex-start; padding: 1rem 1.125rem; border-radius: 1.125rem; background: var(--tone-stone); }
+#fc-root .fc-kpi.is-slaba { background: var(--tone-blush); }
+#fc-root .fc-kpi.is-priemer { background: var(--tone-sand); }
+#fc-root .fc-kpi.is-dobra { background: var(--wm-green); color: #f3e9dd; }
+#fc-root .fc-kpi.is-dobra .fc-kpi-label, #fc-root .fc-kpi.is-dobra .fc-kpi-target { color: rgba(243, 233, 221, 0.88); }
+#fc-root .fc-kpi.is-dobra .fc-kpi-value { color: #f3e9dd; }
+#fc-root .fc-kpi-label { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; color: var(--fg3); }
+#fc-root .fc-kpi-value { font-family: var(--font-serif); font-size: 1.5rem; line-height: 1.15; font-weight: 700; letter-spacing: -0.01em; color: var(--wm-brown); font-variant-numeric: tabular-nums; }
+#fc-root .fc-kpi-target { font-size: 0.75rem; color: var(--fg3); margin-bottom: 0.5rem; }
+
+/* odporúčania */
+#fc-root .fc-rec-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+#fc-root .fc-rec { display: flex; gap: 1rem; padding: 1.125rem 0; border-top: 1px solid var(--hair); }
+#fc-root .fc-rec:first-child { border-top: none; padding-top: 0.25rem; }
+#fc-root .fc-rec-n { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 2rem; height: 2rem; border-radius: 9999px; background: var(--wm-brown); color: #f3e9dd; font-family: var(--font-serif); font-size: 1rem; font-weight: 700; }
+#fc-root .fc-rec.is-slaba .fc-rec-n { background: var(--wm-red); }
+#fc-root .fc-rec.is-priemer .fc-rec-n { background: var(--wm-taupe); }
+#fc-root .fc-rec-body { min-width: 0; flex: 1; }
+#fc-root .fc-rec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; font-size: 0.75rem; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; color: var(--fg3); }
+#fc-root .fc-rec-pct { text-transform: none; letter-spacing: 0; font-variant-numeric: tabular-nums; }
+#fc-root .fc-rec-title { font-family: var(--font-serif); font-size: 1.25rem; line-height: 1.2; font-weight: 700; color: var(--wm-brown); margin: 0.25rem 0 0.375rem; text-wrap: balance; }
+#fc-root .fc-rec-text { font-size: 0.9375rem; line-height: 1.55; color: var(--fg2); margin: 0; text-wrap: pretty; }
+#fc-root .fc-rec-tool { display: inline-flex; align-items: center; gap: 0.375rem; margin-top: 0.625rem; padding: 0.4375rem 0.875rem; border: 1px solid var(--hair-2); border-radius: 9999px; background: transparent; font-size: 0.8125rem; font-weight: 600; color: var(--wm-green); text-decoration: none; transition: background 0.2s, border-color 0.2s; }
+#fc-root .fc-rec-tool:hover { background: var(--tone-sand); border-color: transparent; }
+#fc-root .fc-rec-tool svg { transition: transform 0.22s var(--ease-out); }
+#fc-root .fc-rec-tool:hover svg { transform: translateX(3px); }
+
+/* CTA */
+#fc-root .fc-cta { display: flex; flex-direction: column; gap: 1.25rem; padding: 1.75rem 1.5rem; border-radius: 1.5rem; background: var(--tone-sand); }
+@media (min-width: 768px) { #fc-root .fc-cta { flex-direction: row; align-items: center; justify-content: space-between; padding: 2rem 2.25rem; } }
+#fc-root .fc-cta-title { font-family: var(--font-serif); font-size: 1.5rem; line-height: 1.15; font-weight: 700; color: var(--wm-brown); margin: 0 0 0.375rem; }
+#fc-root .fc-cta-text { font-size: 0.9375rem; line-height: 1.55; color: var(--fg2); margin: 0; max-width: 30rem; }
+#fc-root .fc-cta-actions { display: flex; flex-direction: column; gap: 0.5rem; flex-shrink: 0; }
+#fc-root .fc-btn-ghost { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.625rem 1rem; border: 1px solid transparent; border-radius: 9999px; background: transparent; font-family: var(--font-sans); font-size: 0.875rem; font-weight: 600; color: var(--fg2); cursor: pointer; transition: color 0.2s; }
+#fc-root .fc-btn-ghost:hover { color: var(--wm-brown); }

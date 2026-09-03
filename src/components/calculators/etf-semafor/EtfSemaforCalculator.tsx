@@ -1,4 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
+import type { CSSProperties } from "react";
+import { ArrowLeft, ArrowRight, Brain, ChartPie, FileText, Flag, Lightbulb, MessageCircle, RotateCcw, Target, ThumbsUp, type LucideIcon } from "lucide-react";
+import "../shared/calc-ui.css";
 import "./etf-semafor.css";
 import { BONUSY_CTA_LABEL, KONZULTACIA_URL } from "@/pages/kalkulacky/kalkulackyConfig";
 
@@ -156,26 +159,45 @@ const Q: Question[] = [
 const MAX = Q.length * 2; // 30
 
 // ===== HELPERS =====
-const Pill = ({ children }: { children: React.ReactNode }) => (
-  <span className="inline-block rounded-full bg-primary px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.16em] text-white mb-6">
-    {children}
-  </span>
-);
+type CatKey = keyof typeof CATS;
+type Cls = "g" | "a" | "r";
+const CAT_KEYS = Object.keys(CATS) as CatKey[];
+
+/** Popisok kategórie bez úvodného emoji — v UI používame ikony lucide, emoji ostáva len v texte. */
+const catLabel = (c: CatKey) => CATS[c].replace(/^[^\p{L}\p{N}]+/u, "");
+const CAT_ICON: Record<CatKey, LucideIcon> = { S: Brain, P: ChartPie, D: FileText, C: Target };
+/** Tón karty otázky podľa oblasti (šalvia / piesok / kameň). */
+const CAT_TONE: Record<CatKey, string> = { S: "sage", P: "sand", D: "stone", C: "sage" };
 
 const shockText = (n: number) =>
   n === 1 ? "1 otázka" : n < 5 ? `${n} otázky` : `${n} otázok`;
 
-const colFor = (r: number) =>
-  r >= 0.8 ? "#5BC78A" : r >= 0.55 ? "#D9A441" : "#D9604B";
+/** Verdikt: prvá veta ako italic zlatý dôraz, zvyšok krémový. */
+const splitVerdict = (s: string): [string, string] => {
+  const i = s.indexOf(". ");
+  return i > 0 ? [s.slice(0, i + 1), s.slice(i + 2)] : [s, ""];
+};
 
-const SEM_STYLE = {
-  g: { background: "radial-gradient(circle,rgba(91,199,138,.35),rgba(91,199,138,.08))", border: "3px solid #5BC78A", boxShadow: "0 0 60px rgba(91,199,138,.35)" },
-  a: { background: "radial-gradient(circle,rgba(217,164,65,.35),rgba(217,164,65,.08))", border: "3px solid #D9A441", boxShadow: "0 0 60px rgba(217,164,65,.3)" },
-  r: { background: "radial-gradient(circle,rgba(217,96,75,.35),rgba(217,96,75,.08))", border: "3px solid #D9604B", boxShadow: "0 0 60px rgba(217,96,75,.3)" },
-} as const;
-const VERDICT_COLOR = { g: "#5BC78A", a: "#D9A441", r: "#D9604B" } as const;
-const RECO_BORDER  = { g: "rgba(91,199,138,.45)", a: "rgba(217,164,65,.45)", r: "rgba(217,96,75,.45)" } as const;
-const RECO_LABEL   = { g: "#5BC78A", a: "#D9A441", r: "#D9604B" } as const;
+const VERDICT: Record<Cls, string> = {
+  g: "Zelená. Máš to pod kontrolou.",
+  a: "Žltá. Tvoje portfólio potrebuje audit.",
+  r: "Červená. Tvoje peniaze pracujú proti tebe.",
+};
+
+/** Farba pásu podľa pomeru: lesná zelená / taupe / červená (žiadna žltá na svetlom). */
+const colFor = (r: number) =>
+  r >= 0.8 ? "#2a6647" : r >= 0.55 ? "#a99d7e" : "#ab4132";
+
+/** Tón semafora: na hnedom paneli mint / zlatá / lososová, pod ním šalvia / piesok / ružovkastá. */
+const TONE: Record<Cls, { dark: string; card: string; label: string }> = {
+  g: { dark: "#d9b15c", card: "sage", label: "#2a6647" },
+  a: { dark: "#d9b15c", card: "sand", label: "#292420" },
+  r: { dark: "#e9a27e", card: "blush", label: "#ab4132" },
+};
+
+const RING_R = 54;
+const RING_C = 2 * Math.PI * RING_R;
+const st = (i: number, extra: Record<string, string | number> = {}) => ({ "--i": i, ...extra }) as CSSProperties;
 
 // ===== MAIN COMPONENT =====
 const EtfSemaforCalculator = () => {
@@ -245,139 +267,153 @@ const EtfSemaforCalculator = () => {
 
   const q = Q[idx];
   const progress = idx / Q.length * 100;
+  const CatIcon = q ? CAT_ICON[q.c] : Brain;
+
+  // odvodené hodnoty pre výsledok (iba vizuál)
+  const cls: Cls = result?.cls ?? "g";
+  const tone = TONE[cls];
+  const [vHead, vRest] = splitVerdict(VERDICT[cls]);
+  const pct = result ? Math.round(result.p * 100) : 0;
+  const ringOff = RING_C * (1 - (result?.p ?? 0));
+  const worstLabel = result && CATS[result.worstCat] ? catLabel(result.worstCat) : null;
 
   return (
-    <div className="w-full font-sans">
+    <div id="etfs-root" className="calc-ui etfs w-full font-sans">
+      <div className="calc-body-shell">
+        <div className="calc-page etfs-page">
 
-      {/* ===== INTRO ===== */}
-      {phase === "intro" && (
-        <>
-          <div className="text-center mb-10 max-w-[680px] mx-auto px-5">
-            <Pill>ETF semafor 🚦</Pill>
-            <h1 className="[font-family:var(--font-serif)] font-black text-[clamp(1.875rem,6vw,3.125rem)] leading-[1.15] tracking-[-0.015em] text-foreground mb-3">
-              Investuješ.<br />Ale investuješ <span className="text-primary">správne?</span>
-            </h1>
-            <p className="text-[16.5px] text-muted-foreground font-[500] leading-relaxed max-w-[560px] mx-auto mt-3">
-              15 otázok, 3 minúty. O stratégii, krízach, daniach a chybách, ktoré ťa potichu stoja peniaze — a o ktorých ti nie každý povie.
-            </p>
-            <div className="flex justify-center gap-3.5 mt-[34px]">
-              {["🔴", "🟡", "🟢"].map(e => (
-                <span key={e} className="w-[54px] h-[54px] rounded-full flex items-center justify-center text-[24px] bg-card border border-border shadow-sm">{e}</span>
-              ))}
-            </div>
-            <button
-              type="button" onClick={handleStart}
-              className="btn-primary inline-block mt-[30px] text-body"
-            >
-              Spustiť semafor 🚦
-            </button>
-            <span className="block mt-3 text-[13px] font-semibold text-muted-foreground">zadarmo · bez e-mailu · výsledok hneď</span>
-          </div>
-        </>
-      )}
+          {/* ===== INTRO ===== */}
+          {phase === "intro" && (
+            <>
+              <header className="calc-header calc-reveal" style={st(0)}>
+                <span className="calc-eyebrow">ETF semafor</span>
+                <h1 className="calc-title">Investuješ.<br />Ale investuješ <em>správne?</em></h1>
+                <p className="calc-subtitle">15 otázok, 3 minúty. O stratégii, krízach, daniach a chybách, ktoré ťa potichu stoja peniaze — a o ktorých ti nie každý povie.</p>
+              </header>
+              <section className="etfs-intro calc-reveal" style={st(1)} aria-label="Spustiť semafor">
+                <div className="etfs-lights" aria-hidden>
+                  <span className="etfs-light etfs-light--r" /><span className="etfs-light etfs-light--a" /><span className="etfs-light etfs-light--g" />
+                </div>
+                <button type="button" onClick={handleStart} className="btn-primary etfs-btn">
+                  Spustiť semafor <ArrowRight className="h-4 w-4" strokeWidth={1.75} aria-hidden />
+                </button>
+                <span className="etfs-micro">zadarmo · bez e-mailu · výsledok hneď</span>
+              </section>
+              <ul className="etfs-areas" aria-label="Oblasti otázok">
+                {CAT_KEYS.map((c, i) => {
+                  const Icon = CAT_ICON[c];
+                  const n = Q.filter((x) => x.c === c).length;
+                  return (
+                    <li key={c} className={`etfs-area calc-tone--${CAT_TONE[c]} calc-reveal`} style={st(2 + i)}>
+                      <span className="etfs-area-icon"><Icon className="h-5 w-5" strokeWidth={1.75} aria-hidden /></span>
+                      <span className="etfs-area-name">{catLabel(c)}</span>
+                      <span className="etfs-area-n">{shockText(n)}</span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </>
+          )}
 
-      {/* ===== QUIZ ===== */}
-      {phase === "quiz" && q && (
-        <section className="rounded-2xl overflow-hidden mb-5" style={{ background: "#111210", color: "#F5EDE0" }}>
-          <div className="px-5 py-[60px] md:px-8">
-            <div className="max-w-[620px] mx-auto">
-              {/* Progress */}
-              <div className="h-2 rounded-full overflow-hidden mb-3.5" style={{ background: "rgba(245,237,224,.12)" }}>
-                <div className="h-full rounded-full transition-[width] duration-300 ease-out"
-                  style={{ width: `${progress}%`, background: "linear-gradient(90deg,#2B6B4A,#5BC78A)" }} />
+          {/* ===== QUIZ ===== */}
+          {phase === "quiz" && q && (
+            <section className="etfs-quiz" aria-label="Otázky">
+              <div className="etfs-quiz-top calc-reveal" style={st(0)}>
+                <span className="calc-eyebrow">ETF semafor</span>
               </div>
-              <div className="flex justify-between text-[11.5px] font-extrabold uppercase tracking-[0.1em] mb-[30px]" style={{ color: "#B8B2A4" }}>
-                <span>Otázka <span style={{ color: "#5BC78A" }}>{idx + 1}</span> / {Q.length}</span>
-                <span>{CATS[q.c]}</span>
+              <div className="etfs-progress calc-reveal" style={st(0)} role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress)} aria-label="Priebeh">
+                <span className="etfs-progress-fill" style={{ width: `${Math.max(3, progress)}%` }} />
+              </div>
+              <div className="etfs-meta calc-reveal" style={st(0)}>
+                <span>Otázka <strong>{idx + 1}</strong> / {Q.length}</span>
+                <span className="etfs-meta-cat"><CatIcon className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden />{catLabel(q.c)}</span>
               </div>
 
               {/* Question card — key forces re-animation on each question */}
-              <div key={idx} className="etfs-qcard bg-[#1A1B18] border border-[rgba(245,237,224,.14)] rounded-[14px] p-[34px_24px] md:p-[34px_30px]">
-                <div className="text-[11px] font-extrabold uppercase tracking-[0.14em] mb-3" style={{ color: "#5BC78A" }}>
-                  {CATS[q.c]}
-                </div>
-                <div className="text-[clamp(19px,3.2vw,23px)] font-black leading-[1.35] mb-6" style={{ color: "#F5EDE0" }}>
-                  {q.q}
-                </div>
-                <div className="flex flex-col gap-[11px]">
-                  {q.a.map((a, i) => (
-                    <button key={i} type="button" onClick={() => handleAnswer(i)} className="etfs-ans-btn">
-                      <span className="flex-shrink-0 text-[18px]">{a.e}</span>
-                      {a.t}
-                    </button>
-                  ))}
+              <div key={idx} className={`calc-panel calc-tone--${CAT_TONE[q.c]} etfs-qcard`}>
+                <h2 className="etfs-qtxt">{q.q}</h2>
+                <div className="etfs-ans" role="group" aria-label="Odpovede">
+                  {q.a.map((a, i) => {
+                    const chosen = answers[idx] === i;
+                    return (
+                      <button key={i} type="button" onClick={() => handleAnswer(i)} className={`etfs-ans-btn${chosen ? " is-chosen" : ""}`} aria-pressed={chosen}>
+                        <span className="etfs-ans-key" aria-hidden>{i + 1}</span>
+                        <span className="etfs-ans-text">{a.t}</span>
+                      </button>
+                    );
+                  })}
                 </div>
                 {idx > 0 && (
-                  <button type="button" onClick={handleBack} className="etfs-back-btn">← Späť</button>
+                  <button type="button" onClick={handleBack} className="etfs-back"><ArrowLeft className="h-4 w-4" strokeWidth={1.75} aria-hidden /> Späť</button>
                 )}
               </div>
-            </div>
-          </div>
-        </section>
-      )}
+            </section>
+          )}
 
-      {/* ===== RESULT ===== */}
-      {phase === "result" && result && (
-        <section className="rounded-2xl overflow-hidden mb-5" style={{ background: "#111210", color: "#F5EDE0" }}>
-          <div className="px-5 py-[60px] md:px-8">
-            <div className="max-w-[620px] mx-auto text-center">
-              <Pill>Tvoj výsledok</Pill>
-
-              {/* Semaphore circle */}
-              <div className="etfs-sem" style={SEM_STYLE[result.cls]}>
-                {result.cls === "g" ? "🟢" : result.cls === "a" ? "🟡" : "🔴"}
-              </div>
-
-              {/* Verdict */}
-              <div className="text-[clamp(26px,5vw,38px)] font-black mt-[22px]" style={{ color: VERDICT_COLOR[result.cls] }}>
-                {result.cls === "g" ? "Zelená. Máš to pod kontrolou." : result.cls === "a" ? "Žltá. Tvoje portfólio potrebuje audit." : "Červená. Tvoje peniaze pracujú proti tebe."}
-              </div>
-              <div className="text-[14px] font-bold mt-1.5" style={{ color: "#B8B2A4" }}>
-                Skóre: {result.score} / {MAX} bodov ({Math.round(result.p * 100)} %)
-              </div>
-              {result.flags > 0 && (
-                <div className="text-[13.5px] font-bold mt-1" style={{ color: "#D9604B" }}>
-                  🚩 {result.flags === 1 ? "1 červená vlajka — riziko, ktoré ti vie rozbiť celý plán" : `${result.flags} červené vlajky — každá z nich ti vie rozbiť celý plán`}
+          {/* ===== RESULT ===== */}
+          {phase === "result" && result && (
+            <section className="etfs-result" aria-label="Výsledok">
+              {/* jeden plochý hnedý panel: verdikt + skóre */}
+              <div className="etfs-hero calc-reveal" style={st(0, { "--etfs-tone": tone.dark })}>
+                <div className="etfs-hero-main">
+                  <p className="etfs-kicker">Tvoj výsledok</p>
+                  <h2 className="etfs-verdict"><em>{vHead}</em> {vRest}</h2>
+                  {result.flags > 0 && (
+                    <p className="etfs-flags">
+                      <Flag className="h-4 w-4" strokeWidth={1.75} aria-hidden />
+                      <span>{result.flags === 1 ? "1 červená vlajka — riziko, ktoré ti vie rozbiť celý plán" : `${result.flags} červené vlajky — každá z nich ti vie rozbiť celý plán`}</span>
+                    </p>
+                  )}
+                  <div className="etfs-hero-metrics">
+                    <div><span className="etfs-metric-label">Skóre</span><strong>{result.score} / {MAX}</strong><small>bodov</small></div>
+                    <div><span className="etfs-metric-label">Červené vlajky</span><strong className={result.flags ? "is-neg" : "is-pos"}>{result.flags}</strong><small>v odpovediach</small></div>
+                    {worstLabel ? <div className="is-wide"><span className="etfs-metric-label">Najslabšia oblasť</span><strong>{worstLabel}</strong><small>tvoj ďalší krok</small></div> : null}
+                  </div>
                 </div>
-              )}
+                <div className="etfs-hero-side">
+                  <div className="etfs-ring" role="img" aria-label={`Skóre ${pct} zo 100`}>
+                    <svg viewBox="0 0 128 128" aria-hidden>
+                      <circle cx="64" cy="64" r={RING_R} fill="none" stroke="rgba(243,233,221, 0.28)" strokeWidth="8" />
+                      <circle className="etfs-ring-arc" cx="64" cy="64" r={RING_R} fill="none" stroke={tone.dark} strokeWidth="8" strokeLinecap="round" strokeDasharray={RING_C} strokeDashoffset={ringOff} transform="rotate(-90 64 64)" style={{ "--c": RING_C, "--o": ringOff } as CSSProperties} />
+                    </svg>
+                    <div className="etfs-ring-center"><span className="etfs-ring-val">{pct}<small>%</small></span><span className="etfs-ring-cap">skóre</span></div>
+                  </div>
+                  <div className="etfs-semafor" aria-hidden>
+                    <span className={cls === "r" ? "is-on" : ""} /><span className={cls === "a" ? "is-on" : ""} /><span className={cls === "g" ? "is-on" : ""} />
+                  </div>
+                </div>
+              </div>
 
               {/* Shock box */}
               {result.shocks > 0 && (
-                <div className="mt-6 rounded-[14px] p-[22px_24px] text-left"
-                  style={{ background: "linear-gradient(150deg,rgba(217,164,65,.22),rgba(217,164,65,.05))", border: "1px solid rgba(217,164,65,.45)" }}>
-                  <div className="text-[clamp(20px,3.6vw,26px)] font-black" style={{ color: "#F5EDE0" }}>
-                    Zaskočilo ťa <span style={{ color: "#D9A441" }}>{shockText(result.shocks)}</span> 😳
-                  </div>
-                  <p className="text-[13.5px] font-semibold mt-2" style={{ color: "#B8B2A4" }}>
-                    Každá z nich je miesto, kde tvoje portfólio potichu stráca peniaze alebo zbytočne riskuje. Dobrá správa: všetky sa dajú opraviť.
-                  </p>
+                <div className="etfs-shock calc-tone--stone calc-reveal" style={st(1)}>
+                  <p className="etfs-shock-big">Zaskočilo ťa <em>{shockText(result.shocks)}</em> 😳</p>
+                  <p className="etfs-shock-text">Každá z nich je miesto, kde tvoje portfólio potichu stráca peniaze alebo zbytočne riskuje. Dobrá správa: všetky sa dajú opraviť.</p>
                 </div>
               )}
 
               {/* Recommendation */}
-              <div className="mt-6 rounded-[14px] p-[24px_26px] text-left bg-[#1A1B18]"
-                style={{ border: `1px solid ${RECO_BORDER[result.cls]}` }}>
-                <div className="text-[11px] font-extrabold uppercase tracking-[0.14em] mb-2.5" style={{ color: RECO_LABEL[result.cls] }}>
-                  Odporúčanie
-                </div>
-                <p className="text-[14.5px] font-semibold leading-[1.65]" style={{ color: "#F5EDE0" }}
-                  dangerouslySetInnerHTML={{ __html: result.reco }} />
+              <div className={`etfs-reco calc-tone--${tone.card} calc-reveal`} style={st(2, { "--etfs-reco": tone.label })}>
+                <p className="etfs-reco-lbl">Odporúčanie</p>
+                <p className="etfs-reco-text" dangerouslySetInnerHTML={{ __html: result.reco }} />
               </div>
 
               {/* Category bars */}
-              <div className="grid gap-3 mt-6 text-left">
-                {(Object.keys(CATS) as Array<keyof typeof CATS>).map(c => {
+              <div className="calc-panel etfs-panel calc-reveal" style={st(3)}>
+                <h3 className="etfs-h3">Podľa oblastí</h3>
+                {CAT_KEYS.map(c => {
+                  const Icon = CAT_ICON[c];
                   const score = result.catScore[c] ?? 0;
                   const max   = result.catMax[c]   ?? 1;
                   const ratio = score / max;
                   return (
-                    <div key={c} className="bg-[#1A1B18] border border-[rgba(245,237,224,.14)] rounded-xl p-[16px_18px]">
-                      <div className="flex justify-between text-[12.5px] font-extrabold mb-2.5" style={{ color: "#F5EDE0" }}>
-                        <span>{CATS[c]}</span>
-                        <span style={{ color: "#B8B2A4" }}>{score} / {max}</span>
+                    <div key={c} className="etfs-cat">
+                      <div className="etfs-cat-top">
+                        <span className="etfs-cat-name"><Icon className="h-4 w-4" strokeWidth={1.75} aria-hidden />{catLabel(c)}</span>
+                        <span className="etfs-cat-score">{score} / {max}</span>
                       </div>
-                      <div className="h-2 rounded-full overflow-hidden" style={{ background: "rgba(245,237,224,.1)" }}>
-                        <span className="etfs-bar-fill" style={{ width: `${ratio * 100}%`, background: colFor(ratio) }} />
+                      <div className="etfs-cat-bar">
+                        <span className="etfs-cat-fill" style={{ width: `${ratio * 100}%`, background: colFor(ratio) }} />
                       </div>
                     </div>
                   );
@@ -385,71 +421,57 @@ const EtfSemaforCalculator = () => {
               </div>
 
               {/* Tips */}
-              <div className="mt-[34px] text-left">
-                <div className="text-[13px] font-extrabold uppercase tracking-[0.14em] text-center mb-[14px]" style={{ color: "#5BC78A" }}>
-                  Čo s tým 👇
-                </div>
+              <div className="calc-panel etfs-panel calc-reveal" style={st(4)}>
+                <h3 className="etfs-h3">Čo s tým 👇</h3>
                 {result.tips.length > 0
                   ? [...result.tips]
                       .sort((a, b) => Number(b.flag) - Number(a.flag))
                       .map((tip, i) => (
-                        <div key={i} className={`etfs-tip ${tip.flag ? "flag" : ""}`}>
-                          <span className="etfs-tip-icon">{tip.flag ? "🚩" : "💡"}</span>
+                        <div key={i} className={`etfs-tip${tip.flag ? " is-flag" : ""}`}>
+                          <span className="etfs-tip-icon">{tip.flag ? <Flag className="h-4 w-4" strokeWidth={1.75} aria-hidden /> : <Lightbulb className="h-4 w-4" strokeWidth={1.75} aria-hidden />}</span>
                           <span dangerouslySetInnerHTML={{ __html: tip.tip }} />
                         </div>
                       ))
                   : (
-                    <div className="etfs-tip ok">
-                      <span className="etfs-tip-icon">👏</span>
+                    <div className="etfs-tip">
+                      <span className="etfs-tip-icon"><ThumbsUp className="h-4 w-4" strokeWidth={1.75} aria-hidden /></span>
                       <span><b>Plný počet — rešpekt.</b> Buď investuješ naozaj premyslene, alebo si bol na seba mierny. Over si odpovede s chladnou hlavou — a drž systém, ktorý máš.</span>
                     </div>
                   )
                 }
-                <div className="etfs-tip cta">
-                  <span className="etfs-tip-icon">💬</span>
+                <div className="etfs-tip is-cta">
+                  <span className="etfs-tip-icon"><MessageCircle className="h-4 w-4" strokeWidth={1.75} aria-hidden /></span>
                   <span><b>A pri každom bode vyššie platí:</b> nemusíš to lúskať sám. Priprav si svoje portfólio — AUDIT dostaneš zadarmo. 45 minút, online, prejdeme ho číslo po čísle.</span>
                 </div>
               </div>
 
               {/* CTA */}
-              <a
-                href={KONZULTACIA_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-primary inline-block mt-[30px] text-body"
-                data-umami-event="click_konzultacia"
-                data-umami-event-section="etf-semafor"
-              >
-                {BONUSY_CTA_LABEL}
-              </a>
-              <span className="block mt-3 text-[13px] font-semibold" style={{ color: "#B8B2A4" }}>
-                Priprav si svoje portfólio — audit dostaneš zadarmo
-              </span>
-
-              {/* Restart */}
-              <div className="mt-4">
-                <button
-                  type="button" onClick={handleRestart}
-                  className="inline-block rounded-xl border font-extrabold text-[14px] px-[26px] py-[14px] transition-colors cursor-pointer"
-                  style={{ background: "transparent", color: "#B8B2A4", borderColor: "rgba(245,237,224,.14)" }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = "#F5EDE0"; (e.currentTarget as HTMLButtonElement).style.background = "#1A1B18"; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = "#B8B2A4"; (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
+              <div className="etfs-cta calc-reveal" style={st(5)}>
+                <a
+                  href={KONZULTACIA_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-primary etfs-btn"
+                  data-umami-event="click_konzultacia"
+                  data-umami-event-section="etf-semafor"
                 >
-                  ↺ Spustiť znova
+                  {BONUSY_CTA_LABEL} <ArrowRight className="h-4 w-4" strokeWidth={1.75} aria-hidden />
+                </a>
+                <span className="etfs-micro">Priprav si svoje portfólio — audit dostaneš zadarmo</span>
+                <button type="button" onClick={handleRestart} className="etfs-ghost">
+                  <RotateCcw className="h-4 w-4" strokeWidth={1.75} aria-hidden /> Spustiť znova
                 </button>
               </div>
-            </div>
-          </div>
-        </section>
-      )}
+            </section>
+          )}
 
-      {/* ===== FOOTER DISCLAIMER ===== */}
-      <div className="rounded-2xl px-5 py-[40px] md:px-8 border border-border" style={{ background: "#F3EFE9" }}>
-        <p className="max-w-[680px] mx-auto text-[12.5px] md:text-[14px] leading-[1.8] text-center font-semibold" style={{ color: "#5E5A50" }}>
-          ETF semafor je orientačný vzdelávací nástroj. Daňové a investičné dopady závisia od tvojej konkrétnej situácie — preto ich preberáme individuálne. Nejde o investičné ani daňové odporúčanie.
-        </p>
+          {/* ===== FOOTER DISCLAIMER ===== */}
+          <p className="calc-note calc-note--center etfs-foot">
+            ETF semafor je orientačný vzdelávací nástroj. Daňové a investičné dopady závisia od tvojej konkrétnej situácie — preto ich preberáme individuálne. Nejde o investičné ani daňové odporúčanie.
+          </p>
+
+        </div>
       </div>
-
     </div>
   );
 };

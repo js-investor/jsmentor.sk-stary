@@ -1,213 +1,136 @@
-/** Investičná kalkulačka — scoped pod #inv-calc-root, tokeny zjednotené so sitom */
+/**
+ * Investičná kalkulačka — scoped pod #inv-calc-root, jazyk /bonusy 2.0.
+ * Zdieľané plochy (dock, hero XL, štatistiky, panel, graf, poznámka) rieši calc-ui.css;
+ * tu sú len nástrojové doplnky: rozšírené nastavenia, daň, panel poplatkov (ružovkastý tón).
+ */
 
 #inv-calc-root *,
 #inv-calc-root *::before,
-#inv-calc-root *::after {
-  box-sizing: border-box;
+#inv-calc-root *::after { box-sizing: border-box; }
+
+#inv-calc-root { font-family: var(--font-sans); color: var(--wm-brown); width: 100%; max-width: 100%; }
+
+#inv-calc-root #inv-advanced-toggle { cursor: pointer; user-select: none; }
+
+/* Stepper a jednotka nesmú prekryť text vstupu (dock zužuje padding). */
+#inv-calc-root .calc-dock-item .calc-input-wrap--stepper .calc-input { padding-right: 6.25rem; }
+#inv-calc-root .calc-dock-item .calc-input--unit { padding-right: 2.75rem; }
+
+/* ---------------- Rozšírené nastavenia: inflácia, poplatky, daň ---------------- */
+
+#inv-calc-root .inv-adv-grid { display: grid; grid-template-columns: 1fr; gap: 1rem 1.5rem; }
+
+@media (min-width: 640px) {
+  #inv-calc-root .inv-adv-grid { grid-template-columns: 1fr 1fr; }
 }
 
-#inv-calc-root {
-  font-family: var(--font-sans);
-  color: hsl(var(--charcoal));
+@media (min-width: 1024px) {
+  #inv-calc-root .inv-adv-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+#inv-calc-root .inv-adv-grid .calc-field { margin-bottom: 0; }
+#inv-calc-root .inv-adv-grid .calc-stat-sub { font-size: 0.75rem; line-height: 1.45; }
+
+/* Daň: riadok oddelený hairline, nie box v boxe */
+#inv-calc-root .inv-check-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.875rem;
   width: 100%;
-  max-width: 100%;
+  margin-top: 1.125rem;
+  padding: 0.875rem 0 0.125rem;
+  border: none;
+  border-top: 1px solid var(--hair);
+  border-radius: 0;
+  background: transparent;
+  cursor: pointer;
 }
 
-#inv-calc-root .inv-heading-serif {
-  font-family: var(--font-serif);
+#inv-calc-root .inv-check-text { display: flex; flex-direction: column; gap: 0.125rem; min-width: 0; }
+#inv-calc-root .inv-check-title { font-size: 0.9375rem; font-weight: 500; color: var(--wm-brown); }
+#inv-calc-root .inv-check-sub { font-size: 0.8125rem; line-height: 1.45; color: var(--fg3); }
+#inv-calc-root .inv-check-input { flex-shrink: 0; width: 1.25rem; height: 1.25rem; accent-color: var(--wm-green); cursor: pointer; }
+
+/* ---------------- Poplatky a daň: ružovkastá tónovaná karta (náklady) ---------------- */
+
+#inv-calc-root .inv-fees-panel { background: var(--tone-blush); border-color: transparent; }
+
+/* Sumy poplatkov sú náklad, nie zisk — červená */
+#inv-calc-root .inv-cost { color: var(--wm-red); }
+#inv-calc-root .inv-chip-cost { background: var(--tone-blush); border: none; }
+#inv-calc-root .inv-chip-cost strong { color: var(--wm-red); }
+
+#inv-calc-root .inv-row-hint {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--fg3);
+  margin-top: 0.125rem;
 }
 
-#inv-calc-root .inv-input-field {
-  transition: border-color 0.25s ease, background-color 0.25s ease;
-  border: 1px solid hsl(var(--border));
+#inv-calc-root .inv-row-hint:empty { display: none; }
+
+/* Kompaktný súhrn, rozpis na rozkliknutie */
+#inv-calc-root .inv-fees-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
   width: 100%;
-}
-
-#inv-calc-root .inv-input-field:focus {
-  outline: none;
-  border-color: hsl(var(--primary));
-  background-color: hsl(var(--cream));
-}
-
-#inv-calc-root #inv-advanced-toggle {
   cursor: pointer;
   user-select: none;
 }
 
-#inv-calc-root .inv-btn-email,
-#inv-calc-root .inv-btn-pdf {
-  padding: 12px 20px;
-  border-radius: calc(var(--radius) - 4px);
-  font-weight: 500;
-  font-size: 14px;
+#inv-calc-root .inv-fees-toggle:focus-visible { outline: 2px solid var(--wm-green); outline-offset: 4px; border-radius: 0.5rem; }
+
+#inv-calc-root .inv-fees-toggle-main { display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; }
+#inv-calc-root .inv-fees-toggle-main .calc-panel-title { margin: 0; }
+
+#inv-calc-root .inv-fees-toggle-sum {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.375rem 0.5rem;
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  color: var(--fg2);
+}
+
+#inv-calc-root .inv-fees-toggle-sum strong {
+  font-family: var(--font-serif);
+  font-size: 1.625rem;
+  line-height: 1.1;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+#inv-calc-root .inv-fees-toggle-action {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
-  cursor: pointer;
-  font-family: var(--font-sans);
-  transition:
-    background-color 0.2s,
-    border-color 0.2s,
-    opacity 0.2s;
-}
-
-#inv-calc-root .inv-btn-email {
-  background: hsl(var(--cream));
-  border: 1px solid hsl(var(--charcoal));
-  color: hsl(var(--charcoal));
-}
-
-#inv-calc-root .inv-btn-pdf {
-  background: hsl(var(--primary));
-  border: 1px solid hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-}
-
-#inv-calc-root .inv-btn-email:hover {
-  background: hsl(var(--border));
-}
-
-#inv-calc-root .inv-btn-pdf:hover {
-  filter: brightness(0.92);
-}
-
-#inv-calc-root .ml-dropdown {
-  position: relative;
-}
-
-#inv-calc-root .ml-dropdown-menu {
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  background: hsl(var(--card));
-  border: 1px solid hsl(var(--border));
-  border-radius: calc(var(--radius) - 4px);
-  z-index: 1000;
-  min-width: 170px;
-  padding: 4px;
-  display: none;
-}
-
-#inv-calc-root .ml-dropdown-menu.open {
-  display: block;
-}
-
-#inv-calc-root .ml-dropdown-item {
-  padding: 8px 12px;
-  font-size: 15px;
-  cursor: pointer;
-  border-radius: 6px;
-  color: hsl(var(--foreground));
-  font-family: var(--font-sans);
-  white-space: nowrap;
-}
-
-#inv-calc-root .ml-dropdown-item:hover {
-  background: hsl(var(--cream));
-}
-
-#inv-calc-root .ml-dropdown-item.danger {
-  color: hsl(var(--destructive));
-}
-
-#inv-calc-root .ml-dropdown-item.danger:hover {
-  background: hsl(0 93% 94%);
-}
-
-#inv-calc-root .inv-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 2147483647;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-}
-
-#inv-calc-root .inv-modal-overlay.open {
-  display: flex;
-}
-
-#inv-calc-root .inv-modal-box {
-  background: hsl(var(--card));
-  border-radius: var(--radius);
-  width: 100%;
-  max-width: 900px;
-  max-height: 90vh;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-#inv-calc-root .inv-modal-header {
-  padding: 20px 24px;
-  border-bottom: 1px solid hsl(var(--border));
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  gap: 0.5rem;
   flex-shrink: 0;
+  padding: 0.5rem 0.9375rem;
+  border: 1px solid var(--hair-2);
+  border-radius: 9999px;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--wm-brown);
+  transition: background-color 0.2s, border-color 0.2s;
 }
 
-#inv-calc-root .inv-modal-body {
-  overflow-y: auto;
-  padding: 24px;
-  flex: 1;
-}
+#inv-calc-root .inv-fees-toggle:hover .inv-fees-toggle-action { background: rgba(255, 252, 247, 0.6); border-color: rgba(41, 36, 32, 0.35); }
 
-#inv-calc-root .inv-compare-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 15px;
-}
+#inv-calc-root .inv-fees-gross { margin: 1rem 0 0.25rem; padding-top: 1rem; border-top: 1px solid rgba(41, 36, 32, 0.12); color: var(--fg2); }
+#inv-calc-root .inv-fees-gross strong { color: var(--wm-green); font-weight: 600; }
 
-#inv-calc-root .inv-compare-table th {
-  padding: 10px 16px;
-  text-align: left;
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: hsl(var(--muted-foreground));
-  font-weight: 700;
-  border-bottom: 2px solid hsl(var(--border));
-  background: hsl(var(--cream));
-  position: sticky;
-  top: 0;
-}
+/* Hairline na tónovanej ploche potrebuje o niečo viac kontrastu */
+#inv-calc-root .inv-fees-panel .calc-row { border-bottom-color: rgba(41, 36, 32, 0.12); }
+#inv-calc-root .inv-fees-panel .calc-row--total { border-top-color: rgba(41, 36, 32, 0.22); }
 
-#inv-calc-root .inv-compare-table td {
-  padding: 12px 16px;
-  border-bottom: 1px solid hsl(var(--muted));
-  vertical-align: top;
-}
-
-@media (max-width: 640px) {
-  #inv-calc-root .inv-btn-email,
-  #inv-calc-root .inv-btn-pdf {
-    flex: 1;
-    min-width: 0;
-  }
-
-  #inv-calc-root .inv-modal-overlay.open {
-    padding: 72px 0 0;
-    align-items: stretch;
-  }
-
-  #inv-calc-root .inv-modal-box {
-    max-width: none;
-    width: 100%;
-    height: calc(100dvh - 72px);
-    max-height: calc(100dvh - 72px);
-    border-radius: 0;
-  }
-
-  #inv-calc-root .inv-modal-header {
-    padding: 14px 16px;
-  }
-
-  #inv-calc-root .inv-modal-body {
-    padding: 16px;
-  }
+@media (max-width: 560px) {
+  #inv-calc-root .inv-fees-toggle { flex-direction: column; align-items: flex-start; }
 }

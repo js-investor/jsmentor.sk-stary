@@ -71,6 +71,9 @@ import InvesticnyBytCalculator from "./components/calculators/investicny-byt/Inv
 import EtfSemaforCalculator from "./components/calculators/etf-semafor/EtfSemaforCalculator.tsx";
 import PoplatkovyRontgenCalculator from "./components/calculators/poplatkovy-rontgen/PoplatkovyRontgenCalculator.tsx";
 import BytovySemaforCalculator from "./components/calculators/bytovy-semafor/BytovySemaforCalculator.tsx";
+import FinancnyCheckup from "./components/checkup/FinancnyCheckup.tsx";
+import SkoringBytovCalculator from "./components/calculators/skoring-bytov/SkoringBytovCalculator.tsx";
+import VynosnostBytuCalculator from "./components/calculators/vynosnost-bytu/VynosnostBytuCalculator.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import type { ReactNode } from "react";
 
@@ -84,6 +87,9 @@ const calculatorBySlug: Record<string, ReactNode> = {
   "etf-semafor":         <EtfSemaforCalculator />,
   "poplatkovy-rontgen":  <PoplatkovyRontgenCalculator />,
   "bytovy-semafor":      <BytovySemaforCalculator />,
+  "financny-checkup":    <FinancnyCheckup />,
+  "skoring-bytov":       <SkoringBytovCalculator />,
+  "vynosnost-bytu":      <VynosnostBytuCalculator />,
 };
 
 const App = () => (

@@ -1,17 +1,9 @@
-import { useLayoutEffect } from "react";
+import { useLayoutEffect, type CSSProperties } from "react";
 import "../shared/calculator-toolbar.css";
 import "../shared/calc-ui.css";
 import "./podla-prijmu.css";
 import { initCalcEcho, initCalcHeroPulse, initCalcSliders } from "../shared/calcUi";
 import { mountPodlaPrijmuCalculator } from "./podla-prijmuMount";
-
-const CompareIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
-    <line x1="18" y1="20" x2="18" y2="10" />
-    <line x1="12" y1="20" x2="12" y2="4" />
-    <line x1="6" y1="20" x2="6" y2="14" />
-  </svg>
-);
 
 /** −/+ stepper pre číselný vstup; zmenu hodnoty vždy ohlási input eventom pre mount. */
 const Stepper = ({ inputId, step, unit }: { inputId: string; step: number; unit: string }) => {
@@ -31,6 +23,9 @@ const Stepper = ({ inputId, step, unit }: { inputId: string; step: number; unit:
   );
 };
 
+/** Poradie vstupnej animácie sekcií (.calc-reveal). */
+const reveal = (i: number) => ({ "--i": i }) as CSSProperties;
+
 const PodlaPrijmuCalculator = () => {
   useLayoutEffect(() => {
     const unmountCalc = mountPodlaPrijmuCalculator();
@@ -47,64 +42,21 @@ const PodlaPrijmuCalculator = () => {
 
   return (
     <div id="dti-calc-root" className="calc-ui w-full font-sans text-foreground">
-      <div className="calc-variant-toolbar ml-no-export rounded-2xl border border-border/60 mx-[-0.125rem] sm:mx-0">
-        <div className="calc-variant-toolbar-variants">
-          <div id="dti-variant-tabs" className="calc-variant-tabs" />
-          <button
-            type="button"
-            id="dti-add-variant"
-            className="ml-add-variant"
-            title="Pridať variant"
-            aria-label="Pridať variant"
-            onClick={() => window.dtiAddVariant?.()}
-          >
-            +
-          </button>
-        </div>
-        <button type="button" id="dti-btn-compare" className="calc-btn-compare" onClick={() => window.dtiOpenComparison?.()}>
-          <CompareIcon />
-          Porovnať
-        </button>
-      </div>
-
       <div className="calc-body-shell">
         <div className="calc-page">
-          <header className="calc-header" style={{ marginBottom: "1.5rem" }}>
+          <header className="calc-header calc-reveal" style={reveal(0)}>
             <span className="calc-eyebrow">Úverová kalkulačka</span>
+            <h1 className="calc-title">
+              Koľko ti banka <em>požičia</em>?
+            </h1>
+            <p className="calc-subtitle">
+              Zadaj príjem, záväzky a&nbsp;parametre hypotéky. Uvidíš maximálnu výšku úveru podľa limitov NBS
+              a&nbsp;koľko ti po splátke ostane na život.
+            </p>
           </header>
 
-          {/* Výsledok — hviezda stránky */}
-          <section className="calc-hero-xl" aria-label="Výsledok">
-            <p className="calc-hero-xl-label">Banka ti požičia maximálne</p>
-            <p className="calc-hero-xl-value" id="dti-max-mortgage">0 €</p>
-            <div className="calc-hero-xl-chips">
-              <span className="calc-verdict-chip">
-                Mesačná splátka&nbsp;<strong id="dti-max-payment">0 €</strong>
-              </span>
-              <span className="calc-verdict-chip calc-verdict-chip--muted">
-                <span id="dti-limit-reason" />
-              </span>
-            </div>
-          </section>
-
-          {/* Inline štatistiky */}
-          <div className="calc-stats-inline" role="group" aria-label="Súhrn">
-            <div>
-              <p className="calc-stat-label">Povinná rezerva</p>
-              <p className="calc-stat-value" id="dti-reserve">0 €</p>
-            </div>
-            <div>
-              <p className="calc-stat-label">Limit DTI</p>
-              <p className="calc-stat-value">8×</p>
-            </div>
-            <div>
-              <p className="calc-stat-label">Limit DSTI</p>
-              <p className="calc-stat-value">60 %</p>
-            </div>
-          </div>
-
           {/* Vstupný dock */}
-          <section className="calc-dock" aria-label="Vstupy kalkulačky">
+          <section className="calc-dock calc-reveal" aria-label="Vstupy kalkulačky" style={reveal(1)}>
             <div className="dti-dock-grid">
               <div className="calc-dock-item dti-dock-group" aria-label="Tvoje financie">
                 <p className="dti-dock-heading">Tvoje financie</p>
@@ -200,8 +152,38 @@ const PodlaPrijmuCalculator = () => {
             </div>
           </section>
 
+          {/* Výsledok — hviezda stránky */}
+          <section className="calc-hero-xl calc-reveal" aria-label="Výsledok" style={reveal(2)}>
+            <p className="calc-hero-xl-label">Banka ti požičia maximálne</p>
+            <p className="calc-hero-xl-value" id="dti-max-mortgage">0 €</p>
+            <div className="calc-hero-xl-chips">
+              <span className="calc-verdict-chip">
+                Mesačná splátka&nbsp;<strong id="dti-max-payment">0 €</strong>
+              </span>
+              <span className="calc-verdict-chip calc-verdict-chip--muted">
+                <span id="dti-limit-reason" />
+              </span>
+            </div>
+          </section>
+
+          {/* Inline štatistiky */}
+          <div className="calc-stats-inline calc-reveal" role="group" aria-label="Súhrn" style={reveal(3)}>
+            <div>
+              <p className="calc-stat-label">Povinná rezerva</p>
+              <p className="calc-stat-value" id="dti-reserve">0 €</p>
+            </div>
+            <div>
+              <p className="calc-stat-label">Limit DTI</p>
+              <p className="calc-stat-value">8×</p>
+            </div>
+            <div>
+              <p className="calc-stat-label">Limit DSTI</p>
+              <p className="calc-stat-value">60 %</p>
+            </div>
+          </div>
+
           {/* Ukazovatele DTI a DSTI */}
-          <section className="calc-panel mt-5 md:mt-6" aria-label="Ukazovatele DTI a DSTI">
+          <section className="calc-panel calc-reveal mt-5 md:mt-6" aria-label="Ukazovatele DTI a DSTI" style={reveal(4)}>
             <div className="calc-chart-head">
               <h2 className="calc-panel-title">Ako si na tom s limitmi</h2>
             </div>
@@ -228,20 +210,20 @@ const PodlaPrijmuCalculator = () => {
           </section>
 
           {/* Rozloženie príjmu */}
-          <section className="calc-panel mt-5 md:mt-6" aria-label="Rozloženie príjmu">
+          <section className="calc-panel calc-reveal mt-5 md:mt-6" aria-label="Rozloženie príjmu" style={reveal(5)}>
             <div className="calc-chart-head">
               <h2 className="calc-panel-title">Rozloženie tvojho príjmu</h2>
               <div className="calc-legend">
                 <span className="calc-legend-item">
-                  <span className="calc-legend-dot" style={{ background: "#C1533C" }} aria-hidden />
+                  <span className="calc-legend-dot" style={{ background: "#ab4132" }} aria-hidden />
                   Dlhy
                 </span>
                 <span className="calc-legend-item">
-                  <span className="calc-legend-dot" style={{ background: "#A8956E" }} aria-hidden />
+                  <span className="calc-legend-dot" style={{ background: "#a99d7e" }} aria-hidden />
                   Rezerva
                 </span>
                 <span className="calc-legend-item">
-                  <span className="calc-legend-dot" style={{ background: "#29614A" }} aria-hidden />
+                  <span className="calc-legend-dot" style={{ background: "#2a6647" }} aria-hidden />
                   Voľné
                 </span>
               </div>
@@ -257,23 +239,6 @@ const PodlaPrijmuCalculator = () => {
             Kalkulačka je orientačná — vychádza z limitov NBS (DTI 8-násobok ročného príjmu,
             DSTI 60 % s povinnou rezervou 40 %). Konečné posúdenie závisí od konkrétnej banky.
           </p>
-        </div>
-      </div>
-
-      <div id="dti-compare-modal" className="ml-modal-overlay">
-        <div className="ml-modal-box" role="dialog" aria-modal="true" aria-labelledby="dti-modal-title">
-          <div className="ml-modal-header">
-            <div>
-              <h3 id="dti-modal-title" className="text-xl dti-heading-serif text-foreground m-0 font-normal">Porovnanie variantov</h3>
-              <p className="text-[15px] text-muted-foreground mt-1 mb-0">Prehľad vstupov a výsledkov DTI / DSTI.</p>
-            </div>
-            <button type="button" className="mylife-btn-email shrink-0" onClick={() => window.dtiCloseComparison?.()}>
-              Zavrieť
-            </button>
-          </div>
-          <div className="ml-modal-body">
-            <table className="ml-compare-table" id="dti-compare-table" />
-          </div>
         </div>
       </div>
     </div>

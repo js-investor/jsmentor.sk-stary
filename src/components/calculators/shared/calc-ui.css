@@ -788,6 +788,11 @@
   isolation: isolate;
   text-align: center;
   padding: 0.5rem 0 0.75rem;
+  margin-top: 2.25rem;
+}
+
+@media (min-width: 768px) {
+  .calc-hero-xl { margin-top: 3rem; }
 }
 
 /* Svetelná aura za obrím číslom (svetlá verzia, bez filtra) */
@@ -802,8 +807,8 @@
   z-index: -1;
   background: radial-gradient(
     50% 55% at 50% 50%,
-    rgba(41, 97, 74, 0.16) 0%,
-    rgba(41, 97, 74, 0.08) 45%,
+    rgba(169, 157, 126, 0.22) 0%,
+    rgba(169, 157, 126, 0.08) 45%,
     transparent 75%
   );
   pointer-events: none;
@@ -828,11 +833,8 @@
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   margin: 0.5rem 0 0;
-  background: linear-gradient(180deg, #14503c 0%, hsl(var(--primary)) 55%, #0a5a47 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: hsl(var(--primary)); /* fallback */
+  letter-spacing: -0.02em;
+  color: hsl(var(--foreground));
   display: inline-block;
   transform-origin: center bottom;
 }
@@ -877,11 +879,11 @@
   border: 1px solid hsl(var(--border) / 0.7);
   border-radius: 1.25rem;
   padding: 1.25rem 1.25rem 0.875rem;
-  margin-top: 1.75rem;
+  margin-top: 0;
 }
 
 @media (min-width: 768px) {
-  .calc-dock { padding: 1.5rem 1.75rem 1rem; margin-top: 2.25rem; }
+  .calc-dock { padding: 1.5rem 1.75rem 1rem; }
 }
 
 .calc-dock-grid {
@@ -962,3 +964,170 @@
 }
 
 .calc-note--center { text-align: center; }
+
+
+/* ---------------------------------------------------------------------------
+ * Brand jazyk WealthMap / JS Mentor: krémové plátno, ivory karty, hlboká hnedá
+ * namiesto čiernej (text aj tmavé panely), lesná zelená ako primárna, taupe ako
+ * sekundárna séria, červená pre náklady. Zlatá výhradne na tmavej hnedej.
+ * ------------------------------------------------------------------------- */
+.calc-ui {
+  --font-serif: 'Calvino', 'Recoleta', serif;
+  --font-sans: 'Matter', 'Gilroy', sans-serif;
+  --wm-brown: #292420;        /* text, tmavé panely */
+  --wm-brown-2: #3c3733;      /* sekundárny tmavý povrch */
+  --wm-brown-text: #2a251f;
+  --wm-cream: #f3eee8;
+  --wm-ivory: #fffcf7;
+  --wm-beige: #f3e9dd;
+  --wm-taupe: #a99d7e;
+  --wm-taupe-soft: #ebe4d3;
+  --wm-green: #2a6647;
+  --wm-green-dark: #0b3d2e;
+  --wm-green-soft: #2a6647;      /* zelená plocha pre odznaky (limetka odstránená) */
+  --wm-red: #ab4132;
+  --wm-red-soft: #f3e5d8;
+  --wm-gold: #d9b15c;         /* iba na tmavej hnedej */
+  --wm-on-dark: #f3e9dd;
+  --wm-on-dark-muted: rgba(243, 233, 221, 0.76);
+  --foreground: 27 13% 14%;   /* hnedá namiesto čiernej v celom calc-ui */
+  --muted-foreground: 27 10% 32%;
+  color: hsl(var(--foreground));
+}
+.calc-verdict-chip strong { color: hsl(var(--foreground)); }
+.calc-ui em { font-style: italic; }
+
+/* ===========================================================================
+ * Jazyk /bonusy 2.0 — „živý minimalizmus“ (zdieľané pre všetky nástroje)
+ * Matter na UI, Calvino Bold v nadpisoch a číslach, ivory karty s hairline
+ * na krémovom plátne, tónované plochy (šalvia/piesok/kameň/ružovkastá/les),
+ * jeden plochý hnedý panel so zlatou, jemný závoj za hlavičkou, tiché animácie.
+ * Bez tieňov, bez gradientových textúr, bez zlatej na svetlom.
+ * ======================================================================== */
+.calc-ui {
+  --primary: 149 42% 28%;            /* #2a6647 lesná zelená */
+  --hair: rgba(41, 36, 32, 0.1);
+  --hair-2: rgba(41, 36, 32, 0.18);
+  --fg2: #4a4239;
+  --fg3: #6b625a;
+  --tone-sage: #2a6647;            /* zelená plocha (svetlá D odstránená) */
+  --tone-lime: #f0e3cf;            /* alias piesku, limetka odstránená */
+  --tone-sand: #f0e3cf;
+  --tone-stone: #e9e4dc;
+  --tone-blush: #f3e5d8;
+  --tone-forest: #0b3d2e;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
+  isolation: isolate;
+}
+.calc-ui::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 32rem; z-index: -1; pointer-events: none; border-radius: inherit; background: radial-gradient(46rem 20rem at 40% 0%, rgba(42,102,71, 0.11), transparent 70%), radial-gradient(34rem 18rem at 84% 12%, rgba(217, 177, 92, 0.13), transparent 70%); }
+.calc-ui .calc-body-shell { background: var(--wm-cream); border: none; border-radius: 1.75rem; padding: 1.5rem 1.25rem 3rem; }
+@media (min-width: 640px) { .calc-ui .calc-body-shell { padding: 1.75rem 1.75rem 3.5rem; } }
+
+/* pohyb */
+@keyframes calc-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.calc-ui .calc-reveal { animation: calc-in 0.55s var(--ease-out) both; animation-delay: calc(var(--i, 0) * 60ms); }
+@media (prefers-reduced-motion: reduce) { .calc-ui .calc-reveal { animation: none !important; } }
+
+/* hlavička */
+.calc-ui .calc-header { margin-bottom: 2rem; }
+.calc-ui .calc-eyebrow { border: none; background: var(--wm-green); color: #f3e9dd; font-weight: 600; letter-spacing: 0.04em; padding: 0.4375rem 0.875rem; }
+.calc-ui .calc-title { font-weight: 700; letter-spacing: -0.02em; color: var(--wm-brown); font-size: clamp(2.125rem, 4.4vw, 3rem); line-height: 1.06; text-wrap: balance; }
+.calc-ui .calc-title em { font-style: italic; color: var(--wm-green); }
+.calc-ui .calc-subtitle { color: var(--fg2); text-wrap: pretty; }
+
+/* panely a karty */
+.calc-ui .calc-panel, .calc-ui .calc-dock { background: var(--wm-ivory); border: 1px solid var(--hair); border-radius: 1.5rem; }
+.calc-ui .calc-panel-title { font-weight: 700; color: var(--wm-brown); letter-spacing: -0.01em; }
+.calc-ui .calc-panel-sub { color: var(--fg2); }
+.calc-ui .calc-label { color: var(--wm-brown); font-weight: 500; }
+.calc-ui .calc-label-hint { color: var(--fg3); }
+.calc-ui .calc-label-value { color: var(--wm-green); }
+.calc-ui .calc-collapse-toggle { border-top-color: var(--hair); color: var(--wm-brown); font-weight: 500; }
+.calc-ui .calc-collapse-chevron { color: var(--fg3); }
+.calc-ui .calc-rows-group { color: var(--fg3); font-weight: 500; letter-spacing: 0.04em; border-bottom-color: var(--hair); }
+.calc-ui .calc-row { border-bottom-color: var(--hair); color: var(--wm-brown); }
+.calc-ui .calc-row--total { border-top-color: var(--hair-2); }
+.calc-ui .calc-note { border: none; background: var(--wm-taupe-soft); color: #4a4239; border-radius: 1.25rem; }
+
+/* vstupy */
+.calc-ui .calc-input { border: 1px solid var(--hair-2); border-radius: 0.875rem; font-weight: 500; color: var(--wm-brown); background: #fff; }
+.calc-ui .calc-input:hover { border-color: rgba(41, 36, 32, 0.35); }
+.calc-ui .calc-input:focus, .calc-ui .calc-input:focus-visible { border-color: var(--wm-green); background: #fff; }
+.calc-ui .calc-input-inline { border: 1px solid var(--hair-2); border-radius: 9999px; }
+.calc-ui .calc-input-inline input { font-weight: 600; color: var(--wm-brown); }
+.calc-ui .calc-stepper button { border-radius: 9999px; background: #fff; border-color: var(--hair-2); color: var(--wm-brown); }
+.calc-ui .calc-stepper button:hover { background: var(--wm-taupe-soft); border-color: rgba(41, 36, 32, 0.35); color: var(--wm-brown); }
+.calc-ui .calc-segment { background: var(--wm-taupe-soft); border: none; border-radius: 9999px; padding: 0.1875rem; }
+.calc-ui .calc-segment > button, .calc-ui .calc-segment > label { border-radius: 9999px; font-weight: 500; color: var(--wm-brown); }
+.calc-ui .calc-segment > button.active, .calc-ui .calc-segment > button[aria-pressed="true"], .calc-ui .calc-segment > label.active { background: var(--wm-brown); border-color: transparent; color: var(--wm-on-dark); }
+.calc-ui .calc-slider-scale { color: var(--fg3); }
+
+/* hero: jeden plochý hnedý panel so zlatou */
+.calc-ui .calc-hero { background: var(--wm-brown); color: var(--wm-on-dark); border-radius: 1.5rem; padding: 1.75rem 1.5rem; }
+@media (min-width: 768px) { .calc-ui .calc-hero { padding: 2rem 2rem 1.875rem; } }
+.calc-ui .calc-hero-noise, .calc-ui .calc-hero-pattern, .calc-ui .calc-hero-wrap::before, .calc-ui .calc-hero--glow::after { display: none; }
+.calc-ui .calc-hero-label { color: var(--wm-gold); font-weight: 600; letter-spacing: 0.04em; }
+.calc-ui .calc-hero-value, .calc-ui .calc-hero--glow .calc-hero-value { background: none; -webkit-background-clip: initial; background-clip: initial; -webkit-text-fill-color: currentColor; color: #f3e9dd; font-weight: 700; letter-spacing: -0.02em; }
+.calc-ui .calc-hero-sub { color: rgba(243, 233, 221, 0.88); }
+.calc-ui .calc-hero-chip { border-color: rgba(243, 233, 221, 0.3); background: rgba(243, 233, 221, 0.22); color: #f3e9dd; font-weight: 500; }
+.calc-ui .calc-hero-chip strong { color: var(--wm-gold); }
+
+/* hero XL: obrie číslo na svetlom */
+.calc-ui .calc-hero-xl::before { background: radial-gradient(50% 55% at 50% 50%, rgba(42, 102, 71, 0.14) 0%, rgba(217, 177, 92, 0.06) 45%, transparent 75%); }
+.calc-ui .calc-hero-xl-label { color: var(--fg2); font-weight: 400; }
+.calc-ui .calc-hero-xl-value { color: var(--wm-brown); font-weight: 700; }
+.calc-ui .calc-verdict-chip { border: none; background: var(--wm-taupe-soft); color: var(--wm-brown); font-weight: 500; }
+.calc-ui .calc-verdict-chip strong { color: var(--wm-green); }
+
+/* štatistiky */
+.calc-ui .calc-stat { background: var(--wm-ivory); border: 1px solid var(--hair); border-radius: 1.25rem; }
+.calc-ui .calc-stat--tint { background: var(--tone-sage); border-color: transparent; color: #f3e9dd; }
+.calc-ui .calc-stat--tint .calc-stat-label, .calc-ui .calc-stat--tint .calc-stat-sub { color: rgba(243, 233, 221, 0.88); }
+.calc-ui .calc-stat--tint .calc-stat-value { color: #f3e9dd; }
+.calc-ui .calc-stat--sand { background: var(--tone-sand); border-color: transparent; }
+.calc-ui .calc-stat--stone { background: var(--tone-stone); border-color: transparent; }
+.calc-ui .calc-stat--blush { background: var(--tone-blush); border-color: transparent; }
+.calc-ui .calc-stat-label { color: var(--fg3); }
+.calc-ui .calc-stat-value { color: var(--wm-brown); font-weight: 700; }
+.calc-ui .calc-stat-value.is-negative { color: var(--wm-red); }
+.calc-ui .calc-stat-value.is-positive { color: var(--wm-green); }
+.calc-ui .calc-stat-sub { color: var(--fg3); }
+.calc-ui .calc-statbar { background: var(--wm-ivory); border: 1px solid var(--hair); border-radius: 1.25rem; }
+.calc-ui .calc-statbar > div + div { border-left-color: var(--hair); }
+.calc-ui .calc-stats-inline > div + div { border-left-color: var(--hair-2); }
+.calc-ui .calc-legend { color: var(--fg3); }
+.calc-ui .calc-chart-head .calc-panel-title { font-size: 1.25rem; }
+
+/* tónované plochy (pre nástroje, ktoré chcú kartu s tónom) */
+.calc-ui .calc-tone--sage { background: var(--tone-sage); border-color: transparent; color: #f3e9dd; }
+.calc-ui .calc-tone--sage .calc-panel-title, .calc-ui .calc-tone--sage h2, .calc-ui .calc-tone--sage h3 { color: #f3e9dd; }
+.calc-ui .calc-tone--sage .calc-panel-sub, .calc-ui .calc-tone--sage .calc-stat-label, .calc-ui .calc-tone--sage .calc-stat-sub { color: rgba(243, 233, 221, 0.88); }
+.calc-ui .calc-tone--sage .calc-stat-value { color: #f3e9dd; }
+.calc-ui .calc-tone--sand { background: var(--tone-sand); border-color: transparent; }
+.calc-ui .calc-tone--lime { background: var(--tone-lime); border-color: transparent; }
+.calc-ui .calc-tone--green { background: var(--wm-green); border-color: transparent; color: #f3e9dd; }
+.calc-ui .calc-tone--stone { background: var(--tone-stone); border-color: transparent; }
+.calc-ui .calc-tone--blush { background: var(--tone-blush); border-color: transparent; }
+.calc-ui .calc-tone--forest { background: var(--tone-forest); border-color: transparent; color: #f3e9dd; }
+.calc-ui .calc-tone--forest .calc-stat-label, .calc-ui .calc-tone--forest .calc-stat-sub { color: rgba(243, 233, 221, 0.76); }
+.calc-ui .calc-tone--forest .calc-stat-value { color: #f3e9dd; }
+.calc-ui .calc-tone--brown { background: var(--wm-brown); border-color: transparent; color: #f3e9dd; }
+.calc-ui .calc-tone--brown .calc-stat-label, .calc-ui .calc-tone--brown .calc-stat-sub { color: rgba(243, 233, 221, 0.76); }
+.calc-ui .calc-tone--brown .calc-stat-value { color: var(--wm-gold); }
+
+/* pilulkové prepínače pohľadov (vzor Výnosnosť bytu) */
+.calc-ui .calc-pills { display: flex; flex-wrap: wrap; gap: 0.375rem; }
+.calc-ui .calc-pill { padding: 0.5rem 0.9375rem; border: 1px solid var(--hair-2); border-radius: 9999px; background: transparent; font-family: var(--font-sans); font-size: 0.8125rem; font-weight: 500; color: var(--wm-brown); cursor: pointer; transition: background 0.2s, border-color 0.2s, color 0.2s; }
+.calc-ui .calc-pill:hover { background: var(--wm-taupe-soft); }
+.calc-ui .calc-pill.is-active, .calc-ui .calc-pill[aria-selected="true"], .calc-ui .calc-pill[aria-pressed="true"] { background: var(--wm-green-dark); border-color: var(--wm-green-dark); color: #f3e9dd; }
+
+/* primárne tlačidlo v nástrojoch */
+.calc-ui .btn-primary, .calc-ui .calc-btn { border-radius: 9999px; background: var(--wm-green); color: #fff; font-family: var(--font-sans); font-weight: 600; transition: background 0.22s, transform 0.22s var(--ease-out); }
+.calc-ui .btn-primary:hover, .calc-ui .calc-btn:hover { background: #225a3e; }
+.calc-ui .btn-primary:active, .calc-ui .calc-btn:active { transform: scale(0.98); }
+/* dock: stepper a jednotka nesmú prekrývať hodnotu (špecifickosť voči .calc-dock-item .calc-input) */
+.calc-ui .calc-dock-item .calc-input-wrap--stepper .calc-input { padding-right: 6.25rem; }
+.calc-ui .calc-dock-item .calc-input--unit { padding-right: 2.75rem; }
+/* mobil: dvojstĺpcový riadok so steppermi sa zúži pod 480px na jeden stĺpec (hodnota by kolidovala s ± tlačidlami) */
+@media (max-width: 480px) { .calc-ui .calc-fieldrow:has(.calc-input-wrap--stepper) { grid-template-columns: 1fr; } }

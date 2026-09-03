@@ -1,83 +1,65 @@
-/** Úverová kalkulačka (DTI & DSTI) — scoped pod #dti-calc-root, tokeny zjednotené so sitom */
+/**
+ * Úverová kalkulačka (DTI & DSTI) — scoped pod #dti-calc-root, jazyk /bonusy 2.0.
+ * Zdieľané plochy (dock, hero XL, štatistiky, panel, poznámka) rieši calc-ui.css;
+ * tu sú len nástrojové doplnky: tri skupiny v docku, prepínače, ciferníky, pás príjmu.
+ */
 
 #dti-calc-root *,
 #dti-calc-root *::before,
-#dti-calc-root *::after {
-  box-sizing: border-box;
-}
+#dti-calc-root *::after { box-sizing: border-box; }
 
-#dti-calc-root {
-  font-family: var(--font-sans);
-  color: hsl(var(--foreground));
-  width: 100%;
-  max-width: 100%;
-}
+#dti-calc-root { font-family: var(--font-sans); color: var(--wm-brown); width: 100%; max-width: 100%; }
 
-#dti-calc-root .dti-heading-serif {
-  font-family: var(--font-serif);
-}
+/* Mount prepína triedu .hidden (príjem partnera) */
+#dti-calc-root .hidden { display: none !important; }
 
 /* ------------------------- Hero chip (dôvod limitu) ----------------------- */
 
-#dti-calc-root .calc-verdict-chip--muted {
-  border-color: hsl(var(--border));
-  background: hsl(var(--cream) / 0.7);
-  color: hsl(var(--muted-foreground));
-}
+#dti-calc-root .calc-verdict-chip--muted { background: var(--tone-stone); color: var(--fg2); font-weight: 400; }
 
 /* Skry prázdny pill, kým mount nedoplní text dôvodu */
-#dti-calc-root .calc-verdict-chip--muted:has(> span:empty) {
-  display: none;
-}
+#dti-calc-root .calc-verdict-chip--muted:has(> span:empty) { display: none; }
 
-/* ------------------------- Dock — skupiny vstupov ------------------------- */
+/* ------------------------- Dock — tri skupiny vstupov ------------------------- */
 
-#dti-calc-root .calc-dock {
-  padding-bottom: 1.25rem;
-}
+#dti-calc-root .calc-dock { padding-bottom: 1.25rem; }
 
 @media (min-width: 768px) {
-  #dti-calc-root .calc-dock {
-    padding-bottom: 1.5rem;
-  }
+  #dti-calc-root .calc-dock { padding-bottom: 1.5rem; }
 }
 
-#dti-calc-root .dti-dock-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.375rem;
-}
+#dti-calc-root .dti-dock-grid { display: grid; grid-template-columns: 1fr; gap: 1.375rem; }
 
 @media (min-width: 1024px) {
-  #dti-calc-root .dti-dock-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-  }
+  #dti-calc-root .dti-dock-grid { grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
 }
 
 /* Deliace čiary medzi skupinami: hore na mobile, vľavo rieši calc-ui (lg). */
-#dti-calc-root .dti-dock-group + .dti-dock-group {
-  border-top: 1px solid hsl(var(--border) / 0.6);
-  padding-top: 1.125rem;
-}
+#dti-calc-root .dti-dock-group + .dti-dock-group { border-top: 1px solid var(--hair); padding-top: 1.125rem; }
 
 @media (min-width: 1024px) {
-  #dti-calc-root .dti-dock-group + .dti-dock-group {
-    border-top: none;
-    padding-top: 0;
-  }
+  #dti-calc-root .dti-dock-group + .dti-dock-group { border-top: none; padding-top: 0; }
 }
 
 #dti-calc-root .dti-dock-heading {
   font-family: var(--font-sans);
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 500;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: hsl(var(--primary));
+  color: var(--wm-green);
   margin: 0 0 0.875rem;
 }
 
-/* --------------------------- Checkbox riadky ------------------------------ */
+#dti-calc-root .dti-dock-group .calc-field { margin-bottom: 1rem; }
+#dti-calc-root .dti-dock-group .calc-field:last-child { margin-bottom: 0; }
+#dti-calc-root .dti-dock-group .calc-fieldrow { margin-bottom: 1rem; }
+
+/* Stepper a jednotka nesmú prekryť text vstupu (dock zužuje padding). */
+#dti-calc-root .calc-dock-item .calc-input-wrap--stepper .calc-input { padding-right: 6.25rem; }
+#dti-calc-root .calc-dock-item .calc-input--unit { padding-right: 2.75rem; }
+
+/* --------------------------- Prepínače (riadky s hairline) ------------------------ */
 
 #dti-calc-root .dti-check-row {
   display: flex;
@@ -85,53 +67,26 @@
   justify-content: space-between;
   gap: 0.875rem;
   width: 100%;
-  padding: 0.75rem 0.875rem;
-  border: 1px solid hsl(var(--border) / 0.7);
-  border-radius: 0.75rem;
-  background: hsl(var(--cream) / 0.6);
-  cursor: pointer;
-  transition: border-color 0.2s ease, background-color 0.2s ease;
-}
-
-#dti-calc-root .dti-check-row:hover {
-  border-color: hsl(var(--primary) / 0.35);
-}
-
-#dti-calc-root .dti-check-text {
-  display: flex;
-  flex-direction: column;
-  gap: 0.125rem;
-  min-width: 0;
-}
-
-#dti-calc-root .dti-check-title {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: hsl(var(--foreground));
-}
-
-#dti-calc-root .dti-check-sub {
-  font-size: 0.8125rem;
-  line-height: 1.4;
-  color: hsl(var(--muted-foreground));
-}
-
-#dti-calc-root .dti-check-input {
-  flex-shrink: 0;
-  width: 1.25rem;
-  height: 1.25rem;
-  accent-color: hsl(var(--primary));
+  padding: 0.75rem 0 0;
+  border: none;
+  border-top: 1px solid var(--hair);
+  border-radius: 0;
+  background: transparent;
   cursor: pointer;
 }
 
-/* ------------------------------ Gauge karty ------------------------------- */
+#dti-calc-root .dti-check-text { display: flex; flex-direction: column; gap: 0.125rem; min-width: 0; }
+#dti-calc-root .dti-check-title { font-size: 0.9375rem; font-weight: 500; color: var(--wm-brown); }
+#dti-calc-root .dti-check-sub { font-size: 0.8125rem; line-height: 1.45; color: var(--fg3); }
+#dti-calc-root .dti-check-input { flex-shrink: 0; width: 1.25rem; height: 1.25rem; accent-color: var(--wm-green); cursor: pointer; }
 
-#dti-calc-root .dti-gauges {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
-  gap: 0.75rem;
-  max-width: 44rem;
-  margin: 0 auto;
+/* ------------------------------ Ciferníky ------------------------------- */
+/* Dva stĺpce oddelené hairline, bez boxov v boxe. */
+
+#dti-calc-root .dti-gauges { display: grid; grid-template-columns: 1fr; max-width: 44rem; margin: 0 auto; }
+
+@media (min-width: 640px) {
+  #dti-calc-root .dti-gauges { grid-template-columns: 1fr 1fr; }
 }
 
 #dti-calc-root .dti-gauge {
@@ -140,24 +95,21 @@
   align-items: center;
   text-align: center;
   padding: 1rem 0.875rem;
-  border: 1px solid hsl(var(--border) / 0.7);
-  border-radius: 0.875rem;
-  background: hsl(var(--cream) / 0.5);
+  border: none;
+  border-radius: 0;
+  background: transparent;
 }
 
-#dti-calc-root .dti-gauge-sub {
-  margin: 0.125rem 0 0.75rem;
-  font-size: 0.8125rem;
-  line-height: 1.4;
-  color: hsl(var(--muted-foreground));
+#dti-calc-root .dti-gauge + .dti-gauge { border-top: 1px solid var(--hair); }
+
+@media (min-width: 640px) {
+  #dti-calc-root .dti-gauge + .dti-gauge { border-top: none; border-left: 1px solid var(--hair); }
 }
 
-#dti-calc-root .dti-gauge-canvas {
-  position: relative;
-  width: 100%;
-  max-width: 12rem;
-  height: 6rem;
-}
+#dti-calc-root .dti-gauge .calc-stat-label { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--fg3); }
+#dti-calc-root .dti-gauge-sub { margin: 0.125rem 0 0.75rem; font-size: 0.8125rem; line-height: 1.4; color: var(--fg3); }
+
+#dti-calc-root .dti-gauge-canvas { position: relative; width: 100%; max-width: 12rem; height: 6rem; }
 
 #dti-calc-root .dti-gauge-value {
   position: absolute;
@@ -166,38 +118,20 @@
   align-items: flex-end;
   justify-content: center;
   font-family: var(--font-serif);
-  font-size: 1.5rem;
+  font-size: 1.625rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  color: hsl(var(--foreground));
+  color: var(--wm-brown);
   pointer-events: none;
 }
 
-#dti-calc-root .dti-gauge-status {
-  margin: 0.75rem 0 0;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: hsl(var(--muted-foreground));
-}
+#dti-calc-root .dti-gauge-status { margin: 0.75rem 0 0; font-size: 0.875rem; font-weight: 500; color: var(--fg2); }
 
 /* Väčšie ciferníky na širokých obrazovkách */
 @media (min-width: 1024px) {
-  #dti-calc-root .dti-gauges {
-    gap: 1.25rem;
-  }
-
-  #dti-calc-root .dti-gauge {
-    padding: 1.375rem 1.25rem;
-  }
-
-  #dti-calc-root .dti-gauge-canvas {
-    max-width: 16rem;
-    height: 8rem;
-  }
-
-  #dti-calc-root .dti-gauge-value {
-    font-size: 1.875rem;
-  }
+  #dti-calc-root .dti-gauge { padding: 1.375rem 1.25rem; }
+  #dti-calc-root .dti-gauge-canvas { max-width: 16rem; height: 8rem; }
+  #dti-calc-root .dti-gauge-value { font-size: 2rem; }
 }
 
 /* -------------------------- Rozloženie príjmu ----------------------------- */
@@ -208,7 +142,7 @@
   height: 2.75rem;
   border-radius: 9999px;
   overflow: hidden;
-  background: hsl(var(--cream));
+  background: rgba(41, 36, 32, 0.08);
 }
 
 #dti-calc-root .dti-bar {
@@ -218,186 +152,14 @@
   height: 100%;
   min-width: 0;
   font-size: 0.8125rem;
-  font-weight: 700;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
-  color: #fdf8f2;
+  color: #f3e9dd;
   white-space: nowrap;
   overflow: hidden;
-  transition: width 0.5s ease;
+  transition: width 0.5s var(--ease-out);
 }
 
-#dti-calc-root .dti-bar--debts { background: #c1533c; }
-#dti-calc-root .dti-bar--reserve { background: #a8956e; }
-#dti-calc-root .dti-bar--free { background: #29614a; }
-
-/* --------------------------- Tlačidlá (modal) ----------------------------- */
-
-#dti-calc-root .mylife-btn-email {
-  padding: 12px 20px;
-  border-radius: calc(var(--radius) - 4px);
-  font-weight: 500;
-  font-size: 14px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  cursor: pointer;
-  font-family: var(--font-sans);
-  transition:
-    background-color 0.2s,
-    border-color 0.2s,
-    opacity 0.2s;
-}
-
-#dti-calc-root .mylife-btn-email {
-  background: hsl(var(--cream));
-  border: 1px solid hsl(var(--charcoal));
-  color: hsl(var(--charcoal));
-}
-
-#dti-calc-root .mylife-btn-email:hover {
-  background: hsl(var(--border));
-}
-
-/* ------------------------------ Dropdowny --------------------------------- */
-
-#dti-calc-root .ml-dropdown {
-  position: relative;
-}
-
-#dti-calc-root .ml-dropdown-menu {
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  background: hsl(var(--card));
-  border: 1px solid hsl(var(--border));
-  border-radius: calc(var(--radius) - 4px);
-  z-index: 1000;
-  min-width: 170px;
-  padding: 4px;
-  display: none;
-}
-
-#dti-calc-root .ml-dropdown-menu.open {
-  display: block;
-}
-
-#dti-calc-root .ml-dropdown-item {
-  padding: 8px 12px;
-  font-size: 15px;
-  cursor: pointer;
-  border-radius: 6px;
-  color: hsl(var(--foreground));
-  font-family: var(--font-sans);
-  white-space: nowrap;
-}
-
-#dti-calc-root .ml-dropdown-item:hover {
-  background: hsl(var(--cream));
-}
-
-#dti-calc-root .ml-dropdown-item.danger {
-  color: hsl(var(--destructive));
-}
-
-#dti-calc-root .ml-dropdown-item.danger:hover {
-  background: hsl(0 93% 94%);
-}
-
-/* -------------------------------- Modal ----------------------------------- */
-
-#dti-calc-root .ml-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 2147483647;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-}
-
-#dti-calc-root .ml-modal-overlay.open {
-  display: flex;
-}
-
-#dti-calc-root .ml-modal-box {
-  background: hsl(var(--card));
-  border-radius: var(--radius);
-  width: 100%;
-  max-width: 900px;
-  max-height: 90vh;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-#dti-calc-root .ml-modal-header {
-  padding: 20px 24px;
-  border-bottom: 1px solid hsl(var(--border));
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-shrink: 0;
-}
-
-#dti-calc-root .ml-modal-body {
-  overflow-y: auto;
-  padding: 24px;
-  flex: 1;
-}
-
-#dti-calc-root .ml-compare-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 15px;
-}
-
-#dti-calc-root .ml-compare-table th {
-  padding: 10px 16px;
-  text-align: left;
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: hsl(var(--muted-foreground));
-  font-weight: 700;
-  border-bottom: 2px solid hsl(var(--border));
-  background: hsl(var(--cream));
-  position: sticky;
-  top: 0;
-}
-
-#dti-calc-root .ml-compare-table td {
-  padding: 12px 16px;
-  border-bottom: 1px solid hsl(var(--muted));
-  vertical-align: top;
-}
-
-@media (max-width: 640px) {
-  #dti-calc-root .mylife-btn-email {
-    flex: 1;
-    min-width: 0;
-  }
-
-  #dti-calc-root .ml-modal-overlay.open {
-    padding: 72px 0 0;
-    align-items: stretch;
-  }
-
-  #dti-calc-root .ml-modal-box {
-    max-width: none;
-    width: 100%;
-    height: calc(100dvh - 72px);
-    max-height: calc(100dvh - 72px);
-    border-radius: 0;
-  }
-
-  #dti-calc-root .ml-modal-header {
-    padding: 14px 16px;
-  }
-
-  #dti-calc-root .ml-modal-body {
-    padding: 16px;
-  }
-}
+#dti-calc-root .dti-bar--debts { background: var(--wm-red); }
+#dti-calc-root .dti-bar--reserve { background: var(--wm-taupe); color: var(--wm-brown); }
+#dti-calc-root .dti-bar--free { background: var(--wm-green); }

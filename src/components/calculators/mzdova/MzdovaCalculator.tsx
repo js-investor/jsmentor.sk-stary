@@ -1,4 +1,4 @@
-import { useLayoutEffect } from "react";
+import { useLayoutEffect, type CSSProperties } from "react";
 import "../shared/calc-ui.css";
 import "./mzdova-calculator.css";
 import { initCalcEcho, initCalcHeroPulse, initCalcSliders } from "../shared/calcUi";
@@ -22,6 +22,9 @@ const Stepper = ({ inputId, step, unit }: { inputId: string; step: number; unit:
   );
 };
 
+/** Poradie vstupnej animácie sekcií (.calc-reveal). */
+const reveal = (i: number) => ({ "--i": i }) as CSSProperties;
+
 const MzdovaCalculator = () => {
   useLayoutEffect(() => {
     const unmountCalc = mountMzdovaCalculator();
@@ -40,61 +43,31 @@ const MzdovaCalculator = () => {
     <div id="mzv3-w" className="calc-ui w-full font-sans text-foreground">
       <div className="calc-body-shell">
         <div className="calc-page">
-          <header className="calc-header" style={{ marginBottom: "1.5rem" }}>
+          <header className="calc-header calc-reveal" style={reveal(0)}>
             <span className="calc-eyebrow">Mzdová kalkulačka</span>
+            <h1 className="calc-title">
+              Koľko ti ostane <em>na ruku</em>?
+            </h1>
+            <p className="calc-subtitle">
+              Hrubá aj čistá mzda, odvody, daň a&nbsp;náklady zamestnávateľa podľa legislatívy SR 2026. Pre zamestnancov
+              aj SZČO.
+            </p>
           </header>
 
-          {/* Výsledok — hviezda stránky */}
-          <section className="calc-hero-xl" aria-label="Výsledok">
-            <p className="calc-hero-xl-label">
-              <span id="mzv3-hero-label">Čistá mzda</span>
-            </p>
-            <p className="calc-hero-xl-value" id="mzv3-net">0 €</p>
-            <div className="calc-hero-xl-chips">
-              <span className="calc-verdict-chip">
-                <span id="mzv3-second-label">Náklady zamestnávateľa</span>&nbsp;
-                <strong id="mzv3-super">0 €</strong>
-              </span>
-              <span className="calc-verdict-chip">Legislatíva SR 2026</span>
-            </div>
-            <p className="mzv3-hero-sub" id="mzv3-net-sub" />
-            <p className="mzv3-hero-foot" id="mzv3-super-sub">Superhrubá mzda</p>
-          </section>
-
-          {/* Ročný prehľad — inline štatistiky */}
-          <div className="calc-stats-inline" role="group" aria-label="Ročný prehľad">
-            <div>
-              <p className="calc-stat-label">Hrubá za rok</p>
-              <p className="calc-stat-value" id="mzv3-gross-yr">0 €</p>
-            </div>
-            <div>
-              <p className="calc-stat-label">Čistá za rok</p>
-              <p className="calc-stat-value" id="mzv3-net-yr">0 €</p>
-            </div>
-            <div>
-              <p className="calc-stat-label">Odvody za rok</p>
-              <p className="calc-stat-value" id="mzv3-odvody-yr">0 €</p>
-            </div>
-            <div>
-              <p className="calc-stat-label">Daň za rok</p>
-              <p className="calc-stat-value" id="mzv3-tax-yr">0 €</p>
-            </div>
-          </div>
-
           {/* Prepínač režimu — mení celý výpočet, preto stojí nad dockom */}
-          <div className="mzv3-type-switch-row">
-            <div className="calc-segment mzv3-type-switch" role="group" aria-label="Typ pracovného pomeru">
-              <button type="button" id="mzv3-t-emp" onClick={() => window.mzv3SetType?.("emp")} className="sel" aria-pressed={true}>
+          <div className="mzv3-type-switch-row calc-reveal" style={reveal(1)}>
+            <div className="calc-pills mzv3-type-switch" role="group" aria-label="Typ pracovného pomeru">
+              <button type="button" id="mzv3-t-emp" onClick={() => window.mzv3SetType?.("emp")} className="calc-pill sel" aria-pressed={true}>
                 Zamestnanec
               </button>
-              <button type="button" id="mzv3-t-szco" aria-pressed={false} onClick={() => window.mzv3SetType?.("szco")}>
+              <button type="button" id="mzv3-t-szco" aria-pressed={false} onClick={() => window.mzv3SetType?.("szco")} className="calc-pill">
                 SZČO / Živnostník
               </button>
             </div>
           </div>
 
           {/* Vstupný dock */}
-          <section className="calc-dock" aria-label="Vstupné údaje">
+          <section className="calc-dock calc-reveal" aria-label="Vstupné údaje" style={reveal(2)}>
             <div className="calc-dock-grid">
               <div className="calc-dock-item">
                 <label id="mzv3-salary-label" className="calc-label" htmlFor="mzv3-salary">
@@ -208,14 +181,51 @@ const MzdovaCalculator = () => {
             </div>
           </section>
 
+          {/* Výsledok — hviezda stránky */}
+          <section className="calc-hero-xl calc-reveal" aria-label="Výsledok" style={reveal(3)}>
+            <p className="calc-hero-xl-label">
+              <span id="mzv3-hero-label">Čistá mzda</span>
+            </p>
+            <p className="calc-hero-xl-value" id="mzv3-net">0 €</p>
+            <div className="calc-hero-xl-chips">
+              <span className="calc-verdict-chip">
+                <span id="mzv3-second-label">Náklady zamestnávateľa</span>&nbsp;
+                <strong id="mzv3-super">0 €</strong>
+              </span>
+              <span className="calc-verdict-chip">Legislatíva SR 2026</span>
+            </div>
+            <p className="mzv3-hero-sub" id="mzv3-net-sub" />
+            <p className="mzv3-hero-foot" id="mzv3-super-sub">Superhrubá mzda</p>
+          </section>
+
+          {/* Ročný prehľad — inline štatistiky */}
+          <div className="calc-stats-inline calc-reveal" role="group" aria-label="Ročný prehľad" style={reveal(4)}>
+            <div>
+              <p className="calc-stat-label">Hrubá za rok</p>
+              <p className="calc-stat-value" id="mzv3-gross-yr">0 €</p>
+            </div>
+            <div>
+              <p className="calc-stat-label">Čistá za rok</p>
+              <p className="calc-stat-value" id="mzv3-net-yr">0 €</p>
+            </div>
+            <div>
+              <p className="calc-stat-label">Odvody za rok</p>
+              <p className="calc-stat-value" id="mzv3-odvody-yr">0 €</p>
+            </div>
+            <div>
+              <p className="calc-stat-label">Daň za rok</p>
+              <p className="calc-stat-value" id="mzv3-tax-yr">0 €</p>
+            </div>
+          </div>
+
           {/* Rozklad + graf */}
           <div className="mzv3-panels">
-            <section className="calc-panel" aria-label="Rozklad výpočtu">
+            <section className="calc-panel calc-reveal" aria-label="Rozklad výpočtu" style={reveal(5)}>
               <h2 className="calc-panel-title">Rozklad výpočtu</h2>
               <div id="mzv3-breakdown" className="calc-rows mt-3" />
             </section>
 
-            <section className="calc-panel" aria-label="Štruktúra príjmu">
+            <section className="calc-panel calc-reveal" aria-label="Štruktúra príjmu" style={reveal(6)}>
               <div className="calc-chart-head">
                 <h2 className="calc-panel-title">Štruktúra príjmu</h2>
               </div>

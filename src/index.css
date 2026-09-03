@@ -1,3 +1,25 @@
+/* Matter (UI sans) a klasické Calvino (serif; Grande sa nepoužíva) — používané v /bonusy a kalkulačkách */
+@font-face { font-family: 'Calvino'; src: url('./assets/fonts/calvino/Calvino-Thin.otf') format('opentype'); font-weight: 100; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Calvino'; src: url('./assets/fonts/calvino/Calvino-Extralight.otf') format('opentype'); font-weight: 200; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Calvino'; src: url('./assets/fonts/calvino/Calvino-Light.otf') format('opentype'); font-weight: 300; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Calvino'; src: url('./assets/fonts/calvino/Calvino-Regular.otf') format('opentype'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Calvino'; src: url('./assets/fonts/calvino/Calvino-Book.otf') format('opentype'); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Calvino'; src: url('./assets/fonts/calvino/Calvino-Semibold.otf') format('opentype'); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Calvino'; src: url('./assets/fonts/calvino/Calvino-Bold.otf') format('opentype'); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Calvino'; src: url('./assets/fonts/calvino/Calvino-Extrabold.otf') format('opentype'); font-weight: 800 900; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Calvino'; src: url('./assets/fonts/calvino/Calvino-Thin-Italic.otf') format('opentype'); font-weight: 100; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Calvino'; src: url('./assets/fonts/calvino/Calvino-Extralight-Italic.otf') format('opentype'); font-weight: 200; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Calvino'; src: url('./assets/fonts/calvino/Calvino-Light-Italic.otf') format('opentype'); font-weight: 300; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Calvino'; src: url('./assets/fonts/calvino/Calvino-Italic.otf') format('opentype'); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Calvino'; src: url('./assets/fonts/calvino/Calvino-Book-Italic.otf') format('opentype'); font-weight: 500; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Calvino'; src: url('./assets/fonts/calvino/Calvino-Semibold-Italic.otf') format('opentype'); font-weight: 600; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Calvino'; src: url('./assets/fonts/calvino/Calvino-Bold-Italic.otf') format('opentype'); font-weight: 700; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Calvino'; src: url('./assets/fonts/calvino/Calvino-Extrabold-Italic.otf') format('opentype'); font-weight: 800 900; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Matter'; src: url('./assets/fonts/matter/Matter-Light.ttf') format('truetype'); font-weight: 300; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Matter'; src: url('./assets/fonts/matter/Matter-Regular.ttf') format('truetype'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Matter'; src: url('./assets/fonts/matter/Matter-Medium.ttf') format('truetype'); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Matter'; src: url('./assets/fonts/matter/Matter-SemiBold.ttf') format('truetype'); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Matter'; src: url('./assets/fonts/matter/Matter-Bold.ttf') format('truetype'); font-weight: 700; font-style: normal; font-display: swap; }
 @font-face {
   font-family: 'Recoleta';
   src: url('./assets/fonts/recoleta/Recoleta Regular.otf') format('opentype');

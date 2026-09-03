@@ -210,7 +210,7 @@ export function mountMzdovaCalculator(): () => void {
       type: "doughnut",
       data: {
         labels,
-        datasets: [{ data: values, backgroundColor: colors, borderWidth: 2, borderColor: "#FFF9F5", hoverOffset: 6 }],
+        datasets: [{ data: values, backgroundColor: colors, borderWidth: 2, borderColor: "#fffcf7", hoverOffset: 6 }],
       },
       options: {
         responsive: true,
@@ -220,7 +220,8 @@ export function mountMzdovaCalculator(): () => void {
           legend: {
             position: "right",
             labels: {
-              font: { family: "Gilroy, sans-serif", size: 12 },
+              font: { family: "Matter, sans-serif", size: 12 },
+              color: "#4a4239",
               padding: 12,
               boxWidth: 8,
               boxHeight: 8,
@@ -228,18 +229,17 @@ export function mountMzdovaCalculator(): () => void {
             },
           },
           tooltip: {
-            backgroundColor: "rgba(2, 44, 34, 0.96)",
-            titleColor: "#fdf8f2",
-            bodyColor: "rgba(240, 235, 227, 0.92)",
-            borderColor: "rgba(253, 248, 242, 0.15)",
-            borderWidth: 1,
+            backgroundColor: "rgba(41, 36, 32, 0.96)",
+            titleColor: "#f3e9dd",
+            bodyColor: "rgba(243, 233, 221, 0.9)",
+            borderWidth: 0,
             padding: 12,
             cornerRadius: 12,
             caretSize: 6,
             usePointStyle: true,
             boxPadding: 5,
-            titleFont: { family: "Recoleta, Georgia, serif", size: 13, weight: "bold" },
-            bodyFont: { family: "Gilroy, sans-serif", size: 13 },
+            titleFont: { family: "Matter, sans-serif", size: 13, weight: 600 },
+            bodyFont: { family: "Matter, sans-serif", size: 13 },
             callbacks: {
               label: (c) => {
                 const total = (c.dataset.data as number[]).reduce((a, b) => a + b, 0);
@@ -346,7 +346,7 @@ export function mountMzdovaCalculator(): () => void {
       renderChart(
         ["Čistá mzda", "Zdravotné", "Sociálne", "Daň", "Odvody zamestnávateľa"],
         [Math.max(0, r.net), r.empHealth, r.empSoc, r.taxAfterBonus, r.emprTotal],
-        ["#29614A", "#A8956E", "#D5C098", "#C1533C", "#E7E0D2"],
+        ["#2a6647", "#a99d7e", "#ebe4d3", "#ab4132", "#e9e4dc"],
       );
       setText("mzv3-gross-yr", fmt0(r.gross * 12));
       setText("mzv3-net-yr", fmt0(r.net * 12));
@@ -366,7 +366,7 @@ export function mountMzdovaCalculator(): () => void {
       renderChart(
         ["Čistý príjem", "Sociálne odvody", "Zdravotné odvody", "Daň"],
         [Math.max(0, r.net), r.socOdvod, r.healthOdvod, r.dan],
-        ["#29614A", "#D5C098", "#A8956E", "#C1533C"],
+        ["#2a6647", "#a99d7e", "#ebe4d3", "#ab4132"],
       );
       setText("mzv3-gross-yr", fmt0(salary * 12));
       setText("mzv3-net-yr", fmt0(r.net * 12));

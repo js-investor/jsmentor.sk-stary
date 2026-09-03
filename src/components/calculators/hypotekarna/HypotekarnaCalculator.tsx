@@ -1,17 +1,9 @@
-import { useLayoutEffect } from "react";
+import { useLayoutEffect, type CSSProperties } from "react";
 import "../shared/calculator-toolbar.css";
 import "../shared/calc-ui.css";
 import "./hypotekarna-calculator.css";
 import { initCalcEcho, initCalcHeroPulse, initCalcSliders } from "../shared/calcUi";
 import { mountHypotekarnaCalculator } from "./hypotekarnaMount";
-
-const CompareIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-    <line x1="18" y1="20" x2="18" y2="10" />
-    <line x1="12" y1="20" x2="12" y2="4" />
-    <line x1="6" y1="20" x2="6" y2="14" />
-  </svg>
-);
 
 /** −/+ stepper pre číselný vstup; zmenu hodnoty vždy ohlási input eventom pre mount. */
 const Stepper = ({ inputId, step, unit }: { inputId: string; step: number; unit: string }) => {
@@ -31,6 +23,9 @@ const Stepper = ({ inputId, step, unit }: { inputId: string; step: number; unit:
   );
 };
 
+/** Poradie vstupnej animácie sekcií (.calc-reveal). */
+const reveal = (i: number) => ({ "--i": i }) as CSSProperties;
+
 const HypotekarnaCalculator = () => {
   useLayoutEffect(() => {
     const unmountCalc = mountHypotekarnaCalculator();
@@ -46,53 +41,22 @@ const HypotekarnaCalculator = () => {
   }, []);
 
   return (
-    <div id="hypo-calc-root" className="calc-ui w-full font-sans text-foreground">
-      <div className="calc-variant-toolbar rounded-2xl border border-border/60 mx-[-0.125rem] sm:mx-0">
-        <div className="calc-variant-toolbar-variants" id="hypo-variant-tabs" />
-        <button
-          type="button"
-          className="calc-btn-compare"
-          onClick={() => window.mlOpenComparison?.()}
-        >
-          <CompareIcon />
-          Porovnať
-        </button>
-      </div>
-
+    <div id="hypo-calc-root" className="calc-ui hypo-calc w-full font-sans text-foreground">
       <div id="hypo-compare-wrapper" className="calc-body-shell">
         <div className="calc-page hypo-print-container">
-          <header className="calc-header" style={{ marginBottom: "1.5rem" }}>
+          <header className="calc-header calc-reveal" style={reveal(0)}>
             <span className="calc-eyebrow">Hypotéka vs. investovanie</span>
+            <h1 className="calc-title">
+              Splácať hypotéku, alebo <em>investovať</em>?
+            </h1>
+            <p className="calc-subtitle">
+              Postav hypotéku a&nbsp;investíciu vedľa seba. Uvidíš, ako klesá dlh, ako rastie portfólio a&nbsp;kedy ťa
+              investícia predbehne.
+            </p>
           </header>
 
-          {/* Výsledok — hviezda stránky */}
-          <section className="calc-hero-xl" aria-label="Výsledok">
-            <p className="calc-hero-xl-label">Tvoj čistý majetok na konci obdobia</p>
-            <p className="calc-hero-xl-value" id="res-net-worth">0 €</p>
-            <div className="calc-hero-xl-chips">
-              <span className="calc-verdict-chip">
-                Mesačná splátka&nbsp;<strong id="c-monthly-payment">0 €</strong>
-              </span>
-              <span className="calc-verdict-chip">
-                Hodnota investície&nbsp;<strong id="c-invest-final">0 €</strong>
-              </span>
-            </div>
-          </section>
-
-          {/* Inline štatistiky */}
-          <div className="calc-stats-inline" role="group" aria-label="Súhrn">
-            <div>
-              <p className="calc-stat-label">Celkové náklady úveru</p>
-              <p className="calc-stat-value" id="res-mortgage-total">0 €</p>
-            </div>
-            <div>
-              <p className="calc-stat-label">Vložené do investície</p>
-              <p className="calc-stat-value" id="res-invest-principal">0 €</p>
-            </div>
-          </div>
-
           {/* Vstupný dock — dve skupiny */}
-          <section className="calc-dock" aria-label="Parametre simulácie">
+          <section className="calc-dock calc-reveal" aria-label="Parametre simulácie" style={reveal(1)}>
             <div className="hypo-dock-groups">
               <div className="hypo-dock-group">
                 <div className="hypo-panel-head">
@@ -321,17 +285,43 @@ const HypotekarnaCalculator = () => {
             </div>
           </section>
 
+          {/* Výsledok — hviezda stránky */}
+          <section className="calc-hero-xl calc-reveal" aria-label="Výsledok" style={reveal(2)}>
+            <p className="calc-hero-xl-label">Tvoj čistý majetok na konci obdobia</p>
+            <p className="calc-hero-xl-value" id="res-net-worth">0 €</p>
+            <div className="calc-hero-xl-chips">
+              <span className="calc-verdict-chip">
+                Mesačná splátka&nbsp;<strong id="c-monthly-payment">0 €</strong>
+              </span>
+              <span className="calc-verdict-chip">
+                Hodnota investície&nbsp;<strong id="c-invest-final">0 €</strong>
+              </span>
+            </div>
+          </section>
+
+          {/* Inline štatistiky */}
+          <div className="calc-stats-inline calc-reveal" role="group" aria-label="Súhrn" style={reveal(3)}>
+            <div>
+              <p className="calc-stat-label">Celkové náklady úveru</p>
+              <p className="calc-stat-value" id="res-mortgage-total">0 €</p>
+            </div>
+            <div>
+              <p className="calc-stat-label">Vložené do investície</p>
+              <p className="calc-stat-value" id="res-invest-principal">0 €</p>
+            </div>
+          </div>
+
           {/* Graf */}
-          <section className="calc-panel mt-5 md:mt-6" aria-label="Vývoj v čase">
+          <section className="calc-panel calc-reveal mt-5 md:mt-6" aria-label="Vývoj v čase" style={reveal(4)}>
             <div className="calc-chart-head">
               <h2 className="calc-panel-title">Vývoj v čase</h2>
               <div className="calc-legend" id="ml-chart-legend">
                 <span className="calc-legend-item">
-                  <span className="calc-legend-dot" style={{ background: "#C1533C" }} aria-hidden />
+                  <span className="calc-legend-dot" style={{ background: "#ab4132" }} aria-hidden />
                   Zostatok hypotéky
                 </span>
                 <span className="calc-legend-item">
-                  <span className="calc-legend-dot" style={{ background: "#29614A" }} aria-hidden />
+                  <span className="calc-legend-dot" style={{ background: "#2a6647" }} aria-hidden />
                   Hodnota investície
                 </span>
               </div>
@@ -343,7 +333,7 @@ const HypotekarnaCalculator = () => {
               <span className="hypo-crossover-title">Bod zlomu dosiahnutý</span>
               <span>
                 Investícia presiahne zostatok hypotéky v{" "}
-                <span id="crossover-year" className="font-bold text-foreground" />.
+                <span id="crossover-year" className="hypo-crossover-year" />.
               </span>
             </div>
           </section>
@@ -356,7 +346,7 @@ const HypotekarnaCalculator = () => {
           <div className="hypo-print-footer">
             <p>
               Vygenerované dňa: <span id="hypo-current-date" />
-              <span className="text-foreground font-medium"> — JS Mentor</span>
+              <span className="hypo-print-brand"> — JS Mentor</span>
             </p>
           </div>
         </div>
@@ -377,48 +367,6 @@ const HypotekarnaCalculator = () => {
           >
             Stiahnuť PDF report
           </button>
-        </div>
-      </div>
-
-      <div id="hypo-comparison-modal">
-        <div className="ml-modal-box" role="dialog" aria-modal="true" aria-labelledby="hypo-modal-title">
-          <div className="ml-modal-header">
-            <h3 id="hypo-modal-title" className="hypo-heading text-xl text-foreground m-0">Porovnanie variantov</h3>
-            <button
-              type="button"
-              className="bg-transparent border-none cursor-pointer text-muted-foreground p-1 flex items-center justify-center rounded-md hover:bg-muted transition-colors"
-              onClick={() => window.mlCloseComparison?.()}
-              aria-label="Zavrieť"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
-          </div>
-          <div className="ml-slider-wrap">
-            <div className="flex items-center gap-3">
-              <span className="text-[15px] text-muted-foreground font-semibold whitespace-nowrap">
-                Rok: <span id="ml-slider-label" className="text-foreground font-bold">0</span>
-              </span>
-              <input
-                type="range"
-                id="ml-compare-slider"
-                aria-label="Rok porovnania"
-                min={0}
-                max={20}
-                defaultValue={0}
-                className="calc-slider flex-1"
-                onInput={(e) => window.mlUpdateComparison?.(e.currentTarget.value)}
-              />
-              <span className="text-[15px] text-muted-foreground font-semibold" id="ml-slider-max">
-                20
-              </span>
-            </div>
-          </div>
-          <div className="ml-modal-body">
-            <table className="ml-compare-table" id="ml-compare-table" />
-          </div>
         </div>
       </div>
     </div>

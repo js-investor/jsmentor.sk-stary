@@ -1,4 +1,7 @@
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useMemo, useRef } from "react";
+import type { CSSProperties } from "react";
+import { ArrowLeft, ArrowRight, FileText, Flag, House, Landmark, Lightbulb, MapPin, MessageCircle, RotateCcw, ThumbsUp, type LucideIcon } from "lucide-react";
+import "../shared/calc-ui.css";
 import "./bytovy-semafor.css";
 import { BONUSY_CTA_LABEL, KONZULTACIA_URL } from "@/pages/kalkulacky/kalkulackyConfig";
 
@@ -19,6 +22,7 @@ interface Question {
 }
 type Phase = "intro" | "quiz" | "result";
 type CatKey = "L" | "C" | "D" | "S";
+type Cls = "g" | "a" | "r";
 
 // ── data ──
 const CATS: Record<CatKey, string> = {
@@ -188,6 +192,39 @@ function calcYield(rent: number, price: number): number {
   return (rent * 11) / price * 100;
 }
 
+// ── vizuál: ikony, tóny, formát ──
+const CAT_KEYS = Object.keys(CATS) as CatKey[];
+/** Popisok bez úvodného emoji — v UI používame ikony lucide, emoji ostáva len v texte. */
+const stripEmoji = (s: string) => s.replace(/^[^\p{L}\p{N}]+/u, "");
+const catLabel = (c: CatKey) => stripEmoji(CATS[c]);
+const CAT_ICON: Record<CatKey, LucideIcon> = { L: MapPin, C: Landmark, D: FileText, S: House };
+/** Tón karty otázky podľa oblasti (šalvia / piesok / kameň). */
+const CAT_TONE: Record<CatKey, string> = { L: "sage", C: "sand", D: "stone", S: "sage" };
+
+const shockText = (n: number) =>
+  n === 1 ? "1 otázka" : n < 5 ? `${n} otázky` : `${n} otázok`;
+
+/** Verdikt: prvá veta ako italic zlatý dôraz, zvyšok krémový. */
+const splitVerdict = (s: string): [string, string] => {
+  const i = s.indexOf(". ");
+  return i > 0 ? [s.slice(0, i + 1), s.slice(i + 2)] : [s, ""];
+};
+
+/** Farba pásu podľa pomeru: lesná zelená / taupe / červená (žiadna žltá na svetlom). */
+const colFor = (r: number) =>
+  r >= 0.8 ? "#2a6647" : r >= 0.55 ? "#a99d7e" : "#ab4132";
+
+/** Tón semafora: na hnedom paneli mint / zlatá / lososová, pod ním šalvia / piesok / ružovkastá. */
+const TONE: Record<Cls, { dark: string; card: string; label: string }> = {
+  g: { dark: "#d9b15c", card: "sage", label: "#2a6647" },
+  a: { dark: "#d9b15c", card: "sand", label: "#292420" },
+  r: { dark: "#e9a27e", card: "blush", label: "#ab4132" },
+};
+
+const RING_R = 54;
+const RING_C = 2 * Math.PI * RING_R;
+const st = (i: number, extra: Record<string, string | number> = {}) => ({ "--i": i, ...extra }) as CSSProperties;
+
 // ── component ──
 export default function BytovySemaforCalculator() {
   const [phase, setPhase] = useState<Phase>("intro");
@@ -300,255 +337,292 @@ export default function BytovySemaforCalculator() {
     : null;
 
   const q = Q[idx];
+  const progress = (idx / Q.length) * 100;
+  const CatIcon = q ? CAT_ICON[q.c] : MapPin;
+
+  // odvodené hodnoty pre výsledok (iba vizuál)
+  const cls: Cls = result?.cls ?? "g";
+  const tone = TONE[cls];
+  const [vHead, vRest] = splitVerdict(result?.txt ?? "");
+  const pct = result ? Math.round(result.p * 100) : 0;
+  const ringOff = RING_C * (1 - (result?.p ?? 0));
+  const worstLabel = result?.worstName ? stripEmoji(result.worstName) : null;
 
   return (
-    <div className="bys-root" ref={topRef}>
-      {/* ═══ INTRO ═══ */}
-      {phase === "intro" && (
-        <section className="bys-sec bys-sec--intro">
-          <div className="bys-in">
-            <span className="bys-pill">Bytový semafor 🚦</span>
-            <h1 className="bys-h1">
-              Oplatí sa ti<br />
-              ten byt <em>kúpiť</em>?
-            </h1>
-            <p className="bys-sub">
-              15 otázok, 3 minúty. Niektoré si si možno nikdy nepoložil — a presne tie ťa môžu
-              stáť najviac peňazí. Lokalita, čísla, banka, dane, zmluvy.
-            </p>
-            <div className="bys-lights">
-              <span>🔴</span><span>🟡</span><span>🟢</span>
-            </div>
-            <button type="button" className="bys-btn" onClick={startQuiz}>
-              Spustiť semafor 🚦
-            </button>
-            <span className="bys-micro">zadarmo · bez e-mailu · výsledok hneď</span>
-          </div>
-        </section>
-      )}
+    <div className="section-container bys-outer">
+      <div id="bys-root" className="calc-ui bys-root w-full font-sans" ref={topRef}>
+        <div className="calc-body-shell">
+          <div className="calc-page bys-page">
 
-      {/* ═══ KVÍZ ═══ */}
-      {phase === "quiz" && q && (
-        <section className="bys-sec bys-sec--dark">
-          <div className="bys-qwrap">
-            {/* progress */}
-            <div className="bys-progress">
-              <i style={{ width: `${(idx / Q.length) * 100}%` }} />
-            </div>
-            <div className="bys-pmeta">
-              <span>Otázka <strong>{idx + 1}</strong> / {Q.length}</span>
-              <span>{CATS[q.c]}</span>
-            </div>
-
-            {/* question card */}
-            <div className="bys-qcard" key={idx}>
-              <div className="bys-qcat">{CATS[q.c]}</div>
-              <div className="bys-qtxt">{q.q}</div>
-
-              {/* mini calculator (Q6 — yield) */}
-              {q.calc && (
-                <div className="bys-mini-calc">
-                  <div className="bys-mc-row">
-                    <div className="bys-mc-field">
-                      <label>Nájom / mes. (€)</label>
-                      <input
-                        type="number"
-                        inputMode="numeric"
-                        placeholder="850"
-                        value={mcRent}
-                        onChange={(e) => setMcRent(e.target.value)}
-                      />
-                    </div>
-                    <div className="bys-mc-field">
-                      <label>Cena bytu (€)</label>
-                      <input
-                        type="number"
-                        inputMode="numeric"
-                        placeholder="230 000"
-                        value={mcPrice}
-                        onChange={(e) => setMcPrice(e.target.value)}
-                      />
-                    </div>
+            {/* ═══ INTRO ═══ */}
+            {phase === "intro" && (
+              <>
+                <header className="calc-header calc-reveal" style={st(0)}>
+                  <span className="calc-eyebrow">Bytový semafor</span>
+                  <h1 className="calc-title">Oplatí sa ti<br />ten byt <em>kúpiť</em>?</h1>
+                  <p className="calc-subtitle">
+                    15 otázok, 3 minúty. Niektoré si si možno nikdy nepoložil — a presne tie ťa môžu
+                    stáť najviac peňazí. Lokalita, čísla, banka, dane, zmluvy.
+                  </p>
+                </header>
+                <section className="bys-intro calc-reveal" style={st(1)} aria-label="Spustiť semafor">
+                  <div className="bys-lights" aria-hidden>
+                    <span className="bys-light bys-light--r" /><span className="bys-light bys-light--a" /><span className="bys-light bys-light--g" />
                   </div>
-                  <div className="bys-mc-out">
-                    {yieldValue !== null ? (
-                      <>
-                        Tvoj hrubý výnos:{" "}
-                        <strong>
-                          {yieldValue.toLocaleString("sk-SK", { maximumFractionDigits: 1 })}&nbsp;%
-                        </strong>{" "}
-                        ročne{" "}
-                        <span>
-                          ({Number(mcRent).toLocaleString("sk-SK")}&nbsp;€ × 11 ÷{" "}
-                          {Number(mcPrice).toLocaleString("sk-SK")}&nbsp;€)
-                        </span>
-                        {" "}— klikni zvýraznenú odpoveď 👇
-                      </>
-                    ) : (
-                      "Zadaj nájom a cenu — výnos ti vypočítam 👇"
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* answers */}
-              <div className="bys-ans">
-                {q.a.map((a, ai) => (
-                  <button
-                    key={ai}
-                    type="button"
-                    className={`bys-ans-btn${suggestedAns === ai ? " bys-ans-btn--suggest" : ""}`}
-                    onClick={() => handleAnswer(ai)}
-                  >
-                    <i>{a.e}</i>
-                    {a.t}
+                  <button type="button" className="btn-primary bys-btn" onClick={startQuiz}>
+                    Spustiť semafor <ArrowRight className="h-4 w-4" strokeWidth={1.75} aria-hidden />
                   </button>
-                ))}
-              </div>
-
-              {idx > 0 && (
-                <button type="button" className="bys-back" onClick={goBack}>
-                  ← Späť
-                </button>
-              )}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* ═══ VÝSLEDOK ═══ */}
-      {phase === "result" && result && (
-        <section className="bys-sec bys-sec--dark">
-          <div className="bys-in">
-            <span className="bys-pill">Tvoj výsledok</span>
-
-            {/* semaphore */}
-            <div className={`bys-sem bys-sem--${result.cls}`}>{result.emo}</div>
-            <div className={`bys-verdict bys-verdict--${result.cls}`}>{result.txt}</div>
-            <div className="bys-score">
-              Skóre: {result.score} / {MAX_SCORE} bodov ({Math.round(result.p * 100)}&nbsp;%)
-            </div>
-
-            {result.flags > 0 && (
-              <div className="bys-flags">
-                🚩{" "}
-                {result.flags === 1
-                  ? "1 červená vlajka — tá sama o sebe sťahuje semafor dole"
-                  : `${result.flags} červené vlajky — každá z nich je dôvod zastaviť kúpu`}
-              </div>
+                  <span className="bys-micro">zadarmo · bez e-mailu · výsledok hneď</span>
+                </section>
+                <ul className="bys-areas" aria-label="Oblasti otázok">
+                  {CAT_KEYS.map((c, i) => {
+                    const Icon = CAT_ICON[c];
+                    const n = Q.filter((x) => x.c === c).length;
+                    return (
+                      <li key={c} className={`bys-area calc-tone--${CAT_TONE[c]} calc-reveal`} style={st(2 + i)}>
+                        <span className="bys-area-icon"><Icon className="h-5 w-5" strokeWidth={1.75} aria-hidden /></span>
+                        <span className="bys-area-name">{catLabel(c)}</span>
+                        <span className="bys-area-n">{shockText(n)}</span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </>
             )}
 
-            {/* shock box */}
-            {result.shocks > 0 && (
-              <div className="bys-shock">
-                <div className="bys-shock-big">
-                  Zaskočilo ťa{" "}
-                  <em>
-                    {result.shocks === 1
-                      ? "1 otázka"
-                      : result.shocks < 5
-                        ? `${result.shocks} otázky`
-                        : `${result.shocks} otázok`}
-                  </em>{" "}
-                  😳
+            {/* ═══ KVÍZ ═══ */}
+            {phase === "quiz" && q && (
+              <section className="bys-quiz" aria-label="Otázky">
+                <div className="bys-quiz-top calc-reveal" style={st(0)}>
+                  <span className="calc-eyebrow">Bytový semafor</span>
                 </div>
-                <p>
-                  Presne tieto veci treba vyriešiť <strong>PRED kúpou</strong> — po podpise sa
-                  už väčšina z nich opraviť nedá.
-                </p>
-              </div>
+                {/* progress */}
+                <div className="bys-progress calc-reveal" style={st(0)} role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress)} aria-label="Priebeh">
+                  <span className="bys-progress-fill" style={{ width: `${Math.max(3, progress)}%` }} />
+                </div>
+                <div className="bys-meta calc-reveal" style={st(0)}>
+                  <span>Otázka <strong>{idx + 1}</strong> / {Q.length}</span>
+                  <span className="bys-meta-cat"><CatIcon className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden />{catLabel(q.c)}</span>
+                </div>
+
+                {/* question card */}
+                <div className={`calc-panel calc-tone--${CAT_TONE[q.c]} bys-qcard`} key={idx}>
+                  <h2 className="bys-qtxt">{q.q}</h2>
+
+                  {/* mini calculator (Q6 — yield) */}
+                  {q.calc && (
+                    <div className="bys-mc">
+                      <div className="bys-mc-row">
+                        <label className="bys-mc-field">
+                          <span className="calc-label">Nájom / mes. (€)</span>
+                          <input
+                            className="calc-input"
+                            type="number"
+                            inputMode="numeric"
+                            placeholder="850"
+                            value={mcRent}
+                            onChange={(e) => setMcRent(e.target.value)}
+                          />
+                        </label>
+                        <label className="bys-mc-field">
+                          <span className="calc-label">Cena bytu (€)</span>
+                          <input
+                            className="calc-input"
+                            type="number"
+                            inputMode="numeric"
+                            placeholder="230 000"
+                            value={mcPrice}
+                            onChange={(e) => setMcPrice(e.target.value)}
+                          />
+                        </label>
+                      </div>
+                      <p className="bys-mc-out">
+                        {yieldValue !== null ? (
+                          <>
+                            Tvoj hrubý výnos:{" "}
+                            <strong>
+                              {yieldValue.toLocaleString("sk-SK", { maximumFractionDigits: 1 })}&nbsp;%
+                            </strong>{" "}
+                            ročne{" "}
+                            <span>
+                              ({Number(mcRent).toLocaleString("sk-SK")}&nbsp;€ × 11 ÷{" "}
+                              {Number(mcPrice).toLocaleString("sk-SK")}&nbsp;€)
+                            </span>
+                            {" "}— klikni zvýraznenú odpoveď 👇
+                          </>
+                        ) : (
+                          "Zadaj nájom a cenu — výnos ti vypočítam 👇"
+                        )}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* answers */}
+                  <div className="bys-ans" role="group" aria-label="Odpovede">
+                    {q.a.map((a, ai) => {
+                      const chosen = answers[idx] === ai;
+                      return (
+                        <button
+                          key={ai}
+                          type="button"
+                          className={`bys-ans-btn${suggestedAns === ai ? " is-suggest" : ""}${chosen ? " is-chosen" : ""}`}
+                          aria-pressed={chosen}
+                          onClick={() => handleAnswer(ai)}
+                        >
+                          <span className="bys-ans-key" aria-hidden>{ai + 1}</span>
+                          <span className="bys-ans-text">{a.t}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {idx > 0 && (
+                    <button type="button" className="bys-back" onClick={goBack}>
+                      <ArrowLeft className="h-4 w-4" strokeWidth={1.75} aria-hidden /> Späť
+                    </button>
+                  )}
+                </div>
+              </section>
             )}
 
-            {/* recommendation */}
-            <div className={`bys-reco bys-reco--${result.cls}`}>
-              <div className="bys-reco-lbl">Odporúčanie</div>
-              <p dangerouslySetInnerHTML={{ __html: result.reco }} />
-            </div>
-
-            {/* category bars */}
-            <div className="bys-cats">
-              {(Object.keys(CATS) as CatKey[]).map((c) => {
-                const sc = result.catScore[c] ?? 0;
-                const mx = result.catMax[c] ?? 1;
-                const r = sc / mx;
-                const color = r >= 0.8 ? "var(--bys-green-glow)" : r >= 0.55 ? "var(--bys-amber)" : "var(--bys-red)";
-                return (
-                  <div className="bys-cat" key={c}>
-                    <div className="bys-cat-top">
-                      <span>{CATS[c]}</span>
-                      <span>{sc} / {mx}</span>
-                    </div>
-                    <div className="bys-cat-bar">
-                      <i style={{ width: `${r * 100}%`, background: color }} />
+            {/* ═══ VÝSLEDOK ═══ */}
+            {phase === "result" && result && (
+              <section className="bys-result" aria-label="Výsledok">
+                {/* jeden plochý hnedý panel: semafor + verdikt + skóre */}
+                <div className="bys-hero calc-reveal" style={st(0, { "--bys-tone": tone.dark })}>
+                  <div className="bys-hero-main">
+                    <p className="bys-kicker">Tvoj výsledok</p>
+                    <h2 className="bys-verdict"><em>{vHead}</em> {vRest}</h2>
+                    {result.flags > 0 && (
+                      <p className="bys-flags">
+                        <Flag className="h-4 w-4" strokeWidth={1.75} aria-hidden />
+                        <span>
+                          {result.flags === 1
+                            ? "1 červená vlajka — tá sama o sebe sťahuje semafor dole"
+                            : `${result.flags} červené vlajky — každá z nich je dôvod zastaviť kúpu`}
+                        </span>
+                      </p>
+                    )}
+                    <div className="bys-hero-metrics">
+                      <div><span className="bys-metric-label">Skóre</span><strong>{result.score} / {MAX_SCORE}</strong><small>bodov</small></div>
+                      <div><span className="bys-metric-label">Červené vlajky</span><strong className={result.flags ? "is-neg" : "is-pos"}>{result.flags}</strong><small>v odpovediach</small></div>
+                      {worstLabel ? <div className="is-wide"><span className="bys-metric-label">Najslabšia oblasť</span><strong>{worstLabel}</strong><small>tvoj ďalší krok</small></div> : null}
                     </div>
                   </div>
-                );
-              })}
-            </div>
-
-            {/* tips */}
-            <div className="bys-tips">
-              <h3>Čo s tým 👇</h3>
-              {result.tips.length > 0 ? (
-                result.tips.map((t, i) => (
-                  <div key={i} className="bys-tip">
-                    <i>{t.flag ? "🚩" : "💡"}</i>
-                    <span dangerouslySetInnerHTML={{ __html: t.tip }} />
+                  <div className="bys-hero-side">
+                    <div className="bys-ring" role="img" aria-label={`Skóre ${pct} zo 100`}>
+                      <svg viewBox="0 0 128 128" aria-hidden>
+                        <circle cx="64" cy="64" r={RING_R} fill="none" stroke="rgba(243,233,221, 0.28)" strokeWidth="8" />
+                        <circle className="bys-ring-arc" cx="64" cy="64" r={RING_R} fill="none" stroke={tone.dark} strokeWidth="8" strokeLinecap="round" strokeDasharray={RING_C} strokeDashoffset={ringOff} transform="rotate(-90 64 64)" style={{ "--c": RING_C, "--o": ringOff } as CSSProperties} />
+                      </svg>
+                      <div className="bys-ring-center"><span className="bys-ring-val">{pct}<small>%</small></span><span className="bys-ring-cap">skóre</span></div>
+                    </div>
+                    <div className="bys-semafor" aria-hidden>
+                      <span className={cls === "r" ? "is-on" : ""} /><span className={cls === "a" ? "is-on" : ""} /><span className={cls === "g" ? "is-on" : ""} />
+                    </div>
                   </div>
-                ))
-              ) : (
-                <div className="bys-tip bys-tip--ok">
-                  <i>👏</i>
-                  <span>
-                    <strong>Plný počet — klobúk dole.</strong> Buď máš pred sebou výborný byt a
-                    si pripravený, alebo si bol na seba mierny. Over si odpovede s chladnou
-                    hlavou — a potom konaj, takéto byty nečakajú.
-                  </span>
                 </div>
-              )}
-              <div className="bys-tip bys-tip--cta">
-                <i>💬</i>
-                <span>
-                  <strong>A pri každom bode vyššie platí:</strong> nemusíš to lúskať sám.
-                  Využi konzultáciu zadarmo s Ivanom — 45 minút, online, prejdeme tvoj byt
-                  aj tvoje čísla.
-                </span>
-              </div>
-            </div>
 
-            {/* CTA */}
-            <a
-              className="bys-btn"
-              href={KONZULTACIA_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              data-umami-event="click_konzultacia"
-              data-umami-event-section="bytovy-semafor"
-            >
-              {BONUSY_CTA_LABEL}
-            </a>
-            <span className="bys-micro bys-micro--light">
-              45 minút · zadarmo · online
-            </span>
+                {/* shock box */}
+                {result.shocks > 0 && (
+                  <div className="bys-shock calc-tone--stone calc-reveal" style={st(1)}>
+                    <p className="bys-shock-big">Zaskočilo ťa <em>{shockText(result.shocks)}</em> 😳</p>
+                    <p className="bys-shock-text">
+                      Presne tieto veci treba vyriešiť <strong>PRED kúpou</strong> — po podpise sa
+                      už väčšina z nich opraviť nedá.
+                    </p>
+                  </div>
+                )}
 
-            <div>
-              <button type="button" className="bys-btn bys-btn--ghost" onClick={restart}>
-                ↺ Vyhodnotiť iný byt
-              </button>
-            </div>
+                {/* recommendation */}
+                <div className={`bys-reco calc-tone--${tone.card} calc-reveal`} style={st(2, { "--bys-reco": tone.label })}>
+                  <p className="bys-reco-lbl">Odporúčanie</p>
+                  <p className="bys-reco-text" dangerouslySetInnerHTML={{ __html: result.reco }} />
+                </div>
+
+                {/* category bars */}
+                <div className="calc-panel bys-panel calc-reveal" style={st(3)}>
+                  <h3 className="bys-h3">Podľa oblastí</h3>
+                  {CAT_KEYS.map((c) => {
+                    const Icon = CAT_ICON[c];
+                    const sc = result.catScore[c] ?? 0;
+                    const mx = result.catMax[c] ?? 1;
+                    const r = sc / mx;
+                    return (
+                      <div className="bys-cat" key={c}>
+                        <div className="bys-cat-top">
+                          <span className="bys-cat-name"><Icon className="h-4 w-4" strokeWidth={1.75} aria-hidden />{catLabel(c)}</span>
+                          <span className="bys-cat-score">{sc} / {mx}</span>
+                        </div>
+                        <div className="bys-cat-bar">
+                          <span className="bys-cat-fill" style={{ width: `${r * 100}%`, background: colFor(r) }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* tips */}
+                <div className="calc-panel bys-panel calc-reveal" style={st(4)}>
+                  <h3 className="bys-h3">Čo s tým 👇</h3>
+                  {result.tips.length > 0 ? (
+                    result.tips.map((t, i) => (
+                      <div key={i} className={`bys-tip${t.flag ? " is-flag" : ""}`}>
+                        <span className="bys-tip-icon">{t.flag ? <Flag className="h-4 w-4" strokeWidth={1.75} aria-hidden /> : <Lightbulb className="h-4 w-4" strokeWidth={1.75} aria-hidden />}</span>
+                        <span dangerouslySetInnerHTML={{ __html: t.tip }} />
+                      </div>
+                    ))
+                  ) : (
+                    <div className="bys-tip">
+                      <span className="bys-tip-icon"><ThumbsUp className="h-4 w-4" strokeWidth={1.75} aria-hidden /></span>
+                      <span>
+                        <strong>Plný počet — klobúk dole.</strong> Buď máš pred sebou výborný byt a
+                        si pripravený, alebo si bol na seba mierny. Over si odpovede s chladnou
+                        hlavou — a potom konaj, takéto byty nečakajú.
+                      </span>
+                    </div>
+                  )}
+                  <div className="bys-tip is-cta">
+                    <span className="bys-tip-icon"><MessageCircle className="h-4 w-4" strokeWidth={1.75} aria-hidden /></span>
+                    <span>
+                      <strong>A pri každom bode vyššie platí:</strong> nemusíš to lúskať sám.
+                      Využi konzultáciu zadarmo s Ivanom — 45 minút, online, prejdeme tvoj byt
+                      aj tvoje čísla.
+                    </span>
+                  </div>
+                </div>
+
+                {/* CTA */}
+                <div className="bys-cta calc-reveal" style={st(5)}>
+                  <a
+                    className="btn-primary bys-btn"
+                    href={KONZULTACIA_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-umami-event="click_konzultacia"
+                    data-umami-event-section="bytovy-semafor"
+                  >
+                    {BONUSY_CTA_LABEL} <ArrowRight className="h-4 w-4" strokeWidth={1.75} aria-hidden />
+                  </a>
+                  <span className="bys-micro">45 minút · zadarmo · online</span>
+                  <button type="button" className="bys-ghost" onClick={restart}>
+                    <RotateCcw className="h-4 w-4" strokeWidth={1.75} aria-hidden /> Vyhodnotiť iný byt
+                  </button>
+                </div>
+              </section>
+            )}
+
+            {/* footer */}
+            <p className="calc-note calc-note--center bys-foot">
+              Bytový semafor je orientačný nástroj. Daňové, bankové a právne dopady závisia od
+              tvojej konkrétnej situácie a aktuálnych podmienok — preto ich preberáme individuálne.
+              Nenahrádza právnu previerku, technickú obhliadku ani daňové poradenstvo. Nejde o
+              investičné odporúčanie.
+            </p>
+
           </div>
-        </section>
-      )}
-
-      {/* footer */}
-      <footer className="bys-foot">
-        <div className="bys-in bys-foot-text">
-          Bytový semafor je orientačný nástroj. Daňové, bankové a právne dopady závisia od
-          tvojej konkrétnej situácie a aktuálnych podmienok — preto ich preberáme individuálne.
-          Nenahrádza právnu previerku, technickú obhliadku ani daňové poradenstvo. Nejde o
-          investičné odporúčanie.
         </div>
-      </footer>
+      </div>
     </div>
   );
 }

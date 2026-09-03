@@ -1,0 +1,108 @@
+/**
+ * /bonusy — živý minimalizmus. Málo prvkov, ale každý má charakter:
+ * tónované karty (šalvia, piesok, kameň, ružovkastá, tmavý les) namiesto bielych boxov,
+ * jeden veľký abstraktný tvar na kartu (poster, nie ikonka), jemný farebný závoj za herom,
+ * Calvino Bold v nadpisoch a číslach, Matter na UI. Bez tieňov (globálny reset).
+ */
+
+.bonusy { position: relative; isolation: isolate; --bz-ink: #292420; --bz-fg2: #4a4239; --bz-fg3: #6b625a; --bz-cream: #f3eee8; --bz-well: #ece2d1; --bz-ivory: #fffcf7; --bz-forest: #2a6647; --bz-forest-deep: #225a3e; --bz-forest-dark: #0b3d2e; --bz-mint: #d9b15c; --bz-gold: #d9b15c; --bz-hair: rgba(41, 36, 32, 0.1); --bz-hair-2: rgba(41, 36, 32, 0.18); --bz-ease: cubic-bezier(0.22, 1, 0.36, 1); --font-serif: 'Calvino', 'Recoleta', serif; --font-sans: 'Matter', 'Gilroy', sans-serif; font-family: var(--font-sans); color: var(--bz-ink); }
+/* závoj: nádych bez jediného prvku navyše */
+.bonusy::before { content: ""; position: absolute; left: -10vw; right: -10vw; top: -8rem; height: 44rem; z-index: -1; pointer-events: none; background: radial-gradient(52rem 24rem at 38% 8%, rgba(42,102,71, 0.11), transparent 70%), radial-gradient(40rem 22rem at 78% 22%, rgba(217, 177, 92, 0.14), transparent 70%), radial-gradient(30rem 18rem at 12% 40%, rgba(171,65,50, 0.06), transparent 70%); }
+
+@keyframes bz-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes bz-ring { from { stroke-dashoffset: var(--c); } to { stroke-dashoffset: var(--o); } }
+.bonusy .bz-ring-arc { animation: bz-ring 1.4s var(--bz-ease) 0.35s both; }
+.bonusy .bz-reveal { animation: bz-in 0.55s var(--bz-ease) both; animation-delay: calc(var(--i, 0) * 55ms); }
+@media (prefers-reduced-motion: reduce) { .bonusy .bz-reveal, .bonusy .bz-ring-arc { animation: none !important; } .bonusy .bz-card:hover, .bonusy .bz-step:hover, .bonusy .bz-flag:hover, .bonusy .bz-card:hover .bz-glyph, .bonusy .bz-glyph svg *, .bonusy .bz-flag:hover .bz-flag-ring svg { transform: none !important; transition: none !important; } }
+
+/* ------------------------------ Hlavička ------------------------------ */
+.bonusy .bz-hero { max-width: 46rem; margin: 0 auto; text-align: center; }
+.bonusy .bz-eyebrow { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.4375rem 0.875rem; border-radius: 9999px; background: #2a6647; color: #f3e9dd; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+.bonusy .bz-h1 { font-family: var(--font-serif); font-size: clamp(2.5rem, 5.4vw, 4.125rem); line-height: 1.02; font-weight: 700; letter-spacing: -0.02em; margin: 1.5rem 0 0; color: var(--bz-ink); text-wrap: balance; }
+.bonusy .bz-h1 b { font-weight: 800; }
+.bonusy .bz-h1 em { font-style: italic; font-weight: 700; color: var(--bz-forest); }
+.bonusy .bz-lede { max-width: 36rem; margin: 1.25rem auto 0; font-size: 1.125rem; line-height: 1.6; color: var(--bz-fg2); text-wrap: pretty; }
+.bonusy .bz-well { display: grid; grid-template-columns: repeat(3, 1fr); max-width: 34rem; margin: 2.25rem auto 0; padding: 1.125rem 0.5rem; border-radius: 1.25rem; background: var(--bz-well); list-style: none; }
+.bonusy .bz-well li { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem; border-left: 1px solid var(--bz-hair-2); }
+.bonusy .bz-well li:first-child { border-left: none; }
+.bonusy .bz-well b { font-family: var(--font-serif); font-size: clamp(1.625rem, 3.6vw, 2.125rem); line-height: 1; font-weight: 700; letter-spacing: -0.015em; color: var(--bz-ink); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.bonusy .bz-well b em { font-style: italic; color: var(--bz-forest); }
+.bonusy .bz-well span { font-size: 0.75rem; color: var(--bz-fg3); }
+
+/* ------------------------------ Tri kroky: tónované, s veľkým číslom ------------------------------ */
+.bonusy .bz-steps { display: grid; grid-template-columns: 1fr; gap: 0.875rem; max-width: 72rem; margin: 3rem auto 0; padding: 0; list-style: none; }
+@media (min-width: 768px) { .bonusy .bz-steps { grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 4rem; } }
+.bonusy .bz-step { display: flex; flex-direction: column; height: 100%; min-height: 12.5rem; padding: 1.5rem 1.625rem 1.375rem; border-radius: 1.5rem; background: var(--tone-bg, var(--bz-ivory)); color: var(--tone-text, var(--bz-ink)); text-decoration: none; transition: transform 0.3s var(--bz-ease); }
+.bonusy .bz-step:hover { transform: translateY(-3px); }
+.bonusy .bz-step-n { display: inline-block; font-family: var(--font-serif); font-size: 2.25rem; line-height: 1; font-weight: 700; letter-spacing: -0.02em; color: var(--tone-fg, var(--bz-forest)); transition: transform 0.4s var(--bz-ease); }
+.bonusy .bz-step:hover .bz-step-n { transform: translateY(-3px); }
+.bonusy .bz-step-title { display: block; margin-top: 1rem; font-family: var(--font-serif); font-size: 1.375rem; line-height: 1.15; font-weight: 700; letter-spacing: -0.01em; }
+.bonusy .bz-step-text { display: block; margin-top: 0.375rem; font-size: 0.9375rem; line-height: 1.5; color: var(--tone-muted, var(--bz-fg2)); max-width: 17rem; }
+.bonusy .bz-step-cta { display: inline-flex; align-items: center; gap: 0.375rem; margin-top: auto; padding-top: 1rem; font-size: 0.875rem; font-weight: 600; color: var(--tone-fg, var(--bz-forest)); }
+.bonusy .bz-step-cta svg { transition: transform 0.22s var(--bz-ease); }
+.bonusy .bz-step:hover .bz-step-cta svg { transform: translateX(3px); }
+
+/* ------------------------------ Hlavičky sekcií ------------------------------ */
+.bonusy .bz-h2 { display: flex; align-items: baseline; gap: 0.75rem; margin: 0; font-family: var(--font-serif); font-size: clamp(1.75rem, 2.8vw, 2.25rem); line-height: 1.12; font-weight: 700; letter-spacing: -0.015em; color: var(--bz-ink); }
+.bonusy .bz-h2 small { font-family: var(--font-sans); font-size: 0.875rem; font-weight: 500; color: var(--bz-fg3); }
+.bonusy .bz-sub { margin: 0.375rem 0 0; font-size: 1rem; line-height: 1.55; color: var(--bz-fg2); }
+
+/* ------------------------------ Vlajkový check-up: hnedá plocha, obrí zlatý kruh ------------------------------ */
+.bonusy .bz-flag { position: relative; overflow: hidden; display: flex; flex-direction: column; height: 100%; min-height: 22rem; padding: 2rem 1.75rem; border-radius: 1.75rem; background: var(--bz-ink); color: #f3e9dd; text-decoration: none; transition: transform 0.3s var(--bz-ease); }
+@media (min-width: 1024px) { .bonusy .bz-flag { padding: 2.75rem 3rem; min-height: 26rem; } }
+.bonusy .bz-flag:hover { transform: translateY(-3px); }
+.bonusy .bz-flag-body { position: relative; z-index: 1; max-width: 26rem; display: flex; flex-direction: column; height: 100%; }
+.bonusy .bz-flag-kicker { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--bz-gold); }
+.bonusy .bz-flag-title { display: block; margin-top: 1rem; font-family: var(--font-serif); font-size: clamp(1.875rem, 3.2vw, 2.75rem); line-height: 1.06; font-weight: 700; letter-spacing: -0.02em; color: #f3e9dd; text-wrap: balance; }
+.bonusy .bz-flag-title b { font-weight: 800; }
+.bonusy .bz-flag-title em { font-style: italic; font-weight: 700; color: var(--bz-gold); }
+.bonusy .bz-flag-text { display: block; margin-top: 0.875rem; font-size: 1rem; line-height: 1.6; color: rgba(243, 233, 221, 0.88); }
+.bonusy .bz-flag-pillars { display: block; margin-top: 0.875rem; font-size: 0.8125rem; color: rgba(243, 233, 221, 0.64); }
+.bonusy .bz-flag-cta { display: inline-flex; align-items: center; gap: 0.625rem; align-self: flex-start; margin-top: auto; padding: 0.8125rem 1.375rem; border-radius: 9999px; background: var(--bz-forest); color: #fff; font-size: 0.9375rem; font-weight: 600; transition: background 0.22s; }
+.bonusy .bz-flag:hover .bz-flag-cta { background: var(--bz-forest-deep); }
+.bonusy .bz-flag-ring { position: absolute; right: -4.5rem; top: 50%; width: 19rem; height: 19rem; transform: translateY(-50%); pointer-events: none; }
+@media (min-width: 1024px) { .bonusy .bz-flag-ring { right: -3rem; width: 24rem; height: 24rem; } }
+.bonusy .bz-flag-ring svg { width: 100%; height: 100%; display: block; transition: transform 0.6s var(--bz-ease); }
+.bonusy .bz-flag:hover .bz-flag-ring svg { transform: rotate(6deg) scale(1.02); }
+
+/* ------------------------------ Karty nástrojov: tón + tvar ------------------------------ */
+.bonusy .bz-card { position: relative; overflow: hidden; display: flex; flex-direction: column; height: 100%; min-height: 17rem; padding: 1.5rem 1.5rem 1.375rem; border-radius: 1.5rem; background: var(--tone-bg); color: var(--tone-text, var(--bz-ink)); text-decoration: none; transition: transform 0.3s var(--bz-ease); }
+.bonusy .bz-card:hover { transform: translateY(-3px); }
+.bonusy .bz-glyph { position: absolute; right: -1.25rem; top: -1.25rem; width: 10.5rem; height: 10.5rem; pointer-events: none; transform-origin: 70% 30%; transition: transform 0.5s var(--bz-ease); }
+.bonusy .bz-card:hover .bz-glyph { transform: scale(1.04) rotate(-1.5deg); }
+.bonusy .bz-glyph svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.bonusy .bz-glyph--map { right: auto; left: 56%; margin-left: -7.5rem; top: 0.875rem; width: 15rem; height: 7.75rem; transform-origin: 50% 50%; }
+.bonusy .bz-card:hover .bz-glyph--map { transform: scale(1.03); }
+
+/* ------------------------------ Tvary ožívajú pri hoveri (jemne, so zdržaním) ------------------------------ */
+.bonusy .bz-glyph svg * { transform-box: fill-box; transform-origin: center; transition: transform 0.55s var(--bz-ease), fill-opacity 0.45s var(--bz-ease), stroke-dashoffset 0.7s var(--bz-ease); }
+.bonusy .bz-glyph .g-2 { transition-delay: 60ms; } .bonusy .bz-glyph .g-3 { transition-delay: 120ms; } .bonusy .bz-glyph .g-4 { transition-delay: 180ms; }
+.bonusy .bz-card:hover .g-a { transform: translateX(-4px); } .bonusy .bz-card:hover .g-b { transform: translateX(4px); }
+.bonusy .bz-card:hover .g-1, .bonusy .bz-card:hover .g-2, .bonusy .bz-card:hover .g-3 { transform: translateY(-5px); }
+.bonusy .bz-card:hover .bz-glyph .g-4 { transform: translateY(-5px); }
+.bonusy .bz-glyph rect.g-1, .bonusy .bz-glyph rect.g-2, .bonusy .bz-glyph rect.g-3, .bonusy .bz-glyph rect.g-4 { transform-origin: bottom center; }
+.bonusy .bz-card:hover .bz-glyph rect.g-1, .bonusy .bz-card:hover .bz-glyph rect.g-2, .bonusy .bz-card:hover .bz-glyph rect.g-3, .bonusy .bz-card:hover .bz-glyph rect.g-4 { transform: scaleY(1.12); }
+.bonusy .bz-glyph .g-rot { transform: rotate(-90deg); }
+.bonusy .bz-card:hover .g-arc { stroke-dashoffset: 8; }
+.bonusy .bz-card:hover .g-spin { transform: rotate(-12deg); }
+.bonusy .bz-card:hover .g-l1 { fill-opacity: 1; } .bonusy .bz-card:hover .g-l2 { fill-opacity: 0.45; } .bonusy .bz-card:hover .g-l3 { fill-opacity: 0.3; }
+.bonusy .bz-card:hover .g-kraj { fill-opacity: 1; }
+.bonusy .bz-card:hover .bz-glyph circle.g-1 { fill-opacity: 1; } .bonusy .bz-card:hover .bz-glyph circle.g-2 { fill-opacity: 0.6; } .bonusy .bz-card:hover .bz-glyph circle.g-3 { fill-opacity: 0.35; }
+.bonusy .bz-card-head { display: flex; align-items: center; gap: 0.5rem; position: relative; z-index: 1; }
+.bonusy .bz-cat { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--tone-fg); }
+.bonusy .bz-new { padding: 0.1875rem 0.5rem; border-radius: 9999px; background: var(--tone-fg); color: var(--tone-bg); font-size: 0.625rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+.bonusy .bz-fav { background: #d9b15c; color: #292420; }
+.bonusy .bz-card-body { position: relative; z-index: 1; margin-top: auto; padding-top: 5.5rem; }
+.bonusy .bz-card-title { display: block; font-family: var(--font-serif); font-size: 1.5rem; line-height: 1.15; font-weight: 700; letter-spacing: -0.015em; }
+.bonusy .bz-card-text { display: block; margin-top: 0.5rem; font-size: 0.9375rem; line-height: 1.55; color: var(--tone-muted, var(--bz-fg2)); }
+.bonusy .bz-card-cta { display: inline-flex; align-items: center; gap: 0.375rem; margin-top: 1rem; font-size: 0.875rem; font-weight: 600; color: var(--tone-fg); }
+.bonusy .bz-card-cta svg { transition: transform 0.22s var(--bz-ease); }
+.bonusy .bz-card:hover .bz-card-cta svg { transform: translateX(3px); }
+
+/* ------------------------------ PDF pás ------------------------------ */
+.bonusy .bz-pdf { display: flex; flex-direction: column; align-items: flex-start; gap: 1.25rem; padding: 1.5rem; border-radius: 1.5rem; background: var(--bz-well); text-decoration: none; color: inherit; }
+@media (min-width: 640px) { .bonusy .bz-pdf { flex-direction: row; align-items: center; padding: 1.5rem 1.75rem; } }
+.bonusy .bz-pdf-icon { display: inline-flex; width: 3rem; height: 3rem; align-items: center; justify-content: center; border-radius: 9999px; background: var(--bz-ivory); color: var(--bz-forest); flex-shrink: 0; }
+.bonusy .bz-pdf-title { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; margin: 0; font-family: var(--font-serif); font-size: 1.375rem; font-weight: 700; color: var(--bz-ink); }
+.bonusy .bz-pdf-soon { padding: 0.25rem 0.625rem; border-radius: 9999px; background: var(--bz-ivory); font-family: var(--font-sans); font-size: 0.75rem; font-weight: 500; color: var(--bz-fg2); }
+.bonusy .bz-pdf-text { margin: 0.25rem 0 0; font-size: 0.9375rem; line-height: 1.55; color: var(--bz-fg2); }

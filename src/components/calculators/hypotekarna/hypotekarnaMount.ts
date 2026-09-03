@@ -330,16 +330,15 @@ export function mountHypotekarnaCalculator(): () => void {
     const evts = window._hypoCalcEvents ?? [];
     if (evts.length === 0) {
       list.innerHTML =
-        '<p style="font-size:15px;color:hsl(var(--muted-foreground));font-style:italic;">Zatiaľ žiadne pridané udalosti.</p>';
+        '<p class="hypo-evt-empty">Zatiaľ žiadne pridané udalosti.</p>';
       badge.style.display = "none";
     } else {
       badge.textContent = String(evts.length);
       badge.style.display = "inline-block";
       evts.forEach((evt) => {
         const div = document.createElement("div");
-        div.style.cssText =
-          "display:flex;justify-content:space-between;align-items:center;background:hsl(var(--card));padding:10px 12px;border-radius:6px;border:1px solid hsl(var(--border));font-size:15px;";
-        div.innerHTML = `<div style="display:flex;align-items:center;gap:12px;"><span style="font-weight:700;background:hsl(var(--foreground));color:hsl(var(--background));width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:11px;">${evt.year}.</span><span style="font-weight:600;">${evt.label}</span></div><div style="display:flex;align-items:center;gap:12px;"><span style="font-weight:700;color:hsl(var(--primary));">${evt.valText}</span><button type="button" data-remove="${evt.id}" style="color:hsl(var(--muted-foreground));background:none;border:none;cursor:pointer;font-size:15px;">✕</button></div>`;
+        div.className = "hypo-evt-item";
+        div.innerHTML = `<div class="hypo-evt-item-main"><span class="hypo-evt-year">${evt.year}.</span><span class="hypo-evt-label">${evt.label}</span></div><div class="hypo-evt-item-side"><span class="hypo-evt-val">${evt.valText}</span><button type="button" class="hypo-evt-remove" data-remove="${evt.id}" aria-label="Odstrániť udalosť">✕</button></div>`;
         div.querySelector("button[data-remove]")?.addEventListener("click", () => window.removeEvent?.(evt.id));
         list.appendChild(div);
       });
@@ -497,7 +496,7 @@ export function mountHypotekarnaCalculator(): () => void {
       c.lineTo(x, bottom);
       c.lineWidth = 1;
       c.setLineDash([4, 4]);
-      c.strokeStyle = "rgba(41, 97, 74, 0.35)";
+      c.strokeStyle = "rgba(41, 36, 32, 0.35)";
       c.stroke();
       c.restore();
     },
@@ -506,6 +505,16 @@ export function mountHypotekarnaCalculator(): () => void {
   /** Koncový bod série zvýrazníme — posledná hodnota je pointa grafu. */
   const lastPointRadius = (ctx: ScriptableContext<"line">) =>
     ctx.dataIndex === ctx.dataset.data.length - 1 ? 5 : 0;
+
+  /** Zvislý gradient výplne od farby série (alpha `top`) do priehľadna cez aktuálnu plochu grafu — drží aj po resize. */
+  const areaGradient = (rgb: string, top: number) => (c2: ScriptableContext<"line">) => {
+    const area = c2.chart.chartArea;
+    if (!area) return "transparent";
+    const g = c2.chart.ctx.createLinearGradient(0, area.top, 0, area.bottom);
+    g.addColorStop(0, `rgba(${rgb}, ${top})`);
+    g.addColorStop(1, `rgba(${rgb}, 0)`);
+    return g;
+  };
 
   function updateChart(
     labels: number[],
@@ -539,14 +548,9 @@ export function mountHypotekarnaCalculator(): () => void {
       return;
     }
 
-    const gradientHeight = canvas.clientHeight || 400;
-    const gM = ctx.createLinearGradient(0, 0, 0, gradientHeight);
-    gM.addColorStop(0, "rgba(193, 83, 60, 0.10)");
-    gM.addColorStop(1, "rgba(193, 83, 60, 0)");
-    const gI = ctx.createLinearGradient(0, 0, 0, gradientHeight);
-    gI.addColorStop(0, "rgba(41, 97, 74, 0.28)");
-    gI.addColorStop(0.65, "rgba(41, 97, 74, 0.08)");
-    gI.addColorStop(1, "rgba(41, 97, 74, 0)");
+    // Gradientové výplne podľa aktuálnej plochy grafu (vzor Výnosnosť bytu).
+    const gM = areaGradient("201, 87, 63", 0.12);
+    const gI = areaGradient("47, 107, 78", 0.28);
 
     chartInstance = new Chart(ctx, {
       type: "line",
@@ -557,15 +561,15 @@ export function mountHypotekarnaCalculator(): () => void {
             type: "line",
             label: "Zostatok hypotéky",
             data: dataM,
-            borderColor: "#C1533C",
+            borderColor: "#ab4132",
             backgroundColor: gM,
             borderWidth: 2.5,
             fill: true,
             tension: 0.4,
             pointRadius: lastPointRadius,
             pointHoverRadius: 6,
-            pointBackgroundColor: "#C1533C",
-            pointBorderColor: "#FFF9F5",
+            pointBackgroundColor: "#ab4132",
+            pointBorderColor: "#fffcf7",
             pointBorderWidth: 2,
             hidden: !mEnabled,
           },
@@ -573,15 +577,15 @@ export function mountHypotekarnaCalculator(): () => void {
             type: "line",
             label: "Hodnota investície",
             data: dataI,
-            borderColor: "#29614A",
+            borderColor: "#2a6647",
             backgroundColor: gI,
             borderWidth: 2.5,
             fill: true,
             tension: 0.4,
             pointRadius: lastPointRadius,
             pointHoverRadius: 6,
-            pointBackgroundColor: "#29614A",
-            pointBorderColor: "#FFF9F5",
+            pointBackgroundColor: "#2a6647",
+            pointBorderColor: "#fffcf7",
             pointBorderWidth: 2,
             hidden: !iEnabled,
           },
@@ -597,20 +601,19 @@ export function mountHypotekarnaCalculator(): () => void {
           legend: { display: false },
           tooltip: {
             enabled: !isStatic,
-            backgroundColor: "rgba(2, 44, 34, 0.96)",
-            titleColor: "#fdf8f2",
-            bodyColor: "rgba(240, 235, 227, 0.92)",
-            footerColor: "#8fd4b4",
-            borderColor: "rgba(253, 248, 242, 0.15)",
-            borderWidth: 1,
-            padding: 14,
+            backgroundColor: "rgba(41, 36, 32, 0.96)",
+            titleColor: "#f3e9dd",
+            bodyColor: "rgba(243, 233, 221, 0.9)",
+            footerColor: "#d9b15c",
+            borderWidth: 0,
+            padding: 12,
             cornerRadius: 12,
             caretSize: 6,
             usePointStyle: true,
             boxPadding: 5,
-            titleFont: { family: "Recoleta, Georgia, serif", size: 14, weight: "bold" },
-            bodyFont: { family: "Gilroy, sans-serif", size: 13 },
-            footerFont: { family: "Gilroy, sans-serif", size: 13, weight: "bold" },
+            titleFont: { family: "Matter, sans-serif", size: 13, weight: 600 },
+            bodyFont: { family: "Matter, sans-serif", size: 13 },
+            footerFont: { family: "Matter, sans-serif", size: 13, weight: 600 },
             callbacks: {
               label: (context) => {
                 let label = context.dataset.label || "";
@@ -634,11 +637,11 @@ export function mountHypotekarnaCalculator(): () => void {
           y: {
             beginAtZero: true,
             border: { display: false },
-            grid: { color: "rgba(0, 0, 0, 0.05)" },
+            grid: { color: "rgba(41, 36, 32, 0.08)" },
             ticks: {
               maxTicksLimit: 5,
-              color: "rgba(0, 0, 0, 0.4)",
-              font: { family: "Gilroy, sans-serif", size: 12 },
+              color: "rgba(41, 36, 32, 0.5)",
+              font: { family: "Matter, sans-serif", size: 12 },
               callback(value) {
                 const v = Number(value);
                 return v >= 1_000_000 ? (v / 1_000_000).toFixed(1) + "M €" : (v / 1000).toFixed(0) + "k €";
@@ -650,8 +653,8 @@ export function mountHypotekarnaCalculator(): () => void {
             grid: { display: false },
             ticks: {
               maxTicksLimit: 8,
-              color: "rgba(0, 0, 0, 0.4)",
-              font: { family: "Gilroy, sans-serif", size: 12 },
+              color: "rgba(41, 36, 32, 0.5)",
+              font: { family: "Matter, sans-serif", size: 12 },
             },
           },
         },
@@ -704,7 +707,7 @@ export function mountHypotekarnaCalculator(): () => void {
       ["Zaplatené na úrokoch", (v, r) => (v.mortgageEnabled ? fmtCur(r.totalInterest) : "—")],
     ];
     mRows.forEach(([label, fn]) => {
-      html += `<tr><td style="color:hsl(var(--muted-foreground));">${label}</td>`;
+      html += `<tr><td style="color:var(--fg3);">${label}</td>`;
       snapshots.forEach(({ v, r }) => {
         html += `<td>${fn(v, r)}</td>`;
       });
@@ -720,7 +723,7 @@ export function mountHypotekarnaCalculator(): () => void {
       ["Čistý výnos", (v, r) => (v.investEnabled ? fmtCur(r.curI - r.totalPrincipalInvested) : "—")],
     ];
     iRows.forEach(([label, fn]) => {
-      html += `<tr><td style="color:hsl(var(--muted-foreground));">${label}</td>`;
+      html += `<tr><td style="color:var(--fg3);">${label}</td>`;
       snapshots.forEach(({ v, r }) => {
         html += `<td>${fn(v, r)}</td>`;
       });
@@ -730,7 +733,7 @@ export function mountHypotekarnaCalculator(): () => void {
     html += '<tr class="highlight"><td>Čistý majetok</td>';
     snapshots.forEach(({ v, r }) => {
       const net = (v.investEnabled ? r.curI : 0) - (v.mortgageEnabled ? r.curM : 0);
-      html += `<td style="color:${net >= 0 ? "#29614A" : "#C1533C"}">${fmtCur(net)}</td>`;
+      html += `<td style="color:${net >= 0 ? "#2a6647" : "#ab4132"}">${fmtCur(net)}</td>`;
     });
     html += "</tr></tbody>";
     table.innerHTML = html;
@@ -851,8 +854,10 @@ Vygenerované dňa ${date} — ${BRAND_SITE}`);
       const savedScroll = window.scrollY;
       window.scrollTo(0, 0);
       const pdfWrapper = document.createElement("div");
+      // Klon nesie triedy koreňa, aby preň platili tokeny a štýly nástroja (bez vstupnej animácie a závoja).
+      pdfWrapper.className = "calc-ui hypo-calc hypo-pdf-export";
       pdfWrapper.style.cssText =
-        "position:absolute;top:0;left:0;width:900px;background:hsl(var(--cream));padding:30px;box-sizing:border-box;z-index:99999;";
+        "position:absolute;top:0;left:0;width:900px;background:#f3eee8;padding:30px;box-sizing:border-box;z-index:99999;";
       pdfWrapper.appendChild(clone);
       document.body.appendChild(pdfWrapper);
 

@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { BarChart3, FileDown, House, Percent, Receipt, Wallet, MapPin, TrendingUp, ScanLine, TrafficCone } from "lucide-react";
+import { BarChart3, FileDown, House, Percent, Receipt, Wallet, MapPin, TrendingUp, ScanLine, TrafficCone, HeartPulse, Building2, Landmark } from "lucide-react";
 
 export const BONUSY_BASE_PATH = "/bonusy";
 
@@ -56,7 +56,7 @@ export const KALKULACKY_CALCULATORS: KalkulackaCalculatorMeta[] = [
     title: "Rentová kalkulačka",
     menuLabel: "Renta",
     description:
-      "Zisti, aký kapitál potrebuješ na požadovanú rentu a koľko treba pravidelne investovať.",
+      "Zisti, aký mesačný príjem ti môže chodiť z majetku, koľko kapitálu potrebuješ na cieľovú rentu a ako ju dosiahnuť.",
     Icon: Percent,
   },
   {
@@ -92,6 +92,30 @@ export const KALKULACKY_CALCULATORS: KalkulackaCalculatorMeta[] = [
       "Oplatí sa ti ten byt kúpiť? Lokalita, čísla, banka, dane, zmluvy. Získaš odpovede ešte pred tým, ako zaplatíš zálohu.",
     Icon: TrafficCone,
     fullBleed: true,
+  },
+  {
+    slug: "financny-checkup",
+    title: "Finančný check-up",
+    menuLabel: "Finančný check-up",
+    description:
+      "3 minúty, skóre finančného zdravia 0 až 100 podľa metodiky FinHealth Score®. Päť pilierov, tvoje čísla proti benchmarkom a tri kroky, ktoré skóre posunú najviac.",
+    Icon: HeartPulse,
+  },
+  {
+    slug: "skoring-bytov",
+    title: "Skóring investičných bytov",
+    menuLabel: "Skóring bytov",
+    description:
+      "Porovnaj až 6 bytov: dáta 70+ slovenských miest, reálnosť nájmu, stav domu, férová cena a skóre 0 až 100 s výstrahami.",
+    Icon: Building2,
+  },
+  {
+    slug: "vynosnost-bytu",
+    title: "Výnosnosť investičného bytu",
+    menuLabel: "Výnosnosť bytu",
+    description:
+      "Cashflow, hypotéka s refixáciou, vývoj majetku rok po roku a výnos na vlastný kapitál. So stres testom a porovnaním s ETF.",
+    Icon: Landmark,
   },
 ];
 
@@ -133,6 +157,9 @@ export const KALKULACKY_HEADER_GROUPS: NavGroup[] = [
       { label: "ETF semafor", href: `${BONUSY_BASE_PATH}/etf-semafor` },
       { label: "Poplatkový röntgen", href: `${BONUSY_BASE_PATH}/poplatkovy-rontgen` },
       { label: "Bytový semafor", href: `${BONUSY_BASE_PATH}/bytovy-semafor` },
+      { label: "Finančný check-up", href: `${BONUSY_BASE_PATH}/financny-checkup` },
+      { label: "Skóring bytov", href: `${BONUSY_BASE_PATH}/skoring-bytov` },
+      { label: "Výnosnosť bytu", href: `${BONUSY_BASE_PATH}/vynosnost-bytu` },
     ],
   },
   {

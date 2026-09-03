@@ -1,184 +1,124 @@
 /**
- * Hypotekárna kalkulačka — scoped pod #hypo-calc-root, dizajn systém calc-ui.
- * Root id musí sedieť s HypotekarnaCalculator.tsx (#hypo-calc-root).
+ * Hypotéka vs. investovanie — jazyk /bonusy 2.0.
+ * Scoped triedou .hypo-calc (root #hypo-calc-root ju nesie; rovnakú triedu dostane aj klon
+ * stránky pri exporte do PDF, aby vyzeral ako živá stránka). Root id musí sedieť s TSX.
+ * Zdieľané plochy (dock, hero XL, štatistiky, panel, poznámka) rieši calc-ui.css; tu sú len
+ * nástrojové doplnky: dve skupiny v docku, prepínače, udalosti, bod zlomu, export.
  */
-#hypo-calc-root *,
-#hypo-calc-root *::before,
-#hypo-calc-root *::after {
-  box-sizing: border-box;
-}
 
-#hypo-calc-root {
-  font-family: var(--font-sans);
-  color: hsl(var(--charcoal));
-  width: 100%;
-  max-width: 100%;
-}
+.hypo-calc *,
+.hypo-calc *::before,
+.hypo-calc *::after { box-sizing: border-box; }
 
-#hypo-calc-root .hypo-heading {
-  font-family: var(--font-serif);
-}
+.hypo-calc { font-family: var(--font-sans); color: var(--wm-brown); width: 100%; max-width: 100%; }
+.hypo-calc canvas { pointer-events: auto !important; cursor: crosshair; }
 
-#hypo-calc-root canvas {
-  pointer-events: auto !important;
-  cursor: crosshair;
-}
+/* --------------------- Dock: dve skupiny oddelené hairline -------------------- */
 
-/* --------------------- Dock s dvoma skupinami vstupov --------------------- */
-
-#hypo-calc-root .hypo-dock-groups {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.75rem;
-}
-
-#hypo-calc-root .hypo-dock-group {
-  min-width: 0;
-}
+.hypo-calc .hypo-dock-groups { display: grid; grid-template-columns: 1fr; gap: 1.75rem; }
+.hypo-calc .hypo-dock-group { min-width: 0; }
 
 @media (min-width: 1024px) {
-  #hypo-calc-root .hypo-dock-groups {
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-  }
-
-  #hypo-calc-root .hypo-dock-group + .hypo-dock-group {
-    border-left: 1px solid hsl(var(--border) / 0.6);
-    padding-left: 2rem;
-  }
+  .hypo-calc .hypo-dock-groups { grid-template-columns: 1fr 1fr; gap: 2rem; }
+  .hypo-calc .hypo-dock-group + .hypo-dock-group { border-left: 1px solid var(--hair); padding-left: 2rem; }
 }
 
 @media (max-width: 1023.98px) {
-  #hypo-calc-root .hypo-dock-group + .hypo-dock-group {
-    border-top: 1px solid hsl(var(--border) / 0.6);
-    padding-top: 1.5rem;
-  }
+  .hypo-calc .hypo-dock-group + .hypo-dock-group { border-top: 1px solid var(--hair); padding-top: 1.5rem; }
 }
 
-/* Akordeón udalostí v pätke docku */
-#hypo-calc-root .calc-dock-foot .hypo-evt-toggle {
-  padding: 0.875rem 0 0.5rem;
-}
+/* Vnútri skupiny polia neoddeľujeme ďalšími čiarami — stačí čiara medzi skupinami. */
+.hypo-calc .hypo-dock-group .calc-dock-item + .calc-dock-item { border-left: none; padding-left: 0; }
 
-#hypo-calc-root .calc-dock-foot .hypo-evt-content {
-  margin-top: 0.625rem;
-  padding-bottom: 1rem;
-}
+/* Stepper a jednotka nesmú prekryť text vstupu (dock zužuje padding). */
+.hypo-calc .calc-dock-item .calc-input-wrap--stepper .calc-input { padding-right: 6.25rem; }
+.hypo-calc .calc-dock-item .calc-input--unit { padding-right: 2.75rem; }
+.hypo-calc .hypo-input--years { padding-right: 4rem; }
 
-/* ------------------- Hlavička skupiny docku s prepínačom ------------------ */
+/* ------------------- Hlavička skupiny: názov, prepínač, štítok ------------------ */
 
-#hypo-calc-root .hypo-panel-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  margin-bottom: 1.25rem;
-}
+.hypo-calc .hypo-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 1.25rem; }
+.hypo-calc .hypo-panel-head .calc-panel-title { margin: 0; font-size: 1.25rem; }
+.hypo-calc .hypo-panel-title-group { display: flex; align-items: center; gap: 0.75rem; }
 
-#hypo-calc-root .hypo-panel-head .calc-panel-title {
-  margin: 0;
-}
-
-#hypo-calc-root .hypo-panel-title-group {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-#hypo-calc-root .hypo-tag {
+.hypo-calc .hypo-tag {
   display: inline-flex;
   align-items: center;
   padding: 0.25rem 0.6875rem;
-  border: 1px solid hsl(var(--border));
+  border: none;
   border-radius: 9999px;
-  background: hsl(var(--cream));
+  background: var(--tone-blush);
   font-family: var(--font-sans);
-  font-size: 0.8125rem;
+  font-size: 0.6875rem;
   font-weight: 600;
-  color: hsl(var(--muted-foreground));
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--wm-red);
   white-space: nowrap;
 }
 
-#hypo-calc-root .hypo-tag--primary {
-  border-color: hsl(var(--primary) / 0.25);
-  background: hsl(var(--primary) / 0.06);
-  color: hsl(var(--primary));
-}
+.hypo-calc .hypo-tag--primary { background: var(--wm-green); color: #f3e9dd; }
 
-/* Širšia jednotka „rokov" v poli */
-#hypo-calc-root .hypo-input--years {
-  padding-right: 4rem;
-}
-
-/* Súhrnný riadok na spodku vstupného panelu */
-#hypo-calc-root .hypo-panel-foot {
+/* Súhrnný riadok skupiny */
+.hypo-calc .hypo-panel-foot {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 1rem;
   margin-top: 1.25rem;
   padding-top: 0.9375rem;
-  border-top: 1px solid hsl(var(--border) / 0.7);
+  border-top: 1px solid var(--hair);
   font-family: var(--font-sans);
   font-size: 0.9375rem;
-  color: hsl(var(--muted-foreground));
+  color: var(--fg3);
 }
 
-#hypo-calc-root .hypo-panel-foot-value {
-  font-weight: 700;
-  color: hsl(var(--foreground));
+.hypo-calc .hypo-panel-foot-value {
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--wm-brown);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 
-/* ------------------------------ Prepínač (toggle) ------------------------- */
+/* ------------------------------ Prepínač (zelený) ----------------------------- */
 
-#hypo-calc-root .ml-toggle {
-  position: relative;
-  display: inline-block;
-  width: 40px;
-  height: 22px;
-  flex-shrink: 0;
-}
+.hypo-calc .ml-toggle { position: relative; display: inline-block; width: 2.5rem; height: 1.375rem; flex-shrink: 0; }
+.hypo-calc .ml-toggle input { opacity: 0; width: 0; height: 0; }
 
-#hypo-calc-root .ml-toggle input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-#hypo-calc-root .ml-toggle-slider {
+.hypo-calc .ml-toggle-slider {
   position: absolute;
   cursor: pointer;
   inset: 0;
-  background: hsl(var(--muted));
-  border-radius: 22px;
-  transition: 0.3s;
+  background: rgba(41, 36, 32, 0.18);
+  border-radius: 9999px;
+  transition: background-color 0.25s;
 }
 
-#hypo-calc-root .ml-toggle-slider:before {
+.hypo-calc .ml-toggle-slider::before {
   position: absolute;
   content: "";
-  height: 16px;
-  width: 16px;
-  left: 3px;
-  bottom: 3px;
-  background: hsl(var(--card));
-  border-radius: 50%;
-  transition: 0.3s;
+  height: 1rem;
+  width: 1rem;
+  left: 0.1875rem;
+  bottom: 0.1875rem;
+  background: #fff;
+  border-radius: 9999px;
+  transition: transform 0.25s var(--ease-out);
 }
 
-#hypo-calc-root .ml-toggle input:checked + .ml-toggle-slider {
-  background: hsl(var(--primary));
-}
+.hypo-calc .ml-toggle input:checked + .ml-toggle-slider { background: var(--wm-green); }
+.hypo-calc .ml-toggle input:checked + .ml-toggle-slider::before { transform: translateX(1.125rem); }
 
-#hypo-calc-root .ml-toggle input:checked + .ml-toggle-slider:before {
-  transform: translateX(18px);
-}
+/* Viditeľný fokus — box-shadow je globálne vypnutý, používame outline */
+.hypo-calc .ml-toggle input:focus-visible + .ml-toggle-slider { outline: 2px solid var(--wm-green); outline-offset: 2px; }
 
-/* ---------------------------- Udalosti (akordeón) ------------------------- */
+/* --------------------------- Udalosti (akordeón v pätke) -------------------------- */
 
-#hypo-calc-root .hypo-evt-toggle {
+.hypo-calc .calc-dock-foot .hypo-evt-toggle { padding: 0.875rem 0 0.5rem; }
+
+.hypo-calc .hypo-evt-toggle {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -187,375 +127,206 @@
   user-select: none;
   font-family: var(--font-sans);
   font-size: 0.9375rem;
-  font-weight: 600;
-  color: hsl(var(--foreground));
+  font-weight: 500;
+  color: var(--wm-brown);
 }
 
-#hypo-calc-root .hypo-evt-title {
+.hypo-calc .hypo-evt-title {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--wm-brown);
 }
 
-#hypo-calc-root .hypo-evt-badge {
+.hypo-calc .hypo-evt-badge {
   align-items: center;
   justify-content: center;
   min-width: 1.375rem;
   padding: 0.125rem 0.4375rem;
   border-radius: 9999px;
-  background: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
+  background: var(--wm-green);
+  color: #fff;
   font-size: 0.6875rem;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.2;
   text-align: center;
 }
 
-#hypo-calc-root .hypo-evt-content {
-  margin-top: 1.125rem;
-  padding-top: 1.125rem;
-  border-top: 1px solid hsl(var(--border) / 0.7);
-}
+.hypo-calc .calc-dock-foot .hypo-evt-content { margin-top: 0.25rem; padding: 0.875rem 0 1rem; border-top: 1px solid var(--hair); }
 
-#hypo-calc-root .hypo-evt-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.625rem;
-  margin-bottom: 1.125rem;
-}
+/* Zoznam udalostí: riadky oddelené hairline, nie karty v karte */
+.hypo-calc .hypo-evt-list { display: flex; flex-direction: column; margin-bottom: 1rem; }
+.hypo-calc .hypo-evt-empty { margin: 0 0 0.25rem; font-size: 0.875rem; color: var(--fg3); }
 
-#hypo-calc-root .hypo-evt-form {
-  border: 1px dashed hsl(var(--border));
-  border-radius: 0.875rem;
-  background: hsl(var(--cream) / 0.6);
-  padding: 1rem 1.125rem;
-}
-
-#hypo-calc-root .hypo-evt-form-title {
-  font-family: var(--font-sans);
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: hsl(var(--foreground));
-  margin: 0 0 0.875rem;
-}
-
-#hypo-calc-root .hypo-evt-input {
-  width: 100%;
-  background: #fff;
-  border: 1.5px solid hsl(var(--border));
-  border-radius: 0.625rem;
-  padding: 0.5rem 0.75rem;
-  font-family: var(--font-sans);
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: hsl(var(--foreground));
-  transition: border-color 0.2s ease;
-}
-
-#hypo-calc-root .hypo-evt-input:hover {
-  border-color: hsl(var(--primary) / 0.35);
-}
-
-#hypo-calc-root .hypo-evt-input:focus {
-  outline: none;
-  border-color: hsl(var(--primary));
-}
-
-#hypo-calc-root .hypo-evt-add {
-  width: 100%;
-  padding: 0.625rem 1rem;
-  border: none;
-  border-radius: 0.625rem;
-  background: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-  font-family: var(--font-sans);
-  font-size: 0.9375rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-#hypo-calc-root .hypo-evt-add:hover {
-  background: hsl(var(--forest-hover));
-}
-
-/* ------------------------------- Bod zlomu -------------------------------- */
-
-#hypo-calc-root .hypo-crossover {
-  margin-top: 1.125rem;
-  padding: 0.875rem 1.125rem;
-  border: 1px solid hsl(var(--primary) / 0.2);
-  border-radius: 0.875rem;
-  background: hsl(var(--primary) / 0.05);
-  text-align: center;
-  font-family: var(--font-sans);
-  font-size: 0.9375rem;
-  color: hsl(var(--muted-foreground));
-}
-
-#hypo-calc-root .hypo-crossover-title {
-  display: block;
-  font-family: var(--font-serif);
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: hsl(var(--primary));
-  margin-bottom: 0.25rem;
-}
-
-/* ------------------------------ Pätička (PDF) ----------------------------- */
-
-#hypo-calc-root .hypo-print-footer {
-  margin-top: 2.25rem;
-  padding-top: 1.25rem;
-  border-top: 1px solid hsl(var(--border) / 0.7);
-  text-align: center;
-}
-
-#hypo-calc-root .hypo-print-footer p {
-  font-family: var(--font-sans);
-  font-size: 0.9375rem;
-  color: hsl(var(--muted-foreground));
-  margin: 0;
-}
-
-/* ----------------------------- Varianty (toolbar) ------------------------- */
-
-#hypo-calc-root .ml-dropdown {
-  position: relative;
-}
-
-#hypo-calc-root #hypo-variant-tabs {
-  column-gap: 12px !important;
-  row-gap: 10px !important;
-}
-
-#hypo-calc-root #hypo-variant-tabs .ml-add-variant {
-  margin-left: 10px !important;
-}
-
-#hypo-calc-root #hypo-variant-tabs .ml-dropdown {
-  margin-right: 2px;
-}
-
-#hypo-calc-root .ml-dropdown-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background: hsl(var(--card));
-  border: 1px solid hsl(var(--border));
-  border-radius: calc(var(--radius) - 4px);
-  z-index: 1000;
-  min-width: 160px;
-  padding: 4px;
-  display: none;
-}
-
-#hypo-calc-root .ml-dropdown-menu.open {
-  display: block;
-}
-
-#hypo-calc-root .ml-dropdown-item {
-  padding: 8px 12px;
-  font-size: 15px;
-  cursor: pointer;
-  border-radius: 6px;
-  color: hsl(var(--foreground));
-  font-family: var(--font-sans);
-}
-
-#hypo-calc-root .ml-dropdown-item:hover {
-  background: hsl(var(--cream));
-}
-
-#hypo-calc-root .ml-dropdown-item.danger {
-  color: hsl(var(--destructive));
-}
-
-#hypo-calc-root .ml-dropdown-item.danger:hover {
-  background: hsl(0 93% 94%);
-}
-
-/* --------------------------------- Modál ---------------------------------- */
-
-#hypo-comparison-modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 2147483647;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-}
-
-#hypo-comparison-modal.open {
-  display: flex;
-}
-
-#hypo-calc-root .ml-modal-box {
-  background: hsl(var(--card));
-  border-radius: var(--radius);
-  width: 100%;
-  max-width: 900px;
-  max-height: 90vh;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-#hypo-calc-root .ml-modal-header {
-  padding: 20px 24px;
-  border-bottom: 1px solid hsl(var(--border));
+.hypo-calc .hypo-evt-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-shrink: 0;
+  gap: 0.75rem;
+  padding: 0.625rem 0;
+  border-top: 1px solid var(--hair);
+  font-size: 0.9375rem;
 }
 
-#hypo-calc-root .ml-modal-body {
-  overflow-y: auto;
-  padding: 24px;
-  flex: 1;
-}
+.hypo-calc .hypo-evt-item:first-child { border-top: none; }
+.hypo-calc .hypo-evt-item-main,
+.hypo-calc .hypo-evt-item-side { display: flex; align-items: center; gap: 0.75rem; min-width: 0; }
 
-#hypo-calc-root .ml-slider-wrap {
-  padding: 16px 24px;
-  border-bottom: 1px solid hsl(var(--border));
-  background: hsl(var(--cream));
-  flex-shrink: 0;
-}
-
-#hypo-calc-root .ml-compare-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-}
-
-#hypo-calc-root .ml-compare-table th {
-  padding: 10px 16px;
-  text-align: left;
-  font-size: 13px;
-  text-transform: uppercase;
-  color: hsl(var(--muted-foreground));
-  font-weight: 700;
-  border-bottom: 2px solid hsl(var(--border));
-}
-
-#hypo-calc-root .ml-compare-table td {
-  padding: 12px 16px;
-  border-bottom: 1px solid hsl(var(--muted));
-  color: hsl(var(--foreground));
-}
-
-#hypo-calc-root .ml-compare-table tr:last-child td {
-  border-bottom: none;
-}
-
-#hypo-calc-root .ml-compare-table .section-header td {
-  background: hsl(var(--cream));
-  font-weight: 700;
-  font-size: 13px;
-  text-transform: uppercase;
-  color: hsl(var(--muted-foreground));
-  padding: 8px 16px;
-}
-
-#hypo-calc-root .ml-compare-table .highlight td {
-  font-weight: 700;
-  font-size: 15px;
-}
-
-/* ------------------------------ Tlačidlá exportu -------------------------- */
-
-#hypo-calc-root .hypo-btn-row {
-  max-width: 72rem;
-  margin: 1.5rem auto 0;
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-#hypo-calc-root .hypo-btn-email,
-#hypo-calc-root .hypo-btn-pdf {
-  padding: 12px 20px;
-  border-radius: calc(var(--radius) - 4px);
-  font-weight: 500;
-  font-size: 14px;
+.hypo-calc .hypo-evt-year {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 9999px;
+  background: var(--wm-brown);
+  color: #f3e9dd;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.hypo-calc .hypo-evt-label { font-weight: 500; color: var(--wm-brown); }
+.hypo-calc .hypo-evt-val { font-weight: 600; color: var(--wm-green); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.hypo-calc .hypo-evt-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: none;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--fg3);
+  font-size: 0.875rem;
+  line-height: 1;
   cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.hypo-calc .hypo-evt-remove:hover { background: var(--wm-red-soft); color: var(--wm-red); }
+
+/* Formulár novej udalosti: tónovaná plocha bez rámika */
+.hypo-calc .hypo-evt-form { border: none; border-radius: 1.25rem; background: var(--tone-stone); padding: 1rem 1.125rem 1.125rem; }
+.hypo-calc .hypo-evt-form-title { font-family: var(--font-sans); font-size: 0.9375rem; font-weight: 500; color: var(--wm-brown); margin: 0 0 0.875rem; }
+.hypo-calc .hypo-evt-form .calc-label { font-size: 0.8125rem; margin-bottom: 0.3125rem; }
+
+.hypo-calc .hypo-evt-input {
+  width: 100%;
+  background: #fff;
+  border: 1px solid var(--hair-2);
+  border-radius: 0.875rem;
+  padding: 0.5625rem 0.875rem;
   font-family: var(--font-sans);
-  transition:
-    background-color 0.2s,
-    border-color 0.2s,
-    opacity 0.2s;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--wm-brown);
+  font-variant-numeric: tabular-nums;
+  transition: border-color 0.2s ease;
 }
 
-#hypo-calc-root .hypo-btn-email {
-  background: hsl(var(--cream));
-  border: 1px solid hsl(var(--charcoal));
-  color: hsl(var(--charcoal));
+.hypo-calc .hypo-evt-input:hover { border-color: rgba(41, 36, 32, 0.35); }
+.hypo-calc .hypo-evt-input:focus { outline: none; border-color: var(--wm-green); }
+
+.hypo-calc select.hypo-evt-input {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23292420' stroke-width='1.6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.875rem center;
+  padding-right: 2.25rem;
+  cursor: pointer;
 }
 
-#hypo-calc-root .hypo-btn-email:hover {
-  background: hsl(var(--border));
+.hypo-calc .hypo-evt-add {
+  width: 100%;
+  padding: 0.6875rem 1rem;
+  border: none;
+  border-radius: 9999px;
+  background: var(--wm-green);
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.22s, transform 0.22s var(--ease-out);
 }
 
-#hypo-calc-root .hypo-btn-pdf {
-  background: hsl(var(--primary));
-  border: 1px solid hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
+.hypo-calc .hypo-evt-add:hover { background: #225a3e; }
+.hypo-calc .hypo-evt-add:active { transform: scale(0.98); }
+
+/* ------------------------------ Bod zlomu (pod grafom) ---------------------------- */
+/* Riadok oddelený hairline, nie box v boxe. */
+
+.hypo-calc .hypo-crossover {
+  margin-top: 1.125rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--hair);
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  color: var(--fg2);
 }
 
-#hypo-calc-root .hypo-btn-pdf:hover {
-  background: hsl(var(--forest-hover));
-  border-color: hsl(var(--forest-hover));
+.hypo-calc .hypo-crossover-title {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--wm-green);
+  margin-bottom: 0.25rem;
 }
 
-/* --------------------------------- Mobil ---------------------------------- */
+.hypo-calc .hypo-crossover-year { font-weight: 600; color: var(--wm-brown); }
+
+/* ------------------------------ Pätička (PDF) ------------------------------------ */
+
+.hypo-calc .hypo-print-footer { margin-top: 2.25rem; padding-top: 1.25rem; border-top: 1px solid var(--hair); text-align: center; }
+.hypo-calc .hypo-print-footer p { font-family: var(--font-sans); font-size: 0.875rem; color: var(--fg3); margin: 0; }
+.hypo-calc .hypo-print-brand { font-weight: 500; color: var(--wm-brown); }
+
+/* ------------------------------ Tlačidlá exportu --------------------------------- */
+
+.hypo-calc .hypo-btn-row { max-width: 72rem; margin: 1.5rem auto 0; display: flex; justify-content: flex-end; gap: 0.625rem; flex-wrap: wrap; }
+
+.hypo-calc .hypo-btn-email,
+.hypo-calc .hypo-btn-pdf {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.375rem;
+  border-radius: 9999px;
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.22s, border-color 0.22s, color 0.22s, transform 0.22s var(--ease-out);
+}
+
+.hypo-calc .hypo-btn-email { background: transparent; border: 1px solid var(--hair-2); color: var(--wm-brown); }
+.hypo-calc .hypo-btn-email:hover { background: var(--wm-taupe-soft); border-color: rgba(41, 36, 32, 0.35); }
+.hypo-calc .hypo-btn-pdf { background: var(--wm-green); border: 1px solid var(--wm-green); color: #fff; }
+.hypo-calc .hypo-btn-pdf:hover { background: #225a3e; border-color: #225a3e; }
+.hypo-calc .hypo-btn-email:active,
+.hypo-calc .hypo-btn-pdf:active { transform: scale(0.98); }
 
 @media (max-width: 640px) {
-  #hypo-calc-root .hypo-btn-row {
-    justify-content: center;
-  }
-
-  #hypo-calc-root .hypo-btn-email,
-  #hypo-calc-root .hypo-btn-pdf {
-    flex: 1;
-    min-width: 0;
-  }
-
-  #hypo-comparison-modal {
-    padding: 72px 0 0;
-    align-items: stretch;
-  }
-
-  #hypo-calc-root .ml-modal-box {
-    max-width: none;
-    width: 100%;
-    height: calc(100dvh - 72px);
-    max-height: calc(100dvh - 72px);
-    border-radius: 0;
-  }
-
-  #hypo-calc-root .ml-modal-header {
-    padding: 14px 16px;
-  }
-
-  #hypo-calc-root .ml-slider-wrap {
-    padding: 12px 16px;
-  }
-
-  #hypo-calc-root .ml-modal-body {
-    padding: 16px;
-  }
+  .hypo-calc .hypo-btn-row { justify-content: center; }
+  .hypo-calc .hypo-btn-email,
+  .hypo-calc .hypo-btn-pdf { flex: 1; min-width: 0; }
 }
 
-/* Viditeľný fokus prepínačov — box-shadow je globálne vypnutý, používame outline */
-#hypo-calc-root .ml-toggle input:focus-visible + .ml-toggle-slider {
-  outline: 2px solid hsl(var(--primary));
-  outline-offset: 2px;
+/* PDF export: klon stránky mimo koreňa — bez vstupnej animácie a bez závoja za hlavičkou */
+.hypo-pdf-export .calc-reveal { animation: none !important; }
+.hypo-pdf-export::before { display: none !important; }
+/* mobil: dvojstĺpcové riadky so steppermi na jeden stĺpec (hodnota kolidovala s ± tlačidlami) */
+@media (max-width: 480px) {
+  .hypo-calc .grid.grid-cols-2:has(.calc-input-wrap--stepper) { grid-template-columns: 1fr; }
+  .hypo-calc .grid.grid-cols-2:has(.calc-input-wrap--stepper) > .col-span-2 { grid-column: auto; }
 }

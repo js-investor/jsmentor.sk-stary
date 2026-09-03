@@ -1,31 +1,25 @@
-/** Mzdová kalkulačka — scoped pod #mzv3-w, hero-XL layout na calc-ui systéme */
+/**
+ * Mzdová kalkulačka — scoped pod #mzv3-w, jazyk /bonusy 2.0 (hero-XL layout na calc-ui).
+ * Zdieľané plochy rieši calc-ui.css; tu sú len nástrojové doplnky: prepínač režimu (pilulky),
+ * dock so skupinami display:contents, checkboxy, pätka docku, rozklad (.bd-*) a donut.
+ */
 
 #mzv3-w *,
 #mzv3-w *::before,
-#mzv3-w *::after {
-  box-sizing: border-box;
-}
+#mzv3-w *::after { box-sizing: border-box; }
 
-#mzv3-w {
-  font-family: var(--font-sans);
-  color: hsl(var(--foreground));
-  width: 100%;
-  max-width: 100%;
-}
+#mzv3-w { font-family: var(--font-sans); color: var(--wm-brown); width: 100%; max-width: 100%; }
 
 /* Mount prepína triedu .hidden na wrapperoch (emp/szco režimy) */
-#mzv3-w .hidden {
-  display: none !important;
-}
+#mzv3-w .hidden { display: none !important; }
 
-/* ------------------------- Segmented — aktívny stav ------------------------ */
-/* Mount prepína triedu .sel — mapujeme ju na aktívny vzhľad .calc-segment */
+/* Mount prepína triedu .sel — mapujeme ju na aktívny stav zdieľaných prepínačov */
+#mzv3-w .calc-segment > button.sel { background: var(--wm-brown); border-color: transparent; color: var(--wm-on-dark); }
+#mzv3-w .calc-pill.sel { background: var(--wm-green-dark); border-color: var(--wm-green-dark); color: #f3e9dd; }
 
-#mzv3-w .calc-segment > button.sel {
-  background: #fff;
-  border-color: hsl(var(--primary) / 0.3);
-  color: hsl(var(--primary));
-}
+/* Stepper a jednotka nesmú prekryť text vstupu (dock zužuje padding). */
+#mzv3-w .calc-dock-item .calc-input-wrap--stepper .calc-input { padding-right: 6.25rem; }
+#mzv3-w .calc-dock-item .calc-input--unit { padding-right: 2.75rem; }
 
 /* ------------------- Hero XL — podtitulky pod chipmi ----------------------- */
 
@@ -33,102 +27,55 @@
   font-family: var(--font-sans);
   font-size: 0.9375rem;
   font-weight: 500;
-  color: hsl(var(--foreground) / 0.75);
+  color: var(--fg2);
   font-variant-numeric: tabular-nums;
   margin: 0.75rem 0 0;
 }
 
-#mzv3-w .mzv3-hero-sub:empty {
-  display: none;
-}
+#mzv3-w .mzv3-hero-sub:empty { display: none; }
 
-#mzv3-w .mzv3-hero-foot {
-  font-family: var(--font-sans);
-  font-size: 0.8125rem;
-  color: hsl(var(--muted-foreground) / 0.85);
-  margin: 0.375rem 0 0;
-}
+#mzv3-w .mzv3-hero-foot { font-family: var(--font-sans); font-size: 0.8125rem; color: var(--fg3); margin: 0.375rem 0 0; }
 
-/* -------------------- Prepínač Zamestnanec / SZČO -------------------------- */
+/* -------------------- Prepínač Zamestnanec / SZČO (pilulky) ----------------- */
 
-#mzv3-w .mzv3-type-switch-row {
-  display: flex;
-  justify-content: center;
-  margin-top: 1.75rem;
-}
+#mzv3-w .mzv3-type-switch-row { display: flex; justify-content: center; }
+#mzv3-w .mzv3-type-switch { justify-content: center; }
+#mzv3-w .mzv3-type-switch .calc-pill { padding: 0.5625rem 1.125rem; font-size: 0.875rem; }
 
-@media (min-width: 768px) {
-  #mzv3-w .mzv3-type-switch-row {
-    margin-top: 2.25rem;
-  }
-}
-
-#mzv3-w .mzv3-type-switch {
-  width: min(100%, 27rem);
-}
-
-/* Dock nasleduje hneď za prepínačom — menší odstup než v referencii */
-#mzv3-w .calc-dock {
-  margin-top: 1.25rem;
-}
+/* Dock nasleduje hneď za prepínačom */
+#mzv3-w .calc-dock { margin-top: 1rem; }
 
 /* ------------------------------- Dock grid --------------------------------- */
 /* Skupiny polí (emp/szco) sú display: contents — deti sa stanú grid položkami;
    .hidden (display: none !important) prepísanie vypne celú skupinu. */
 
-#mzv3-w .mzv3-dock-group {
-  display: contents;
-}
+#mzv3-w .mzv3-dock-group { display: contents; }
 
-/* Zvislé oddeľovače stĺpcov aj pre položky vnútri display:contents skupín */
 @media (min-width: 1024px) {
   #mzv3-w .calc-dock-grid > * .calc-dock-item,
-  #mzv3-w .calc-dock-item + .calc-dock-item {
-    border-left: 1px solid hsl(var(--border) / 0.6);
-    padding-left: 1.5rem;
-  }
+  #mzv3-w .calc-dock-item + .calc-dock-item { border-left: 1px solid var(--hair); padding-left: 1.5rem; }
 
-  #mzv3-w .calc-dock-grid > .calc-dock-item:first-child {
-    border-left: none;
-    padding-left: 0;
-  }
+  #mzv3-w .calc-dock-grid > .calc-dock-item:first-child { border-left: none; padding-left: 0; }
 }
 
 /* Kompaktnejšie segmenty v docku (dlhé popisky smeru výpočtu) */
-#mzv3-w .calc-dock-item .calc-segment > button {
-  padding: 0.5rem 0.5rem;
-  font-size: 0.875rem;
-}
-
-#mzv3-w .calc-dock-item .calc-stat-sub {
-  font-size: 0.75rem;
-  line-height: 1.45;
-}
+#mzv3-w .calc-dock-item .calc-segment > button { padding: 0.5rem 0.5rem; font-size: 0.875rem; }
+#mzv3-w .calc-dock-item .calc-stat-sub { font-size: 0.75rem; line-height: 1.45; }
 
 /* Bonus na deti — dva mini vstupy vedľa seba */
-#mzv3-w .mzv3-mini-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.625rem;
-}
-
-#mzv3-w .mzv3-mini-row .calc-label {
-  margin-bottom: 0.3125rem;
-}
+#mzv3-w .mzv3-mini-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.625rem; }
+#mzv3-w .mzv3-mini-row .calc-label { margin-bottom: 0.3125rem; }
+#mzv3-w .calc-label--sub { font-size: 0.8125rem; font-weight: 500; color: var(--fg3); }
 
 /* ----------------------------- Checkbox riadky ----------------------------- */
 
-#mzv3-w .mzv3-check {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.625rem;
-}
+#mzv3-w .mzv3-check { display: flex; align-items: flex-start; gap: 0.625rem; }
 
 #mzv3-w .mzv3-check input[type="checkbox"] {
   width: 1.05rem;
   height: 1.05rem;
   margin-top: 0.15rem;
-  accent-color: hsl(var(--primary));
+  accent-color: var(--wm-green);
   cursor: pointer;
   flex: none;
 }
@@ -137,109 +84,43 @@
   font-family: var(--font-sans);
   font-size: 0.9375rem;
   font-weight: 500;
-  color: hsl(var(--foreground));
+  color: var(--wm-brown);
   cursor: pointer;
   line-height: 1.4;
 }
 
-#mzv3-w .mzv3-check-hint {
-  display: block;
-  margin-top: 0.125rem;
-  font-size: 0.8125rem;
-  font-weight: 400;
-  color: hsl(var(--muted-foreground));
-}
+#mzv3-w .mzv3-check-hint { display: block; margin-top: 0.125rem; font-size: 0.8125rem; font-weight: 400; color: var(--fg3); }
 
-/* Checkboxy v dock položkách — drobnejšie, aby sadli do stĺpca */
-#mzv3-w .calc-dock-item .mzv3-check label {
-  font-size: 0.875rem;
-}
-
-#mzv3-w .calc-dock-item .mzv3-check-hint {
-  font-size: 0.75rem;
-}
+#mzv3-w .calc-dock-item .mzv3-check label { font-size: 0.875rem; }
+#mzv3-w .calc-dock-item .mzv3-check-hint { font-size: 0.75rem; }
 
 /* Minimá SZČO — kompaktný textový stĺpec v docku */
-#mzv3-w .mzv3-minima-text {
-  font-family: var(--font-sans);
-  font-size: 0.75rem;
-  line-height: 1.6;
-  color: hsl(var(--muted-foreground));
-  margin: 0;
-}
-
-#mzv3-w .mzv3-minima-text strong {
-  font-weight: 600;
-  color: hsl(var(--foreground));
-  font-variant-numeric: tabular-nums;
-}
-
-/* Menší label pre podpolia (bonus na deti) */
-#mzv3-w .calc-label--sub {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: hsl(var(--muted-foreground));
-}
+#mzv3-w .mzv3-minima-text { font-family: var(--font-sans); font-size: 0.75rem; line-height: 1.6; color: var(--fg3); margin: 0; }
+#mzv3-w .mzv3-minima-text strong { font-weight: 600; color: var(--wm-brown); font-variant-numeric: tabular-nums; }
 
 /* ------------------------------- Pätka docku ------------------------------- */
 
-#mzv3-w .mzv3-dock-foot {
-  display: grid;
-  gap: 0.875rem;
-  padding: 1rem 0 0.375rem;
-}
+#mzv3-w .mzv3-dock-foot { display: grid; gap: 0.875rem; padding: 1rem 0 0.375rem; }
 
-#mzv3-w .mzv3-foot-note {
-  border: 1px solid hsl(var(--border) / 0.7);
-  border-radius: 0.875rem;
-  background: hsl(var(--cream) / 0.6);
-  padding: 0.875rem 1.125rem;
-}
-
-#mzv3-w .mzv3-infobox-title {
-  font-family: var(--font-sans);
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: hsl(var(--foreground));
-  margin: 0 0 0.25rem;
-}
-
-#mzv3-w .mzv3-infobox-text {
-  font-family: var(--font-sans);
-  font-size: 0.875rem;
-  line-height: 1.55;
-  color: hsl(var(--muted-foreground));
-  margin: 0;
-}
+/* Poznámka k SZČO: tónovaná plocha bez rámika (ako .calc-note) */
+#mzv3-w .mzv3-foot-note { border: none; border-radius: 1.25rem; background: var(--wm-taupe-soft); padding: 0.875rem 1.125rem; }
+#mzv3-w .mzv3-infobox-title { font-family: var(--font-sans); font-size: 0.9375rem; font-weight: 500; color: var(--wm-brown); margin: 0 0 0.25rem; }
+#mzv3-w .mzv3-infobox-text { font-family: var(--font-sans); font-size: 0.875rem; line-height: 1.55; color: var(--fg2); margin: 0; }
 
 /* ------------------------- Panely: rozklad + graf -------------------------- */
 
-#mzv3-w .mzv3-panels {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 1.25rem;
-  align-items: start;
-  margin-top: 1.25rem;
-}
+#mzv3-w .mzv3-panels { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem; align-items: start; margin-top: 1.25rem; }
 
 @media (min-width: 1024px) {
-  #mzv3-w .mzv3-panels {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 1.5rem;
-    margin-top: 1.5rem;
-  }
+  #mzv3-w .mzv3-panels { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.5rem; margin-top: 1.5rem; }
 }
 
 /* -------------------------------- Graf (donut) ----------------------------- */
 
-#mzv3-w .mzv3-chart-body {
-  height: 14rem;
-}
+#mzv3-w .mzv3-chart-body { height: 14rem; }
 
 @media (min-width: 768px) {
-  #mzv3-w .mzv3-chart-body {
-    height: 17rem;
-  }
+  #mzv3-w .mzv3-chart-body { height: 17rem; }
 }
 
 /* ------------------------- Rozklad výpočtu (injektované) ------------------- */
@@ -251,55 +132,32 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 0.625rem 0;
-  border-bottom: 1px solid hsl(var(--border) / 0.5);
+  border-bottom: 1px solid var(--hair);
   font-family: var(--font-sans);
   font-size: 0.9375rem;
-  color: hsl(var(--foreground));
+  color: var(--wm-brown);
 }
 
-#mzv3-w .bd-row:last-child {
-  border-bottom: none;
-}
-
-#mzv3-w .bd-label {
-  flex: 1;
-  color: hsl(var(--muted-foreground));
-}
-
-#mzv3-w .bd-val {
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-  text-align: right;
-  color: hsl(var(--foreground));
-}
+#mzv3-w .bd-row:last-child { border-bottom: none; }
+#mzv3-w .bd-label { flex: 1; color: var(--fg2); }
+#mzv3-w .bd-val { font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right; color: var(--wm-brown); }
 
 #mzv3-w .bd-sep {
   font-family: var(--font-sans);
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 500;
   text-transform: uppercase;
-  color: hsl(var(--primary));
+  color: var(--wm-green);
   padding: 1rem 0 0.375rem;
-  border-bottom: 1px solid hsl(var(--border) / 0.7);
+  border-bottom: 1px solid var(--hair);
 }
 
-#mzv3-w .bd-total {
-  margin-top: 0.5rem;
-  border-top: 2px solid hsl(var(--foreground) / 0.85);
-  border-bottom: none;
-}
-
+#mzv3-w .bd-total { margin-top: 0.5rem; border-top: 1px solid var(--hair-2); border-bottom: none; }
 #mzv3-w .bd-total .bd-label,
-#mzv3-w .bd-total .bd-val {
-  font-weight: 700;
-  color: hsl(var(--foreground));
-}
+#mzv3-w .bd-total .bd-val { font-weight: 700; color: var(--wm-brown); }
+#mzv3-w .bd-total .bd-val { font-family: var(--font-serif); font-size: 1.125rem; }
 
-#mzv3-w .bd-neg {
-  color: hsl(var(--accent));
-}
-
-#mzv3-w .bd-pos {
-  color: hsl(var(--primary));
-}
+#mzv3-w .bd-neg { color: var(--wm-red); }
+#mzv3-w .bd-pos { color: var(--wm-green); }
+#mzv3-w .bd-label.text-muted-foreground,
+#mzv3-w .bd-val.text-muted-foreground { color: var(--fg3); }
