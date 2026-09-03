@@ -101,21 +101,21 @@ const GlyphArt = ({ glyph, tone }: { glyph: Glyph; tone: ToneId }) => {
       /* byt s grafom: silueta domu a tri rastúce stĺpce (Výnosnosť investičného bytu) */
       return (
         <svg viewBox="0 0 120 120" aria-hidden>
-          <path className="g-roof" d="M60 14 L106 50 L106 104 L14 104 L14 50 Z" fill={fg2} stroke={fg2} strokeWidth="10" strokeLinejoin="round" />
-          {[22, 36, 50].map((h, i) => <rect key={i} className={`g-${i + 1}`} x={31 + i * 21} y={92 - h} width="15" height={h} rx="5" fill={fg} fillOpacity={0.55 + i * 0.22} />)}
+          <path className="g-roof" d="M60 21 L99 51.5 L99 97.5 L21 97.5 L21 51.5 Z" fill={fg2} stroke={fg2} strokeWidth="8.5" strokeLinejoin="round" />
+          {[19, 31, 43].map((h, i) => <rect key={i} className={`g-${i + 1}`} x={35.5 + i * 18} y={87 - h} width="13" height={h} rx="4.5" fill={fg} fillOpacity={0.55 + i * 0.22} />)}
         </svg>
       );
     case "euro":
       /* mzda: tri bankovky a minca s € */
       return (
         <svg viewBox="0 0 120 120" aria-hidden>
-          <rect className="g-1" x="14" y="80" width="56" height="16" rx="8" fill={fg2} />
-          <rect className="g-2" x="14" y="60" width="56" height="16" rx="8" fill={fg} fillOpacity="0.55" />
-          <rect className="g-3" x="14" y="40" width="56" height="16" rx="8" fill={fg} fillOpacity="0.8" />
           <g className="g-coin">
-            <circle cx="90" cy="44" r="26" fill={fg} />
-            <text x="90" y="56" textAnchor="middle" fontFamily="Calvino, serif" fontWeight="700" fontSize="34" fill={bg}>€</text>
+            <circle cx="32" cy="54" r="25" fill={fg} />
+            <text x="32" y="66" textAnchor="middle" fontFamily="Calvino, serif" fontWeight="700" fontSize="34" fill={bg}>€</text>
           </g>
+          <rect className="g-note g-n1" x="62" y="30" width="44" height="16" rx="8" fill={fg} fillOpacity="0.8" />
+          <rect className="g-note g-n2" x="62" y="50" width="44" height="16" rx="8" fill={fg} fillOpacity="0.55" />
+          <rect className="g-note g-n3" x="62" y="70" width="44" height="16" rx="8" fill={fg2} />
         </svg>
       );
     case "slice":
