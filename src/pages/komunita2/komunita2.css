@@ -205,18 +205,16 @@
 .km-car-item figcaption b { display: block; font-size: 1rem; font-weight: 600; color: var(--km-ink); }
 .km-car-btn { position: absolute; top: 50%; display: inline-flex; align-items: center; justify-content: center; width: 2.75rem; height: 2.75rem; border-radius: 9999px; border: 1px solid var(--km-hair-2); background: var(--km-ivory); color: var(--km-ink); cursor: pointer; transform: translateY(-50%); transition: background 0.2s, border-color 0.2s; }
 .km-car-btn:hover { background: var(--km-sand); border-color: var(--km-hair-2); }
+.km-car-btn:focus { outline: none; }
+.km-car-btn:focus-visible { outline: 2px solid var(--km-green); outline-offset: 2px; }
+.km-dot:focus { outline: none; }
+.km-dot:focus-visible { outline: 2px solid var(--km-green); outline-offset: 3px; }
 .km-car-btn--prev { left: 1rem; }
 .km-car-btn--next { right: 1rem; }
 @media (max-width: 767px) { .km-car-btn { display: none; } }
 .km-car-dots { display: flex; justify-content: center; gap: 0.5rem; margin-top: 1.5rem; }
 .km-dot { width: 0.5rem; height: 0.5rem; padding: 0; border: none; border-radius: 9999px; background: var(--km-hair-2); cursor: pointer; transition: transform 0.2s, background 0.2s; }
 .km-dot.is-on { background: var(--km-green); transform: scale(1.3); }
-.km-proofstats { display: grid; grid-template-columns: 1fr; gap: 1.5rem; max-width: 58rem; margin: 3rem auto 0; padding: 2rem 0 0; list-style: none; border-top: 1px solid var(--km-hair-2); }
-@media (min-width: 640px) { .km-proofstats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2rem; } }
-.km-proofstats small { display: block; margin-bottom: 0.625rem; font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--km-green); }
-.km-proofstats b { display: block; white-space: nowrap; font-family: var(--font-serif); font-size: clamp(2rem, 2.9vw, 2.75rem); line-height: 1; font-weight: 800; letter-spacing: -0.03em; color: var(--km-ink); font-variant-numeric: tabular-nums; }
-.km-proofstats p { margin: 0.625rem 0 0; font-size: 0.9375rem; line-height: 1.45; color: var(--km-fg2); }
-.km-proofstats p strong { font-weight: 600; color: var(--km-ink); }
 .km-wall { margin-top: 3.5rem; }
 .km-wall-cap { margin: 0 0 1rem; text-align: center; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--km-fg3); }
 .km-marquee { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); }

@@ -206,8 +206,6 @@ const Testimonials = () => {
   );
 };
 
-const PROOF_KICKERS = ["Investičný kurz", "Rentový kurz", "Individuálne plány"];
-
 const Komunita2 = () => {
   useScrollDepth();
   const toolsCount = KALKULACKY_CALCULATORS.length;
@@ -481,18 +479,6 @@ const Komunita2 = () => {
             </AnimatedSection>
             <AnimatedSection delay={0.05}>
               <Testimonials />
-            </AnimatedSection>
-            <AnimatedSection delay={0.1}>
-              <ul className="km-proofstats" aria-label="Čísla">
-                {REVIEWS.stats.map((st, i) => (
-                  <li key={st.number}>
-                    <small>{PROOF_KICKERS[i]}</small>
-                    <b><CountUp text={st.number} /></b>
-                    <p>{rich(st.text)}</p>
-                  </li>
-                ))}
-              </ul>
-              <div className="km-actions km-center"><CtaLink cta={REVIEWS.cta} /></div>
             </AnimatedSection>
           </div>
           <div className="km-wall">
