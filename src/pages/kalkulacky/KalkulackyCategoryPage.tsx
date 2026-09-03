@@ -16,7 +16,7 @@ import "./bonusy-dashboard.css";
  * ------------------------------------------------------------------------- */
 
 type ToneId = "sage" | "lime" | "green" | "sand" | "stone" | "rust" | "clay" | "forest" | "brown";
-type Glyph = "venn" | "arcs" | "coins" | "gauge" | "pie" | "map" | "crescent" | "semafor" | "steps" | "dots" | "ring";
+type Glyph = "venn" | "arcs" | "coins" | "gauge" | "pie" | "map" | "crescent" | "semafor" | "steps" | "dots" | "ring" | "house" | "euro" | "slice" | "cross" | "sun";
 
 /* tón: povrch karty, hlavná farba tvaru, sekundárna farba tvaru, text, tlmený text */
 const TONES: Record<ToneId, { bg: string; fg: string; fg2: string; text?: string; muted?: string }> = {
@@ -35,15 +35,15 @@ const TOOL_META: Record<string, { category: string; tone: ToneId; glyph: Glyph }
   "financny-checkup": { category: "Začni tu", tone: "sage", glyph: "ring" },
   "etf-semafor": { category: "Investovanie", tone: "sage", glyph: "dots" },
   "skoring-bytov": { category: "Nehnuteľnosti", tone: "sand", glyph: "ring" },
-  "inteligentna-hypoteka": { category: "Hypotéka", tone: "sand", glyph: "venn" },
-  "investicna-kalkulacka": { category: "Investovanie", tone: "green", glyph: "arcs" },
-  "mzdova-kalkulacka": { category: "Mzda", tone: "stone", glyph: "coins" },
+  "inteligentna-hypoteka": { category: "Hypotéka", tone: "sand", glyph: "cross" },
+  "investicna-kalkulacka": { category: "Investovanie", tone: "green", glyph: "steps" },
+  "mzdova-kalkulacka": { category: "Mzda", tone: "stone", glyph: "euro" },
   "uverova-kalkulacka": { category: "Úvery", tone: "sand", glyph: "gauge" },
-  "rentova-kalkulacka": { category: "Renta", tone: "brown", glyph: "pie" },
+  "rentova-kalkulacka": { category: "Renta", tone: "brown", glyph: "sun" },
   "investicny-byt": { category: "Nehnuteľnosti", tone: "forest", glyph: "map" },
-  "poplatkovy-rontgen": { category: "Poplatky", tone: "clay", glyph: "crescent" },
+  "poplatkovy-rontgen": { category: "Poplatky", tone: "clay", glyph: "slice" },
   "bytovy-semafor": { category: "Nehnuteľnosti", tone: "stone", glyph: "semafor" },
-  "vynosnost-bytu": { category: "Nehnuteľnosti", tone: "green", glyph: "steps" },
+  "vynosnost-bytu": { category: "Nehnuteľnosti", tone: "green", glyph: "house" },
 };
 
 const NEW_SLUGS = new Set(["financny-checkup", "skoring-bytov", "vynosnost-bytu", "inteligentna-hypoteka"]);
@@ -96,6 +96,57 @@ const GlyphArt = ({ glyph, tone }: { glyph: Glyph; tone: ToneId }) => {
     case "steps":
       return (
         <svg viewBox="0 0 120 120" aria-hidden>{[26, 44, 66, 92].map((h, i) => <rect key={i} className={`g-${i + 1}`} x={14 + i * 25} y={106 - h} width="18" height={h} rx="6" fill={fg} fillOpacity={0.35 + i * 0.22} />)}</svg>
+      );
+    case "house":
+      /* byt s grafom: silueta domu a tri rastúce stĺpce (Výnosnosť investičného bytu) */
+      return (
+        <svg viewBox="0 0 120 120" aria-hidden>
+          <path className="g-roof" d="M60 14 L106 50 L106 104 L14 104 L14 50 Z" fill={fg2} stroke={fg2} strokeWidth="10" strokeLinejoin="round" />
+          {[22, 36, 50].map((h, i) => <rect key={i} className={`g-${i + 1}`} x={31 + i * 21} y={92 - h} width="15" height={h} rx="5" fill={fg} fillOpacity={0.55 + i * 0.22} />)}
+        </svg>
+      );
+    case "euro":
+      /* mzda: tri bankovky a minca s € */
+      return (
+        <svg viewBox="0 0 120 120" aria-hidden>
+          <rect className="g-1" x="14" y="80" width="56" height="16" rx="8" fill={fg2} />
+          <rect className="g-2" x="14" y="60" width="56" height="16" rx="8" fill={fg} fillOpacity="0.55" />
+          <rect className="g-3" x="14" y="40" width="56" height="16" rx="8" fill={fg} fillOpacity="0.8" />
+          <g className="g-coin">
+            <circle cx="90" cy="44" r="26" fill={fg} />
+            <text x="90" y="56" textAnchor="middle" fontFamily="Calvino, serif" fontWeight="700" fontSize="34" fill={bg}>€</text>
+          </g>
+        </svg>
+      );
+    case "slice":
+      /* poplatkový röntgen: koláč, z ktorého sa pri hoveri odpojí výsek */
+      return (
+        <svg viewBox="0 0 120 120" aria-hidden>
+          <path d="M58 64 L58 22 A42 42 0 1 0 100 64 Z" fill={fg} />
+          <path className="g-slice" d="M58 64 L58 22 A42 42 0 0 1 100 64 Z" fill={fg} fillOpacity="0.55" />
+        </svg>
+      );
+    case "cross":
+      /* inteligentná hypotéka: klesajúci dlh, rastúca rezerva a bod prieniku */
+      return (
+        <svg viewBox="0 0 120 120" aria-hidden>
+          <path d="M16 26 L104 98" fill="none" stroke={fg2} strokeWidth="9" strokeLinecap="round" />
+          <path d="M16 100 L104 24" fill="none" stroke={fg} strokeWidth="9" strokeLinecap="round" />
+          <circle className="g-halo" cx="60" cy="62" r="17" fill={fg2} />
+          <circle className="g-dot" cx="60" cy="62" r="10" fill={fg} stroke={bg} strokeWidth="4" />
+        </svg>
+      );
+    case "sun":
+      /* renta = sloboda: slnko vychádzajúce nad obzor */
+      return (
+        <svg viewBox="0 0 120 120" aria-hidden>
+          <defs><clipPath id="bz-sun-clip"><rect x="0" y="0" width="120" height="82" /></clipPath></defs>
+          <line className="g-ray" x1="60" y1="40" x2="60" y2="26" stroke={fg2} strokeWidth="6" strokeLinecap="round" />
+          <line className="g-ray" x1="29" y1="53" x2="19" y2="43" stroke={fg2} strokeWidth="6" strokeLinecap="round" />
+          <line className="g-ray" x1="91" y1="53" x2="101" y2="43" stroke={fg2} strokeWidth="6" strokeLinecap="round" />
+          <circle className="g-sun" cx="60" cy="86" r="34" fill={fg} clipPath="url(#bz-sun-clip)" />
+          <line x1="8" y1="82" x2="112" y2="82" stroke={fg2} strokeWidth="8" strokeLinecap="round" />
+        </svg>
       );
     case "dots":
       return (

@@ -100,3 +100,13 @@
 .bonusy .bz-pdf-title { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; margin: 0; font-family: var(--font-serif); font-size: 1.375rem; font-weight: 700; color: var(--bz-ink); }
 .bonusy .bz-pdf-soon { padding: 0.25rem 0.625rem; border-radius: 9999px; background: var(--bz-ivory); font-family: var(--font-sans); font-size: 0.75rem; font-weight: 500; color: var(--bz-fg2); }
 .bonusy .bz-pdf-text { margin: 0.25rem 0 0; font-size: 0.9375rem; line-height: 1.55; color: var(--bz-fg2); }
+
+/* Nové tvary (2026-09-03): domček s grafom, € minca, koláč s výsekom, prienik, slnko nad obzorom */
+.bonusy .bz-card:hover .g-roof { transform: translateY(-3px); }
+.bonusy .bz-card:hover .g-coin { transform: translateY(-5px) rotate(-10deg); }
+.bonusy .bz-card:hover .g-slice { transform: translate(10px, -10px); fill-opacity: 0.7; }
+.bonusy .bz-card:hover .g-dot { transform: scale(1.22); }
+.bonusy .bz-card:hover .g-halo { transform: scale(1.45); }
+.bonusy .bz-glyph .g-ray { opacity: 0.55; transition: opacity 0.45s var(--bz-ease), transform 0.55s var(--bz-ease); }
+.bonusy .bz-card:hover .g-ray { opacity: 1; }
+.bonusy .bz-card:hover .g-sun { transform: translateY(-8px); }
