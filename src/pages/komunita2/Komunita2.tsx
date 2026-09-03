@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import {
   ArrowRight,
+  Award,
   BarChart3,
   Calculator,
   CalendarDays,
   Check,
   FileCheck,
+  Instagram,
   MessageCircle,
   Play,
   PlayCircle,
@@ -14,6 +16,7 @@ import {
   Shield,
   TrendingUp,
   Users,
+  Wallet,
   X,
   type LucideIcon,
 } from "lucide-react";
@@ -121,40 +124,49 @@ function useInView<T extends HTMLElement>(margin = "-60px") {
   return [ref, seen] as const;
 }
 
-/** Číslo, ktoré sa napočíta, keď sa objaví na obrazovke (napr. „2000+“). */
-const BigStat = ({ number, text }: { number: string; text: string }) => {
-  const [ref, seen] = useInView<HTMLLIElement>();
-  const target = Number(number.replace(/\D/g, "")) || 0;
-  const suffix = number.replace(/[\d\s]/g, "");
+/** Text s číslom („2000+“, „8 rokov“, „3,5 mil. €+“) – číslo sa napočíta, keď sa objaví na obrazovke. */
+const CountUp = ({ text }: { text: string }) => {
+  const [ref, seen] = useInView<HTMLSpanElement>();
+  const match = /^([\d\s\u00a0]+(?:,\d+)?)(.*)$/.exec(text);
+  const numeric = match ? match[1].replace(/[\s\u00a0]/g, "").replace(",", ".") : "";
+  const target = numeric ? Number(numeric) : 0;
+  const decimals = match && match[1].includes(",") ? 1 : 0;
+  const rest = match ? match[2] : text;
   const [value, setValue] = useState(0);
   useEffect(() => {
-    if (!seen) return;
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) {
+    if (!seen || !match) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setValue(target);
       return;
     }
     let raf = 0;
     const t0 = performance.now();
     const tick = (t: number) => {
-      const p = Math.min(1, (t - t0) / 1500);
+      const p = Math.min(1, (t - t0) / 1400);
       const eased = 1 - Math.pow(1 - p, 3);
-      setValue(Math.round(target * eased));
+      setValue(target * eased);
       if (p < 1) raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [seen, target]);
+  }, [seen, target, match]);
+  if (!match) return <span ref={ref}>{text}</span>;
   return (
-    <li ref={ref}>
-      <b>
-        {value.toLocaleString("sk-SK")}
-        {suffix}
-      </b>
-      <span>{rich(text)}</span>
-    </li>
+    <span ref={ref}>
+      {value.toLocaleString("sk-SK", { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}
+      {rest}
+    </span>
   );
 };
+
+const BigStat = ({ number, text }: { number: string; text: string }) => (
+  <li>
+    <b><CountUp text={number} /></b>
+    <span>{rich(text)}</span>
+  </li>
+);
+
+const STRIP_ICONS: LucideIcon[] = [Instagram, Award, Wallet, Calculator];
 
 const Komunita2 = () => {
   useScrollDepth();
@@ -248,10 +260,16 @@ const Komunita2 = () => {
             </div>
 
             <ul className="km-strip km-reveal" style={st(12)} aria-label="Dôvera">
-              {HERO.trustStats.map((s) => (
-                <li key={s.label}><b>{s.value}</b><span>{s.label}</span></li>
-              ))}
-              <li><b>{toolsCount}</b><span>nástrojov a kalkulačiek zadarmo</span></li>
+              {[...HERO.trustStats.map((t) => ({ value: t.value, label: t.label })), { value: String(toolsCount), label: "nástrojov a kalkulačiek zadarmo" }].map((item, i) => {
+                const Icon = STRIP_ICONS[i] ?? Check;
+                return (
+                  <li key={item.label}>
+                    <span className="km-strip-ico" aria-hidden><Icon className="h-4 w-4" strokeWidth={1.75} /></span>
+                    <b><CountUp text={item.value} /></b>
+                    <span>{item.label}</span>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         </section>
