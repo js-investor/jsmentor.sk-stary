@@ -324,8 +324,9 @@ const Komunita2 = () => {
         </section>
 
         {/* ═══ 4. Čo získaš: zoznam + prilepená karta členstva (Sketch 101) ═══ */}
-        <section className="km-section" id={SECTION_IDS.nastroje} style={{ paddingTop: 0 }}>
+        <section className="km-section km-section--divided" id={SECTION_IDS.nastroje}>
           <div className="km-wrap">
+            <hr className="km-divider" />
             <AnimatedSection>
               <div className="km-head km-head--left">
                 <span className="km-kicker">Čo je vnútri</span>
@@ -541,7 +542,7 @@ const Komunita2 = () => {
         </section>
 
         {/* ═══ 10. FAQ ═══ */}
-        <section className="km-section" id={SECTION_IDS.faq} style={{ paddingTop: 0 }}>
+        <section className="km-band km-band--stone" id={SECTION_IDS.faq}>
           <div className="km-wrap">
             <div className="km-faq-grid">
               <AnimatedSection className="km-faq-side">
@@ -551,6 +552,7 @@ const Komunita2 = () => {
                 <div className="km-actions"><CtaLink cta={NASTROJE.cta} className="km-link">Vyskúšať prvé 2 týždne zadarmo</CtaLink></div>
               </AnimatedSection>
               <AnimatedSection delay={0.06}>
+                <div className="km-faq-card">
                 <div className="km-faq">
                   {FAQ.items.map((item, i) => (
                     <details key={item.question} open={i === FAQ.defaultOpenIndex}>
@@ -561,13 +563,14 @@ const Komunita2 = () => {
                     </details>
                   ))}
                 </div>
+                </div>
               </AnimatedSection>
             </div>
           </div>
         </section>
 
         {/* ═══ 11. Porovnanie ═══ */}
-        <section className="km-section" id={SECTION_IDS.porovnanie} style={{ paddingTop: 0 }}>
+        <section className="km-section" id={SECTION_IDS.porovnanie}>
           <div className="km-wrap">
             <AnimatedSection>
               <div className="km-head km-center">

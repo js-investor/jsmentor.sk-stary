@@ -16,6 +16,10 @@
 .km-band--ink { background: radial-gradient(120% 90% at 50% 0%, #4a3c31 0%, #322b26 48%, #241f1b 100%); color: var(--km-paper); }
 .km-band--sand { background: var(--km-sand); }
 .km-band--green { background: radial-gradient(120% 90% at 50% 0%, #145c44 0%, #0d4433 50%, #082c21 100%); color: var(--km-paper); }
+.km-band--stone { background: #e8e1d6; border-top: 1px solid rgba(41, 36, 32, 0.08); border-bottom: 1px solid rgba(41, 36, 32, 0.08); }
+.km-section--divided { padding-top: 0; }
+.km-divider { height: 1px; margin: 0 0 4rem; border: 0; background: var(--km-hair-2); }
+@media (min-width: 768px) { .km-divider { margin-bottom: 5.5rem; } }
 
 /* ------------------------------ typografia ------------------------------ */
 .km-kicker { display: inline-flex; align-items: center; gap: 0.625rem; margin-bottom: 1rem; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--km-green); }
@@ -252,8 +256,12 @@
 /* ------------------------------ 10. FAQ: dvojstĺpec ------------------------------ */
 .km-faq-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; align-items: start; }
 @media (min-width: 900px) { .km-faq-grid { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: 4rem; } .km-faq-side { position: sticky; top: 6rem; } }
-.km-faq { border-top: 1px solid var(--km-hair-2); }
-.km-faq details { border-bottom: 1px solid var(--km-hair); }
+.km-faq-card { padding: 0.5rem 1.25rem; border-radius: var(--km-r); background: var(--km-ivory); border: 1px solid var(--km-hair); }
+@media (min-width: 768px) { .km-faq-card { padding: 0.75rem 1.75rem; } }
+.km-faq details { border-bottom: 1px solid var(--km-hair); transition: background 0.2s; }
+.km-faq details:last-child { border-bottom: none; }
+.km-faq details[open] { margin: 0.375rem -0.875rem; padding: 0 0.875rem; border-radius: 0.875rem; border-bottom-color: transparent; background: var(--km-cream); }
+.km-faq details[open] + details { border-top: 1px solid var(--km-hair); }
 .km-faq summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.25rem 0; list-style: none; cursor: pointer; font-family: var(--font-serif); font-size: 1.1875rem; line-height: 1.25; font-weight: 700; color: var(--km-ink); }
 .km-faq summary::-webkit-details-marker { display: none; }
 .km-faq summary span { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 2rem; height: 2rem; border-radius: 9999px; border: 1px solid var(--km-hair-2); color: var(--km-green); transition: transform 0.25s var(--km-ease), background 0.2s; }
