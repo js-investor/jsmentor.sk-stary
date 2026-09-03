@@ -1,0 +1,23 @@
+/**
+ * Sekcia bonusov na /komunita: mriežka kariet z /bonusy (rovnaký jazyk), bez radiálneho závoja,
+ * ktorý má prehľad bonusov za hlavičkou.
+ */
+
+.bonusy.kb { margin-top: 2.75rem; }
+.bonusy.kb::before { display: none; }
+.kb-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+@media (min-width: 640px) { .kb-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .kb-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; } }
+
+.kb-more { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 1.5rem; }
+.kb-more-label { font-family: 'Matter', 'Gilroy', sans-serif; font-size: 0.875rem; font-weight: 500; color: #6b625a; margin-right: 0.25rem; }
+.kb-chip { display: inline-flex; align-items: center; padding: 0.4375rem 0.875rem; border: 1px solid rgba(41, 36, 32, 0.18); border-radius: 9999px; background: transparent; font-family: 'Matter', 'Gilroy', sans-serif; font-size: 0.875rem; font-weight: 500; color: #292420; text-decoration: none; transition: background 0.2s, border-color 0.2s; }
+.kb-chip:hover { background: #f0e3cf; border-color: rgba(41, 36, 32, 0.32); }
+.kb-chip:focus-visible { outline: 2px solid #2a6647; outline-offset: 2px; }
+
+.kb-actions { display: flex; flex-direction: column; align-items: center; gap: 1rem; margin-top: 2.25rem; }
+@media (min-width: 640px) { .kb-actions { flex-direction: row; justify-content: center; gap: 1.5rem; } }
+.kb-link { display: inline-flex; align-items: center; gap: 0.5rem; font-family: 'Matter', 'Gilroy', sans-serif; font-size: 1rem; font-weight: 600; color: #2a6647; text-decoration: none; }
+.kb-link svg { transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1); }
+.kb-link:hover { text-decoration: underline; text-underline-offset: 4px; }
+.kb-link:hover svg { transform: translateX(3px); }
