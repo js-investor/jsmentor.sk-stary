@@ -1,0 +1,215 @@
+/**
+ * Hlavička Bonusov – „tichá linka“ (variant A).
+ * Krémová lišta na plátne stránky, hairline spodná linka, textové odkazy v Matter,
+ * konzultácia ako zelený textový odkaz so šípkou v krúžku. Žiadna kapsula, tieň ani gradient.
+ * Referencie: Munro Partners, Wealthsimple, Ashton Bespoke (Refero).
+ */
+
+.bzh {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  /* rovnaká farba ako plátno stránky (--background), aby lišta „sedela“ na stránke a delila ju len hairline */
+  background: hsl(var(--background, 25 100% 98%));
+  border-bottom: 1px solid rgba(41, 36, 32, 0.1);
+  font-family: 'Matter', 'Gilroy', sans-serif;
+  color: #292420;
+}
+
+.bzh-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  max-width: 1200px;
+  height: 56px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+@media (min-width: 768px) {
+  .bzh-bar { height: 64px; padding: 0 2rem; }
+}
+
+/* logo: wordmark WealthMap + zelené „bonuses“ */
+.bzh-logo { display: inline-flex; align-items: center; flex-shrink: 0; }
+.bzh-logo img { display: block; width: auto; height: 22px; }
+@media (min-width: 768px) {
+  .bzh-logo img { height: 28px; }
+}
+
+/* desktop navigácia: opticky v strede lišty */
+.bzh-nav { display: none; }
+@media (min-width: 1024px) {
+  .bzh-nav {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.bzh-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.5rem 0.75rem;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.2;
+  color: #292420;
+  opacity: 0.72;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.bzh-link:hover,
+.bzh-link.is-active,
+.bzh-link.is-open { opacity: 1; }
+.bzh-link:focus-visible { outline: 2px solid #2a6647; outline-offset: 2px; opacity: 1; }
+
+.bzh-chev { width: 0.8rem; height: 0.8rem; opacity: 0.7; transition: transform 0.2s; }
+.bzh-link.is-open .bzh-chev,
+.bzh-chev.is-open { transform: rotate(180deg); }
+
+/* rozbaľovacie menu: ivory panel s hairline, bez tieňa */
+.bzh-group { position: relative; }
+.bzh-panel-wrap {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 100%;
+  z-index: 70;
+  min-width: 15rem;
+  padding-top: 0.5rem; /* neviditeľný most medzi odkazom a panelom */
+}
+.bzh-panel-wrap.is-open { display: block; }
+.bzh-panel {
+  padding: 0.375rem;
+  border: 1px solid rgba(41, 36, 32, 0.14);
+  border-radius: 1rem;
+  background: #fffcf7;
+}
+.bzh-item {
+  display: block;
+  padding: 0.625rem 0.875rem;
+  border-radius: 0.625rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #292420;
+  opacity: 0.82;
+  text-decoration: none;
+  transition: background 0.15s, opacity 0.15s;
+}
+.bzh-item:hover,
+.bzh-item.is-active { background: #f3eee8; opacity: 1; }
+.bzh-soon { display: block; padding: 0.625rem 0.875rem; font-size: 0.75rem; font-weight: 600; color: #6b625a; }
+
+/* konzultácia: textový odkaz so šípkou v krúžku */
+.bzh-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #2a6647;
+  text-decoration: none;
+  white-space: nowrap;
+}
+/* na mobile kratší text „Konzultácia“, plný text od 640 px */
+.bzh-cta-long { display: none; }
+@media (min-width: 640px) {
+  .bzh-cta-long { display: inline; }
+  .bzh-cta-short { display: none; }
+}
+.bzh-cta-arrow {
+  display: inline-grid;
+  place-items: center;
+  width: 1.125rem;
+  height: 1.125rem;
+  border: 1.5px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  line-height: 1;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.bzh-cta:hover { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+.bzh-cta:hover .bzh-cta-arrow { transform: translateX(3px); }
+.bzh-cta:focus-visible { outline: 2px solid #2a6647; outline-offset: 3px; border-radius: 4px; }
+
+/* mobil: hamburger a rozbalený panel pod lištou */
+.bzh-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid rgba(41, 36, 32, 0.18);
+  border-radius: 999px;
+  background: transparent;
+  color: #292420;
+  cursor: pointer;
+}
+@media (min-width: 1024px) {
+  .bzh-toggle { display: none; }
+}
+
+.bzh-mobile {
+  padding: 0.25rem 1.25rem 1.25rem;
+  border-top: 1px solid rgba(41, 36, 32, 0.1);
+  background: hsl(var(--background, 25 100% 98%));
+}
+@media (min-width: 1024px) {
+  .bzh-mobile { display: none; }
+}
+.bzh-mobile-nav { display: flex; flex-direction: column; }
+.bzh-mlink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.875rem 0;
+  border: 0;
+  border-bottom: 1px solid rgba(41, 36, 32, 0.1);
+  background: none;
+  font: inherit;
+  font-size: 1.0625rem;
+  font-weight: 500;
+  color: #292420;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+.bzh-mitems {
+  display: flex;
+  flex-direction: column;
+  padding: 0.25rem 0 0.5rem 1rem;
+  border-bottom: 1px solid rgba(41, 36, 32, 0.1);
+}
+.bzh-mitem { padding: 0.625rem 0; font-size: 0.9375rem; font-weight: 500; color: #4a4239; text-decoration: none; }
+.bzh-mitem.is-active { color: #292420; }
+.bzh-mcta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: #2a6647;
+  text-decoration: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bzh-link, .bzh-chev, .bzh-item, .bzh-cta-arrow { transition: none !important; }
+  .bzh-cta:hover .bzh-cta-arrow { transform: none !important; }
+}
