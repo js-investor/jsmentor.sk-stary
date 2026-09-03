@@ -592,21 +592,22 @@ const Komunita2 = () => {
           </div>
         </section>
 
-        {/* ═══ 12. Záver: „Vitaj v komunite“ ═══ */}
+        {/* ═══ 12. Záver: plagát „Vitaj vo svete, kde peniaze robia peniaze“ ═══ */}
         <section className="km-band km-band--ink">
           <div className="km-wrap">
             <AnimatedSection>
+              <figure className="km-poster">
+                <img src={vitajWide} alt="Ivan Jašík víta nových členov komunity" loading="lazy" decoding="async" />
+                <figcaption className="km-poster-text">Vitaj vo svete, kde peniaze robia peniaze</figcaption>
+              </figure>
+            </AnimatedSection>
+            <AnimatedSection delay={0.06}>
               <div className="km-final">
-                <div className="km-final-photo">
-                  <img src={vitajWide} alt="Ivan Jašík víta nových členov komunity" loading="lazy" decoding="async" />
-                </div>
-                <div className="km-final-copy">
-                  <span className="km-kicker km-kicker--gold">Vitaj v komunite</span>
-                  <h2>Prvé 2 týždne zadarmo, <em>potom len 5 € mesačne.</em></h2>
-                  <p>{CENNIK.subheading}. Vojdeš dnu, pozrieš si videá, vyskúšaš nástroje a ak ti to nedáva hodnotu, jedným klikom zrušíš.</p>
-                  <CtaLink cta={CENNIK.cta} className="km-btn km-btn--light km-btn--lg" />
-                  <small>{CENNIK.note} · {HODNOTA.note}</small>
-                </div>
+                <span className="km-kicker km-kicker--gold">Rozhodni sa podľa seba</span>
+                <h2>Prvé 2 týždne zadarmo, <em>potom len 5 € mesačne.</em></h2>
+                <p>{CENNIK.subheading}. Vojdeš dnu, pozrieš si videá, vyskúšaš nástroje a ak ti to nedáva hodnotu, jedným klikom zrušíš.</p>
+                <CtaLink cta={CENNIK.cta} className="km-btn km-btn--light km-btn--lg" />
+                <small>{CENNIK.note} · {HODNOTA.note}</small>
               </div>
             </AnimatedSection>
           </div>
