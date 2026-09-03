@@ -369,8 +369,8 @@ const Komunita2 = () => {
           </div>
         </section>
 
-        {/* ═══ 5. Ukážky: zoznam lekcií (MasterClass) ═══ */}
-        <section className="km-band km-band--ink" id={SECTION_IDS.darkGradient}>
+        {/* ═══ 5. Ukážky: videá pod sebou na hnedom gradiente ═══ */}
+        <section className="km-band km-band--videos" id={SECTION_IDS.darkGradient}>
           <div className="km-wrap">
             <AnimatedSection>
               <div className="km-head km-center">
@@ -379,33 +379,31 @@ const Komunita2 = () => {
                 <p className="km-lede">{NASTROJE.subheading}</p>
               </div>
             </AnimatedSection>
-            <AnimatedSection delay={0.06}>
-              <ol className="km-lessons">
-                {DARK_GRADIENT.items.map((v, i) => (
-                  <li key={v.title}>
+            <ol className="km-shows">
+              {DARK_GRADIENT.items.map((v, i) => (
+                <li key={v.title}>
+                  <AnimatedSection delay={i * 0.05}>
                     <button
                       type="button"
-                      className="km-lesson"
+                      className="km-show"
                       onClick={scrollToCta}
                       data-umami-event={DARK_GRADIENT.thumbnailClick.umamiEvent}
                       data-umami-event-section={DARK_GRADIENT.thumbnailClick.umamiSection}
                     >
-                      <span className="km-lesson-thumb">
+                      <span className="km-show-title">{v.title}</span>
+                      <span className="km-show-frame">
                         <img src={asset(v.image.src)} alt="" loading="lazy" decoding="async" />
-                        <span className="km-video-dur">{v.duration}</span>
+                        <span className="km-show-play" aria-hidden><Play className="h-6 w-6" strokeWidth={2.5} /></span>
                       </span>
-                      <span className="km-lesson-body">
-                        <small className="km-lesson-n">{String(i + 1).padStart(2, "0")}</small>
-                        <b>{v.title}</b>
-                        <span className="km-lesson-meta">Video · {v.duration}</span>
-                      </span>
-                      <span className="km-lesson-play" aria-hidden><Play className="h-4 w-4" strokeWidth={2.5} /></span>
+                      <span className="km-show-dur">{v.duration}</span>
                     </button>
-                  </li>
-                ))}
-              </ol>
-              <div className="km-lessons-foot">
-                <CtaLink cta={DARK_GRADIENT.cta} className="km-btn km-btn--light" />
+                  </AnimatedSection>
+                </li>
+              ))}
+            </ol>
+            <AnimatedSection>
+              <div className="km-shows-foot">
+                <CtaLink cta={DARK_GRADIENT.cta} className="km-btn km-btn--light km-btn--lg" />
                 <p>{rich(DARK_GRADIENT.note)}</p>
               </div>
             </AnimatedSection>

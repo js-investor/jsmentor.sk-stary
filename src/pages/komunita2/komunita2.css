@@ -155,25 +155,25 @@
 .km-summary .km-btn { width: 100%; justify-content: center; }
 .km-summary-note { margin: 0.875rem 0 0; text-align: center; font-size: 0.8125rem; line-height: 1.5; color: var(--km-fg3); }
 
-/* ------------------------------ 5. Ukážky: zoznam lekcií (MasterClass) ------------------------------ */
-.km-lessons { max-width: 58rem; margin: 0 auto; padding: 0; list-style: none; border-top: 1px solid rgba(243, 233, 221, 0.18); }
-.km-lesson { display: grid; grid-template-columns: 1fr; gap: 1rem; width: 100%; padding: 1.25rem 0; border: none; border-bottom: 1px solid rgba(243, 233, 221, 0.18); background: none; color: var(--km-paper); text-align: left; cursor: pointer; font-family: var(--font-sans); }
-@media (min-width: 640px) { .km-lesson { grid-template-columns: 14rem minmax(0, 1fr) auto; gap: 1.5rem; align-items: center; padding: 1.5rem 0; } }
-.km-lesson-thumb { position: relative; display: block; aspect-ratio: 16 / 9; border-radius: 0.75rem; overflow: hidden; background: var(--km-ink-2); }
-.km-lesson-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--km-ease); }
-.km-lesson:hover .km-lesson-thumb img { transform: scale(1.04); }
-.km-video-dur { position: absolute; right: 0.5rem; bottom: 0.5rem; padding: 0.2rem 0.5rem; border-radius: 9999px; background: rgba(41, 36, 32, 0.82); color: var(--km-paper); font-size: 0.75rem; font-weight: 600; }
-.km-lesson-n { display: block; margin-bottom: 0.375rem; font-family: var(--font-serif); font-size: 0.875rem; font-weight: 600; letter-spacing: 0.04em; color: var(--km-gold); }
-.km-lesson-body b { display: block; font-family: var(--font-serif); font-size: 1.25rem; line-height: 1.25; font-weight: 700; text-wrap: pretty; }
-@media (min-width: 768px) { .km-lesson-body b { font-size: 1.375rem; } }
-.km-lesson-meta { display: block; margin-top: 0.375rem; font-size: 0.875rem; color: rgba(243, 233, 221, 0.62); }
-.km-lesson-play { display: none; align-items: center; justify-content: center; width: 2.75rem; height: 2.75rem; border-radius: 9999px; background: var(--km-paper); color: var(--km-ink); transition: transform 0.3s var(--km-ease); }
-@media (min-width: 640px) { .km-lesson-play { display: inline-flex; } }
-.km-lesson:hover .km-lesson-play { transform: scale(1.08); }
-.km-lesson:focus-visible { outline: 2px solid var(--km-paper); outline-offset: 2px; border-radius: 0.5rem; }
-.km-lessons-foot { display: flex; flex-direction: column; align-items: center; gap: 1rem; margin-top: 2.5rem; text-align: center; }
-.km-lessons-foot p { margin: 0; font-size: 1rem; color: rgba(243, 233, 221, 0.72); }
-.km-lessons-foot p strong { font-family: var(--font-serif); font-size: 1.25rem; font-weight: 800; color: var(--km-gold); }
+/* ------------------------------ 5. Ukážky: videá pod sebou na hnedom gradiente ------------------------------ */
+.km-band--videos { background: radial-gradient(120% 90% at 50% 0%, #4a3c31 0%, #322b26 48%, #241f1b 100%); color: var(--km-paper); }
+.km-band--videos .km-h2 { color: var(--km-paper); }
+.km-band--videos .km-lede { color: rgba(243, 233, 221, 0.78); }
+.km-shows { display: grid; gap: 3.5rem; margin: 0; padding: 0; list-style: none; }
+@media (min-width: 768px) { .km-shows { gap: 4.5rem; } }
+.km-show { display: flex; flex-direction: column; align-items: center; gap: 1.25rem; width: 100%; max-width: 46rem; margin: 0 auto; padding: 0; border: none; background: none; color: var(--km-paper); font-family: var(--font-sans); text-align: center; cursor: pointer; }
+.km-show-title { display: block; max-width: 34rem; font-family: var(--font-serif); font-size: clamp(1.25rem, 2.2vw, 1.625rem); line-height: 1.25; font-weight: 700; text-wrap: balance; }
+.km-show-frame { position: relative; display: block; width: 100%; aspect-ratio: 16 / 9; border-radius: 1.5rem; overflow: hidden; border: 2px solid rgba(243, 233, 221, 0.6); outline: 1px solid rgba(243, 233, 221, 0.16); outline-offset: 7px; background: var(--km-ink-2); transition: border-color 0.3s, outline-color 0.3s, transform 0.4s var(--km-ease); }
+.km-show:hover .km-show-frame { border-color: var(--km-paper); outline-color: rgba(243, 233, 221, 0.32); transform: translateY(-3px); }
+.km-show-frame img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--km-ease); }
+.km-show:hover .km-show-frame img { transform: scale(1.03); }
+.km-show-play { position: absolute; left: 50%; top: 50%; display: inline-flex; align-items: center; justify-content: center; width: 4.5rem; height: 4.5rem; border-radius: 9999px; background: var(--km-paper); color: var(--km-ink); transform: translate(-50%, -50%); transition: transform 0.3s var(--km-ease); }
+.km-show:hover .km-show-play { transform: translate(-50%, -50%) scale(1.08); }
+.km-show-dur { display: inline-flex; align-items: center; padding: 0.4375rem 0.875rem; border-radius: 9999px; background: var(--km-paper); color: var(--km-ink); font-size: 0.8125rem; font-weight: 600; }
+.km-show:focus-visible { outline: 2px solid var(--km-paper); outline-offset: 4px; border-radius: 1rem; }
+.km-shows-foot { display: flex; flex-direction: column; align-items: center; gap: 1rem; margin-top: 3.5rem; text-align: center; }
+.km-shows-foot p { margin: 0; font-size: 1rem; color: rgba(243, 233, 221, 0.72); }
+.km-shows-foot p strong { font-family: var(--font-serif); font-size: 1.25rem; font-weight: 800; color: var(--km-gold); }
 
 /* ------------------------------ 6. Bonusy (zdieľaná sekcia) ------------------------------ */
 .km-bonusy #bonusy-kalkulacky { background: var(--km-cream) !important; }
@@ -296,5 +296,5 @@
 
 @media (prefers-reduced-motion: reduce) {
   .km-reveal, .km-w, .km-marquee-track, .km-pulse::after { animation: none !important; }
-  .km-mistake, .km-lesson-thumb img, .km-lesson-play, .km-btn, .km-bar { transition: none !important; }
+  .km-mistake, .km-show-frame, .km-show-frame img, .km-show-play, .km-btn, .km-bar { transition: none !important; }
 }
