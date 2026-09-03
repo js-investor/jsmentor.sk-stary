@@ -25,8 +25,10 @@ import useScrollDepth from "@/hooks/useScrollDepth";
 import { BONUSY_BASE_PATH, KALKULACKY_CALCULATORS } from "@/pages/kalkulacky/kalkulackyConfig";
 import { cn } from "@/lib/utils";
 import jsLogo from "@/assets/images/js-mentor-logo.png";
-import ivanGesto from "@/assets/images/jsmentor-ivan-gesto-vysvetlovanie.jpg";
-import ivanPortrait from "@/assets/images/jsmentor-biznis-portret-ivan-interier-svetlo.jpg";
+import videoPoster from "@/assets/images/komunita-video-poster.jpg";
+import ivanKniha from "@/assets/images/js-investor-ivan-kniha.jpg";
+import ivanPolo from "@/assets/images/jsmentor-casual-biznis-muz-biela-kosela.jpg";
+import vitajWide from "@/assets/images/komunita-vitaj.jpg";
 import {
   CENNIK,
   CHYBY,
@@ -236,7 +238,7 @@ const Komunita2 = () => {
                 </div>
               ) : (
                 <button type="button" className="km-stage-video" onClick={() => setPlaying(true)} aria-label={`Prehrať video: ${HERO.video.title}`}>
-                  <img src={asset(CHYBY.image.src)} alt="" decoding="async" />
+                  <img src={videoPoster} alt="" decoding="async" />
                   <span className="km-stage-play" aria-hidden><Play className="h-7 w-7" strokeWidth={2.5} /></span>
                   <span className="km-stage-cap" aria-hidden><span>{HERO.video.title}</span><small>Prehrať video</small></span>
                 </button>
@@ -344,7 +346,7 @@ const Komunita2 = () => {
                 </ul>
                 <aside className="km-summary" aria-label="Členstvo v skratke">
                   <div className="km-summary-head">
-                    <img src={ivanPortrait} alt="" decoding="async" />
+                    <img src={ivanPolo} alt="" decoding="async" />
                     <div><b>Ivan Jašík</b><small>Pod dohľadom NBS · viac ako 8 rokov skúseností</small></div>
                   </div>
                   <ul className="km-summary-meta">
@@ -368,11 +370,11 @@ const Komunita2 = () => {
         </section>
 
         {/* ═══ 5. Ukážky: zoznam lekcií (MasterClass) ═══ */}
-        <section className="km-band km-band--sand" id={SECTION_IDS.darkGradient}>
+        <section className="km-band km-band--ink" id={SECTION_IDS.darkGradient}>
           <div className="km-wrap">
             <AnimatedSection>
               <div className="km-head km-center">
-                <span className="km-kicker">Ukážky z komunity</span>
+                <span className="km-kicker km-kicker--gold">Ukážky z komunity</span>
                 <h2 className="km-h2"><span aria-hidden>{DARK_GRADIENT.headingEmoji}</span> {DARK_GRADIENT.headingText}</h2>
                 <p className="km-lede">{NASTROJE.subheading}</p>
               </div>
@@ -403,7 +405,7 @@ const Komunita2 = () => {
                 ))}
               </ol>
               <div className="km-lessons-foot">
-                <CtaLink cta={DARK_GRADIENT.cta} className="km-btn km-btn--ink" />
+                <CtaLink cta={DARK_GRADIENT.cta} className="km-btn km-btn--light" />
                 <p>{rich(DARK_GRADIENT.note)}</p>
               </div>
             </AnimatedSection>
@@ -518,7 +520,7 @@ const Komunita2 = () => {
             <div className="km-bio">
               <AnimatedSection>
                 <div className="km-bio-photo">
-                  <img src={ivanGesto} alt={IVAN.image.alt} decoding="async" />
+                  <img src={ivanKniha} alt={IVAN.image.alt} decoding="async" />
                   <span className="km-bio-tag">Pod dohľadom NBS</span>
                 </div>
               </AnimatedSection>
@@ -592,16 +594,21 @@ const Komunita2 = () => {
           </div>
         </section>
 
-        {/* ═══ 12. Záver ═══ */}
+        {/* ═══ 12. Záver: „Vitaj v komunite“ ═══ */}
         <section className="km-band km-band--ink">
           <div className="km-wrap">
             <AnimatedSection>
               <div className="km-final">
-                <span className="km-kicker km-kicker--gold">Rozhodni sa podľa seba</span>
-                <h2>Prvé 2 týždne zadarmo, <em>potom len 5 € mesačne.</em></h2>
-                <p>{CENNIK.subheading}. Vojdeš dnu, pozrieš si videá, vyskúšaš nástroje a ak ti to nedáva hodnotu, jedným klikom zrušíš.</p>
-                <CtaLink cta={CENNIK.cta} className="km-btn km-btn--light km-btn--lg" />
-                <small>{CENNIK.note} · {HODNOTA.note}</small>
+                <div className="km-final-photo">
+                  <img src={vitajWide} alt="Ivan Jašík víta nových členov komunity" loading="lazy" decoding="async" />
+                </div>
+                <div className="km-final-copy">
+                  <span className="km-kicker km-kicker--gold">Vitaj v komunite</span>
+                  <h2>Prvé 2 týždne zadarmo, <em>potom len 5 € mesačne.</em></h2>
+                  <p>{CENNIK.subheading}. Vojdeš dnu, pozrieš si videá, vyskúšaš nástroje a ak ti to nedáva hodnotu, jedným klikom zrušíš.</p>
+                  <CtaLink cta={CENNIK.cta} className="km-btn km-btn--light km-btn--lg" />
+                  <small>{CENNIK.note} · {HODNOTA.note}</small>
+                </div>
               </div>
             </AnimatedSection>
           </div>

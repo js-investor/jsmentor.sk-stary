@@ -86,7 +86,7 @@
 .km-trust strong { font-weight: 600; color: var(--km-ink); }
 .km-stage { max-width: 62rem; margin: 3rem auto 0; }
 .km-stage-video { position: relative; display: block; width: 100%; padding: 0; border: 1px solid var(--km-hair); border-radius: var(--km-r); overflow: hidden; background: var(--km-ink); color: var(--km-paper); cursor: pointer; text-align: left; }
-.km-stage-video img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; object-position: 50% 22%; transition: transform 0.6s var(--km-ease); }
+.km-stage-video img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; object-position: 50% 50%; transition: transform 0.6s var(--km-ease); }
 .km-stage-video:hover img { transform: scale(1.02); }
 .km-stage-play { position: absolute; left: 50%; top: 50%; display: inline-flex; align-items: center; justify-content: center; width: 4.5rem; height: 4.5rem; border-radius: 9999px; background: var(--km-paper); color: var(--km-ink); transform: translate(-50%, -50%); transition: transform 0.3s var(--km-ease); }
 .km-stage-video:hover .km-stage-play { transform: translate(-50%, -50%) scale(1.06); }
@@ -156,24 +156,24 @@
 .km-summary-note { margin: 0.875rem 0 0; text-align: center; font-size: 0.8125rem; line-height: 1.5; color: var(--km-fg3); }
 
 /* ------------------------------ 5. Ukážky: zoznam lekcií (MasterClass) ------------------------------ */
-.km-lessons { max-width: 58rem; margin: 0 auto; padding: 0; list-style: none; border-top: 1px solid rgba(41, 36, 32, 0.16); }
-.km-lesson { display: grid; grid-template-columns: 1fr; gap: 1rem; width: 100%; padding: 1.25rem 0; border: none; border-bottom: 1px solid rgba(41, 36, 32, 0.16); background: none; color: var(--km-ink); text-align: left; cursor: pointer; font-family: var(--font-sans); }
+.km-lessons { max-width: 58rem; margin: 0 auto; padding: 0; list-style: none; border-top: 1px solid rgba(243, 233, 221, 0.18); }
+.km-lesson { display: grid; grid-template-columns: 1fr; gap: 1rem; width: 100%; padding: 1.25rem 0; border: none; border-bottom: 1px solid rgba(243, 233, 221, 0.18); background: none; color: var(--km-paper); text-align: left; cursor: pointer; font-family: var(--font-sans); }
 @media (min-width: 640px) { .km-lesson { grid-template-columns: 14rem minmax(0, 1fr) auto; gap: 1.5rem; align-items: center; padding: 1.5rem 0; } }
-.km-lesson-thumb { position: relative; display: block; aspect-ratio: 16 / 9; border-radius: 0.75rem; overflow: hidden; background: var(--km-ink); }
+.km-lesson-thumb { position: relative; display: block; aspect-ratio: 16 / 9; border-radius: 0.75rem; overflow: hidden; background: var(--km-ink-2); }
 .km-lesson-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--km-ease); }
 .km-lesson:hover .km-lesson-thumb img { transform: scale(1.04); }
 .km-video-dur { position: absolute; right: 0.5rem; bottom: 0.5rem; padding: 0.2rem 0.5rem; border-radius: 9999px; background: rgba(41, 36, 32, 0.82); color: var(--km-paper); font-size: 0.75rem; font-weight: 600; }
-.km-lesson-n { display: block; margin-bottom: 0.375rem; font-family: var(--font-serif); font-size: 0.875rem; font-weight: 600; letter-spacing: 0.04em; color: var(--km-fg3); }
+.km-lesson-n { display: block; margin-bottom: 0.375rem; font-family: var(--font-serif); font-size: 0.875rem; font-weight: 600; letter-spacing: 0.04em; color: var(--km-gold); }
 .km-lesson-body b { display: block; font-family: var(--font-serif); font-size: 1.25rem; line-height: 1.25; font-weight: 700; text-wrap: pretty; }
 @media (min-width: 768px) { .km-lesson-body b { font-size: 1.375rem; } }
-.km-lesson-meta { display: block; margin-top: 0.375rem; font-size: 0.875rem; color: var(--km-fg3); }
-.km-lesson-play { display: none; align-items: center; justify-content: center; width: 2.75rem; height: 2.75rem; border-radius: 9999px; background: var(--km-ink); color: var(--km-paper); transition: transform 0.3s var(--km-ease); }
+.km-lesson-meta { display: block; margin-top: 0.375rem; font-size: 0.875rem; color: rgba(243, 233, 221, 0.62); }
+.km-lesson-play { display: none; align-items: center; justify-content: center; width: 2.75rem; height: 2.75rem; border-radius: 9999px; background: var(--km-paper); color: var(--km-ink); transition: transform 0.3s var(--km-ease); }
 @media (min-width: 640px) { .km-lesson-play { display: inline-flex; } }
 .km-lesson:hover .km-lesson-play { transform: scale(1.08); }
-.km-lesson:focus-visible { outline: 2px solid var(--km-green); outline-offset: 2px; border-radius: 0.5rem; }
+.km-lesson:focus-visible { outline: 2px solid var(--km-paper); outline-offset: 2px; border-radius: 0.5rem; }
 .km-lessons-foot { display: flex; flex-direction: column; align-items: center; gap: 1rem; margin-top: 2.5rem; text-align: center; }
-.km-lessons-foot p { margin: 0; font-size: 1rem; color: var(--km-fg2); }
-.km-lessons-foot p strong { font-family: var(--font-serif); font-size: 1.25rem; font-weight: 800; color: var(--km-ink); }
+.km-lessons-foot p { margin: 0; font-size: 1rem; color: rgba(243, 233, 221, 0.72); }
+.km-lessons-foot p strong { font-family: var(--font-serif); font-size: 1.25rem; font-weight: 800; color: var(--km-gold); }
 
 /* ------------------------------ 6. Bonusy (zdieľaná sekcia) ------------------------------ */
 .km-bonusy #bonusy-kalkulacky { background: var(--km-cream) !important; }
@@ -238,7 +238,7 @@
 .km-bio { display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: center; }
 @media (min-width: 900px) { .km-bio { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: 4.5rem; } }
 .km-bio-photo { position: relative; padding: 1rem; border-radius: 1.75rem; background: var(--km-sand); }
-.km-bio-photo img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; object-position: 50% 12%; border-radius: var(--km-r); background: var(--km-stone); }
+.km-bio-photo img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; object-position: 50% 20%; border-radius: var(--km-r); background: var(--km-stone); }
 .km-bio-tag { position: absolute; left: 2rem; bottom: 2rem; padding: 0.5rem 0.875rem; border-radius: 9999px; background: var(--km-ink); color: var(--km-paper); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; }
 .km-bio p { margin: 0; font-size: 1.0625rem; line-height: 1.65; color: var(--km-fg2); text-wrap: pretty; }
 .km-bio p + p { margin-top: 1rem; }
@@ -277,12 +277,14 @@
 .km-ledger-vs { display: flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-style: italic; font-size: 1.25rem; color: var(--km-fg3); }
 @media (min-width: 768px) { .km-ledger-vs { display: none; } }
 
-/* ------------------------------ 12. Záver ------------------------------ */
-.km-final { max-width: 46rem; margin: 0 auto; text-align: center; }
-.km-final h2 { margin: 0 0 1rem; font-family: var(--font-serif); font-size: clamp(2rem, 4.6vw, 3.5rem); line-height: 1.04; font-weight: 800; letter-spacing: -0.025em; color: var(--km-paper); text-wrap: balance; }
-.km-final h2 em { font-style: italic; font-weight: 600; color: var(--km-gold); }
-.km-final p { margin: 0 auto 2rem; max-width: 34rem; font-size: 1.0625rem; line-height: 1.6; color: rgba(243, 233, 221, 0.8); }
-.km-final small { display: block; margin-top: 1.25rem; font-size: 0.8125rem; color: rgba(243, 233, 221, 0.6); }
+/* ------------------------------ 12. Záver: „Vitaj v komunite“ ------------------------------ */
+.km-final { display: grid; grid-template-columns: 1fr; gap: 2rem; align-items: center; }
+@media (min-width: 1024px) { .km-final { grid-template-columns: minmax(0, 6fr) minmax(0, 6fr); gap: 4rem; } }
+.km-final-photo img { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; object-position: 50% 30%; border-radius: var(--km-r); background: var(--km-ink-2); }
+.km-final-copy h2 { margin: 0 0 1rem; font-family: var(--font-serif); font-size: clamp(2rem, 4vw, 3.25rem); line-height: 1.04; font-weight: 800; letter-spacing: -0.025em; color: var(--km-paper); text-wrap: balance; }
+.km-final-copy h2 em { font-style: italic; font-weight: 600; color: var(--km-gold); }
+.km-final-copy p { margin: 0 0 2rem; max-width: 32rem; font-size: 1.0625rem; line-height: 1.6; color: rgba(243, 233, 221, 0.8); text-wrap: pretty; }
+.km-final-copy small { display: block; margin-top: 1.25rem; font-size: 0.8125rem; color: rgba(243, 233, 221, 0.6); }
 
 /* ------------------------------ Lepiaca lišta na mobile ------------------------------ */
 .km-bar { position: fixed; left: 0.75rem; right: 0.75rem; bottom: 0.75rem; z-index: 50; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.625rem 0.625rem 0.625rem 1rem; border-radius: 9999px; background: var(--km-ink); color: var(--km-paper); transform: translateY(140%); transition: transform 0.45s var(--km-ease); }
