@@ -4,9 +4,10 @@ import oMne from "@/assets/images/o-mne-ivan-jasik.png";
 import vanecko from "@/assets/images/vanecko.webp";
 import latkoczy from "@/assets/images/Latkoczy.webp";
 import papik from "@/assets/images/papik.webp";
-import video1 from "@/assets/images/Ako by som zacal investovat.webp";
-import video2 from "@/assets/images/Investicny byt.webp";
-import video3 from "@/assets/images/Mimoriadna splátka hypotéky.webp";
+// Náhľady videí v štýle značky (béžový papier), nahrádzajú pôvodné čierne miniatúry.
+import video1 from "@/assets/images/ukazka-ako-by-som-zacal.jpg";
+import video2 from "@/assets/images/ukazka-investicny-byt.jpg";
+import video3 from "@/assets/images/ukazka-mimoriadna-splatka.jpg";
 import recenzia1 from "@/assets/images/recenzia-1.png";
 import recenzia2 from "@/assets/images/recenzia-2.png";
 import recenzia3 from "@/assets/images/recenzia-3.png";
