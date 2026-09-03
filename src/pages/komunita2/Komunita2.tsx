@@ -51,7 +51,7 @@ import { rich } from "./rich";
 import "./komunita2.css";
 
 /**
- * Komunita 3.2 — „živý klub“ v prísnej mriežke. Predajná logika (Hormozi): hook s ponukou → problém,
+ * Komunita 3.3 — „živý klub“ v prísnej mriežke. Predajná logika (Hormozi): hook s ponukou → problém,
  * v ktorom sa človek nájde → čo sa stane v prvých 14 dňoch → hodnotový stack → ukážky → dôkazy →
  * ponuka bez rizika → kto za tým stojí → otázky → porovnanie → záver. Obsah z komunitaContent.ts.
  * Vizuál (Refero): Alo Wellness Club, Patreon, Elementor/Kajabi, Wealthsimple.
@@ -68,8 +68,8 @@ const DAYS = [
 ];
 
 /** Témy rozborov a produkty zo slovenského trhu (z FAQ). */
-const ROZBORY_CHIPS = ["Fondy", "Hypotéky", "Investičné byty", "ETF", "Poplatky", "Platformy"];
-const PRODUKTY = ["Fondy", "Investičné produkty", "Platformy", "Hypotéky", "Poplatky", "Bežné riešenia bez kontextu"];
+const ROZBORY_CHIPS = ["Fondy", "Hypotéky", "Investičné byty", "ETF", "Poplatky", "Platformy", "Renta", "Dane"];
+const PRODUKTY = ["Fondy", "Investičné produkty", "Platformy", "Hypotéky", "Poplatky", "Riešenia bez kontextu"];
 const PATH_STEPS = ["Rezerva", "Portfólio", "Renta"];
 
 const CtaLink = ({ cta, className = "km-btn", children }: { cta: Cta; className?: string; children?: ReactNode }) => (
@@ -161,8 +161,8 @@ const BigStat = ({ number, text }: { number: string; text: string }) => {
 
 const rokov = (n: number) => (n === 1 ? "rok" : n >= 2 && n <= 4 ? "roky" : "rokov");
 
-/** Mini graf z modelu Inteligentnej hypotéky (predvolený príklad): dlh klesá, rezerva rastie. */
-const HypoChart = () => {
+/** Mini graf z modelu Inteligentnej hypotéky (predvolený príklad): dlh klesá, rezerva rastie. Kreslí sa, keď je na obrazovke. */
+const HypoChart = ({ animate }: { animate: boolean }) => {
   const r = useMemo(() => compute(DEFAULT_INPUTS), []);
   const W = 320;
   const H = 120;
@@ -181,11 +181,10 @@ const HypoChart = () => {
   const yearsEarlier = Math.round(r.monthsEarlier / 12);
   return (
     <>
-      <h3 className="km-panel-title">
+      <p className="km-visual-title">
         Hypotéku splatíš <em>o {yearsEarlier} {rokov(yearsEarlier)} skôr.</em>
-      </h3>
-      <p className="km-panel-text">Plať banke minimum a rozdiel posielaj do úverovej rezervy. V bode, kde rezerva dobehne zostatok, môžeš dlh splatiť naraz.</p>
-      <svg className="km-chart" viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Dlh klesá, úverová rezerva rastie – v bode kríženia môžeš hypotéku splatiť.">
+      </p>
+      <svg className={cn("km-chart", animate && "is-in")} viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Dlh klesá, úverová rezerva rastie – v bode kríženia môžeš hypotéku splatiť.">
         <line className="l-x" x1="6" x2={W - 6} y1={H - 8} y2={H - 8} />
         {crossX !== null ? <line className="l-x" x1={crossX} x2={crossX} y1="8" y2={H - 8} strokeDasharray="3 4" /> : null}
         <path className="l-fill" d={`${resPath} L${x(years * 12).toFixed(1)},${H - 8} L6,${H - 8} Z`} />
@@ -201,93 +200,14 @@ const HypoChart = () => {
   );
 };
 
-/** Náhľad k položke zoznamu „Čo je vnútri“ (index = poradie v HODNOTA.benefitCards). */
-const FeaturePanel = ({ index, toolsCount }: { index: number; toolsCount: number }) => {
-  switch (index) {
-    case 0:
-      return (
-        <div className="km-panel" key="feed">
-          <p className="km-panel-label"><span className="km-pulse" aria-hidden />Nové video každý týždeň</p>
-          <ul className="km-feed">
-            {DARK_GRADIENT.items.map((v) => (
-              <li key={v.title}>
-                <img src={asset(v.image.src)} alt="" loading="lazy" decoding="async" />
-                <span><b>{v.title}</b><small>{v.duration}</small></span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      );
-    case 1:
-      return (
-        <div className="km-panel" key="rozbory">
-          <p className="km-panel-label">Rozbory cez čísla</p>
-          <blockquote className="km-panel-quote">Nebude to štýlom „toto si kúp“. Bude to cez čísla, poplatky, riziká, výhody, nevýhody a alternatívy.</blockquote>
-          <div className="km-chips" aria-hidden>
-            {ROZBORY_CHIPS.map((c) => (
-              <span key={c} className="km-chip">{c}</span>
-            ))}
-          </div>
-        </div>
-      );
-    case 2:
-      return (
-        <div className="km-panel" key="nastroje">
-          <p className="km-panel-label">Inteligentná hypotéka · jeden z {toolsCount} nástrojov</p>
-          <HypoChart />
-          <Link to={BONUSY_BASE_PATH} className="km-panel-link">Vyskúšať všetky nástroje zadarmo <ArrowRight className="h-4 w-4" aria-hidden /></Link>
-        </div>
-      );
-    case 3:
-      return (
-        <div className="km-panel" key="cesta">
-          <p className="km-panel-label">Krok za krokom</p>
-          <h3 className="km-panel-title">{HODNOTA.benefitCards[3].title}</h3>
-          <p className="km-panel-text">{HODNOTA.benefitCards[3].description}</p>
-          <ol className="km-path">
-            {PATH_STEPS.map((s, i) => (
-              <li key={s}><span className="km-path-n">0{i + 1}</span><b>{s}</b></li>
-            ))}
-          </ol>
-        </div>
-      );
-    case 4:
-      return (
-        <div className="km-panel" key="produkty">
-          <p className="km-panel-label">Slovenský trh</p>
-          <h3 className="km-panel-title">{HODNOTA.benefitCards[4].title}</h3>
-          <p className="km-panel-text">Aby si konečne vedel, čo vlastne vlastníš alebo čo sa ti niekto snaží predať.</p>
-          <ul className="km-checklist">
-            {PRODUKTY.map((p) => (
-              <li key={p}><Check className="h-4 w-4" strokeWidth={2.25} aria-hidden />{p}</li>
-            ))}
-          </ul>
-        </div>
-      );
-    default:
-      return (
-        <div className="km-panel km-chat" key="otazky">
-          <p className="km-panel-label">{HODNOTA.benefitCards[5].title}</p>
-          <div className="km-chat-head">
-            <img src={ivanPortrait} alt="" decoding="async" />
-            <span><b>Ivan Jašík</b><small>odpovedá v komunite</small></span>
-          </div>
-          <span className="km-bubble">{HODNOTA.benefitCards[5].description}</span>
-        </div>
-      );
-  }
-};
-
 const Komunita2 = () => {
   useScrollDepth();
   const toolsCount = KALKULACKY_CALCULATORS.length;
   const [playing, setPlaying] = useState(false);
   const [barOn, setBarOn] = useState(false);
-  const [active, setActive] = useState(0);
-  const [auto, setAuto] = useState(true);
-  const [hover, setHover] = useState(false);
   const heroRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
+  const [chartRef, chartSeen] = useInView<HTMLDivElement>("-40px");
 
   useEffect(() => {
     // Lišta sa ukáže, keď hero odíde z obrazovky, a schová sa, kým je vidieť ponuku (CTA1).
@@ -304,19 +224,6 @@ const Komunita2 = () => {
     return () => { ioHero.disconnect(); ioOffer.disconnect(); };
   }, []);
 
-  useEffect(() => {
-    // Náhľady sa striedajú samy, kým sa človek nedotkne zoznamu.
-    if (!auto || hover) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const id = window.setInterval(() => setActive((a) => (a + 1) % HODNOTA.benefitCards.length), 4500);
-    return () => window.clearInterval(id);
-  }, [auto, hover]);
-
-  const pick = (i: number) => {
-    setActive(i);
-    setAuto(false);
-  };
-
   const playHero = () => {
     setPlaying(true);
     stageRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -324,6 +231,7 @@ const Komunita2 = () => {
 
   const videoSrc = HERO.video.src.replace("autoplay=0", "autoplay=1");
   const [featured, ...moreVideos] = DARK_GRADIENT.items;
+  const [obsah, rozbory, nastroje, cesta, produkty, otazky] = HODNOTA.benefitCards;
 
   return (
     <PageWrapper>
@@ -460,7 +368,7 @@ const Komunita2 = () => {
           </div>
         </section>
 
-        {/* ═══ 4. Hodnotový stack: zoznam + prilepený náhľad ═══ */}
+        {/* ═══ 4. Hodnotový stack: bento so skutočným obsahom v každej karte ═══ */}
         <section className="km-section" id={SECTION_IDS.nastroje} style={{ paddingTop: 0 }}>
           <div className="km-wrap">
             <AnimatedSection>
@@ -471,30 +379,79 @@ const Komunita2 = () => {
               </div>
             </AnimatedSection>
             <AnimatedSection delay={0.06}>
-              <div className="km-features" onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
-                <ol className="km-feature-list">
-                  {HODNOTA.benefitCards.map((b, i) => {
-                    const Icon = ICONS[b.icon] ?? Check;
-                    return (
-                      <li key={b.title}>
-                        <button
-                          type="button"
-                          className={cn("km-feature", active === i && "is-active")}
-                          aria-pressed={active === i}
-                          onMouseEnter={() => setActive(i)}
-                          onFocus={() => setActive(i)}
-                          onClick={() => pick(i)}
-                        >
-                          <span className="km-feature-icon"><Icon className="h-4 w-4" strokeWidth={1.75} aria-hidden /></span>
-                          <span><b>{b.title}</b><span>{b.description}</span></span>
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ol>
-                <div className="km-feature-stage" aria-live="polite">
-                  <FeaturePanel index={active} toolsCount={toolsCount} />
-                </div>
+              <div className="km-bento">
+                <article className="km-card km-card--sand km-span-7">
+                  <div className="km-visual km-visual--tall">
+                    <p className="km-feed-head"><span className="km-pulse" aria-hidden />Nové video každý týždeň</p>
+                    <ul className="km-feed">
+                      {DARK_GRADIENT.items.map((v) => (
+                        <li key={v.title}>
+                          <img src={asset(v.image.src)} alt="" loading="lazy" decoding="async" />
+                          <span><b>{v.title}</b><small>{v.duration}</small></span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <h3>{obsah.title}</h3>
+                  <p>{obsah.description}</p>
+                </article>
+
+                <article className="km-card km-span-5" ref={chartRef}>
+                  <div className="km-visual km-visual--tall">
+                    <HypoChart animate={chartSeen} />
+                  </div>
+                  <h3>{nastroje.title}</h3>
+                  <p>{nastroje.description}</p>
+                  <Link to={BONUSY_BASE_PATH} className="km-card-link">Vyskúšať {toolsCount} nástrojov zadarmo <ArrowRight className="h-4 w-4" aria-hidden /></Link>
+                </article>
+
+                <article className="km-card km-span-4">
+                  <div className="km-visual">
+                    <div className="km-chips" aria-hidden>
+                      {ROZBORY_CHIPS.map((c) => (
+                        <span key={c} className="km-chip">{c}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <h3>{rozbory.title}</h3>
+                  <p>{rozbory.description}</p>
+                </article>
+
+                <article className="km-card km-card--green km-span-4">
+                  <div className="km-visual">
+                    <ol className="km-path">
+                      {PATH_STEPS.map((s, i) => (
+                        <li key={s}><span className="km-path-n">0{i + 1}</span><b>{s}</b>{i < PATH_STEPS.length - 1 ? <ArrowRight className="h-4 w-4" aria-hidden /> : <Check className="h-4 w-4" aria-hidden />}</li>
+                      ))}
+                    </ol>
+                  </div>
+                  <h3>{cesta.title}</h3>
+                  <p>{cesta.description}</p>
+                </article>
+
+                <article className="km-card km-card--stone km-span-4">
+                  <div className="km-visual">
+                    <ul className="km-checklist">
+                      {PRODUKTY.map((p) => (
+                        <li key={p}><Check className="h-4 w-4" strokeWidth={2.25} aria-hidden />{p}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <h3>{produkty.title}</h3>
+                  <p>{produkty.description}</p>
+                </article>
+
+                <article className="km-card km-card--ink km-card--chat km-span-12">
+                  <div className="km-chat-who">
+                    <img src={ivanPortrait} alt="" decoding="async" />
+                    <span><b>Ivan Jašík</b><small>odpovedá v komunite</small></span>
+                  </div>
+                  <div className="km-chat-copy">
+                    <h3>{otazky.title}</h3>
+                    <p>Nie je to len ďalší obsah. Je to systém, podľa ktorého sa vieš rozhodovať.</p>
+                  </div>
+                  <span className="km-bubble">{otazky.description}</span>
+                </article>
               </div>
               <div className="km-actions"><CtaLink cta={NASTROJE.cta} /></div>
             </AnimatedSection>
