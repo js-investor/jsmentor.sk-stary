@@ -1,13 +1,11 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import {
   ArrowRight,
-  Award,
   BarChart3,
   Calculator,
   CalendarDays,
   Check,
   FileCheck,
-  Instagram,
   MessageCircle,
   Play,
   PlayCircle,
@@ -16,7 +14,6 @@ import {
   Shield,
   TrendingUp,
   Users,
-  Wallet,
   X,
   type LucideIcon,
 } from "lucide-react";
@@ -170,7 +167,13 @@ const BigStat = ({ number, text }: { number: string; text: string }) => (
   </li>
 );
 
-const STRIP_ICONS: LucideIcon[] = [Instagram, Award, Wallet, Calculator];
+/** Pás čísel pod videom (variant A – editoriál bez karty). Prvé číslo podľa Ivana: stiahnutia online kurzov. */
+const STRIP = (tools: number) => [
+  { kicker: "Online kurzy", value: "4\u00a0000+", text: "stiahnutí online kurzov" },
+  { kicker: "Skúsenosti", value: "8 rokov", text: "pomáham ľuďom rozumne investovať" },
+  { kicker: "V starostlivosti", value: "3,5\u00a0mil.\u00a0€", text: "klientskych aktív pod dohľadom NBS" },
+  { kicker: "Bonusy", value: String(tools), text: "nástrojov a kalkulačiek zadarmo" },
+];
 
 const Komunita2 = () => {
   useScrollDepth();
@@ -264,16 +267,13 @@ const Komunita2 = () => {
             </div>
 
             <ul className="km-strip km-reveal" style={st(12)} aria-label="Dôvera">
-              {[...HERO.trustStats.map((t) => ({ value: t.value, label: t.label })), { value: String(toolsCount), label: "nástrojov a kalkulačiek zadarmo" }].map((item, i) => {
-                const Icon = STRIP_ICONS[i] ?? Check;
-                return (
-                  <li key={item.label}>
-                    <span className="km-strip-ico" aria-hidden><Icon className="h-4 w-4" strokeWidth={1.75} /></span>
-                    <b><CountUp text={item.value} /></b>
-                    <span>{item.label}</span>
-                  </li>
-                );
-              })}
+              {STRIP(toolsCount).map((item) => (
+                <li key={item.kicker}>
+                  <small>{item.kicker}</small>
+                  <b><CountUp text={item.value} /></b>
+                  <p>{item.text}</p>
+                </li>
+              ))}
             </ul>
           </div>
         </section>
