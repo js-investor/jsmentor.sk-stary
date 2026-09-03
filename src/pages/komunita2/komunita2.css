@@ -112,8 +112,8 @@
 @media (min-width: 768px) { .km-section--tight { padding-top: 4.5rem; } }
 .km-intro { display: grid; grid-template-columns: 1fr; gap: 2.25rem; align-items: center; }
 @media (min-width: 1024px) { .km-intro { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 4.5rem; } }
-.km-intro-photo img { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 18%; border-radius: var(--km-r); background: var(--km-ink-2); }
-@media (max-width: 1023px) { .km-intro-photo img { aspect-ratio: 16 / 10; } }
+.km-intro-photo img { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 22%; border-radius: var(--km-r); background: var(--km-sand); }
+@media (max-width: 1023px) { .km-intro-photo img { aspect-ratio: 4 / 5; max-width: 26rem; margin: 0 auto; } }
 .km-intro-statement { margin: 0 0 1.25rem; font-family: var(--font-serif); font-size: clamp(1.75rem, 3.2vw, 2.625rem); line-height: 1.15; font-weight: 700; letter-spacing: -0.02em; color: var(--km-ink); text-wrap: balance; }
 .km-intro-statement em { font-style: italic; color: var(--km-green); }
 .km-pull-lead { color: var(--km-fg3); font-weight: 600; }

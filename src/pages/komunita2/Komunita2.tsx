@@ -30,7 +30,7 @@ import videoPoster from "@/assets/images/komunita-video-poster.jpg";
 import ivanKniha from "@/assets/images/js-investor-ivan-kniha.jpg";
 import ivanPolo from "@/assets/images/jsmentor-casual-biznis-muz-biela-kosela.jpg";
 import vitajWide from "@/assets/images/komunita-vitaj.jpg";
-import vitajBlizko from "@/assets/images/komunita-vitaj-blizko.jpg";
+import ivanKreslo from "@/assets/images/komunita-ivan-kreslo.jpg";
 import {
   CENNIK,
   CHYBY,
@@ -307,7 +307,7 @@ const Komunita2 = () => {
           <div className="km-wrap">
             <div className="km-intro">
               <AnimatedSection className="km-intro-photo">
-                <img src={vitajBlizko} alt="Ivan Jašík pred stenou členov komunity" loading="lazy" decoding="async" />
+                <img src={ivanKreslo} alt="Ivan Jašík v kresle pri rozhovore o peniazoch" loading="lazy" decoding="async" />
               </AnimatedSection>
               <AnimatedSection delay={0.06} className="km-intro-copy">
                 <span className="km-kicker">Pre koho to je</span>
