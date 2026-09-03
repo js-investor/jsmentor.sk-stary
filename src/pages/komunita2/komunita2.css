@@ -1,13 +1,13 @@
 /**
- * Komunita 3.1 — „živý klub“ v prísnej mriežke: krémové plátno, atrament, jedna zelená na akcie,
- * plnoformátové pásy (hnedý, pieskový, tmavozelený) ako rytmus, karty vždy zarovnané na 12 stĺpcov,
- * žiadne rotácie ani prekrývanie. Život prinášajú skutočný obsah (video, graf, náhľady, správy),
+ * Komunita 3.2 — „živý klub“ v prísnej mriežke: krémové plátno, atrament, jedna zelená na akcie,
+ * plnoformátové pásy (hnedý, pieskový, tmavozelený) ako rytmus, žiadne rotácie ani prekrývanie.
+ * Hero je centrovaný s jedným veľkým videom a pásom čísel, „Čo je vnútri“ je interaktívny zoznam
+ * s prilepeným náhľadom, ukážky videí sú hlavné video + zoznam. Život prinášajú skutočný obsah,
  * napočítavané čísla a jemné vstupné animácie.
- * Referencie (Refero): Alo Wellness Club (prémiový editoriál členstva), Patreon (fotografia ako hero
- * vrstva), Elementor / Kajabi (šachovnicový rytmus svetlé–tmavé), Wealthsimple (pokojná mriežka).
+ * Referencie (Refero): Alo Wellness Club, Patreon, Elementor / Kajabi (šachovnicový rytmus), Wealthsimple.
  */
 
-.km { --km-ink: #292420; --km-ink-2: #3a332d; --km-fg2: #4a4239; --km-fg3: #6b625a; --km-cream: #f3eee8; --km-ivory: #fffcf7; --km-sand: #f0e3cf; --km-stone: #e9e4dc; --km-green: #2a6647; --km-green-dark: #0b3d2e; --km-gold: #d9b15c; --km-paper: #f3e9dd; --km-hair: rgba(41, 36, 32, 0.1); --km-hair-2: rgba(41, 36, 32, 0.18); --km-ease: cubic-bezier(0.22, 1, 0.36, 1); --km-r: 1.25rem; --km-pad: 1.5rem; --font-serif: 'Calvino', 'Recoleta', serif; --font-sans: 'Matter', 'Gilroy', sans-serif; position: relative; isolation: isolate; overflow-x: clip; font-family: var(--font-sans); color: var(--km-ink); background: var(--km-cream); -webkit-font-smoothing: antialiased; }
+.km { --km-ink: #292420; --km-ink-2: #3a332d; --km-fg2: #4a4239; --km-fg3: #6b625a; --km-cream: #f3eee8; --km-ivory: #fffcf7; --km-sand: #f0e3cf; --km-stone: #e9e4dc; --km-green: #2a6647; --km-green-dark: #0b3d2e; --km-gold: #d9b15c; --km-paper: #f3e9dd; --km-hair: rgba(41, 36, 32, 0.1); --km-hair-2: rgba(41, 36, 32, 0.18); --km-ease: cubic-bezier(0.22, 1, 0.36, 1); --km-r: 1.25rem; --font-serif: 'Calvino', 'Recoleta', serif; --font-sans: 'Matter', 'Gilroy', sans-serif; position: relative; isolation: isolate; overflow-x: clip; font-family: var(--font-sans); color: var(--km-ink); background: var(--km-cream); -webkit-font-smoothing: antialiased; }
 .km *, .km *::before, .km *::after { box-sizing: border-box; }
 .km-wrap { max-width: 1200px; margin: 0 auto; padding: 0 1.25rem; }
 @media (min-width: 768px) { .km-wrap { padding: 0 2rem; } }
@@ -22,7 +22,6 @@
 .km-kicker::before { content: ""; width: 1.5rem; height: 1px; background: currentColor; }
 .km-kicker--gold { color: var(--km-gold); }
 .km-kicker--paper { color: rgba(243, 233, 221, 0.72); }
-.km-kicker-line { margin: 0 0 1rem; font-family: var(--font-serif); font-style: italic; font-size: 1.125rem; color: var(--km-fg3); }
 .km-h1 { margin: 0 0 1.25rem; font-family: var(--font-serif); font-size: clamp(2.75rem, 6vw, 4.75rem); line-height: 1; font-weight: 700; letter-spacing: -0.03em; color: var(--km-ink); text-wrap: balance; }
 .km-h2 { margin: 0 0 0.875rem; font-family: var(--font-serif); font-size: clamp(2rem, 4vw, 3rem); line-height: 1.06; font-weight: 700; letter-spacing: -0.025em; color: var(--km-ink); text-wrap: balance; }
 .km-h2 strong { font-weight: 800; }
@@ -57,7 +56,7 @@
 .km-link:hover { text-decoration: underline; text-underline-offset: 4px; }
 .km-link svg { transition: transform 0.22s var(--km-ease); }
 .km-link:hover svg { transform: translateX(3px); }
-.km-btn:focus-visible, .km-link:focus-visible, .km-video-card:focus-visible, .km-stage-video:focus-visible { outline: 2px solid var(--km-green); outline-offset: 3px; }
+.km-btn:focus-visible, .km-link:focus-visible, .km-stage-video:focus-visible, .km-featured:focus-visible, .km-video-row:focus-visible { outline: 2px solid var(--km-green); outline-offset: 3px; }
 .km-band--ink :is(.km-btn, .km-link):focus-visible, .km-band--green :is(.km-btn, .km-link):focus-visible { outline-color: var(--km-paper); }
 
 /* vstupné animácie */
@@ -66,83 +65,39 @@
 @keyframes km-word { from { opacity: 0; transform: translateY(0.35em); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
 .km-w-wrap { display: inline; }
 .km-w { display: inline-block; animation: km-word 0.7s var(--km-ease) both; animation-delay: calc(var(--i, 0) * 60ms); }
-
-/* ------------------------------ karty (spoločný základ) ------------------------------ */
-.km-tile { position: relative; display: flex; flex-direction: column; gap: 0.375rem; padding: var(--km-pad); border-radius: var(--km-r); background: var(--km-ivory); border: 1px solid var(--km-hair); color: var(--km-ink); transition: transform 0.35s var(--km-ease); }
-.km-tile--sand { background: var(--km-sand); border-color: transparent; }
-.km-tile--stone { background: var(--km-stone); border-color: transparent; }
-.km-tile--green { background: var(--km-green); border-color: transparent; color: var(--km-paper); }
-.km-tile--ink { background: var(--km-ink); border-color: transparent; color: var(--km-paper); }
-.km-tile:hover { transform: translateY(-3px); }
-.km-tile-icon { display: inline-flex; align-items: center; justify-content: center; width: 2.25rem; height: 2.25rem; margin-bottom: 0.875rem; border-radius: 9999px; background: var(--km-ink); color: var(--km-paper); }
-.km-tile--green .km-tile-icon, .km-tile--ink .km-tile-icon { background: rgba(243, 233, 221, 0.16); color: var(--km-paper); }
-.km-tile h3 { margin: 0; font-family: var(--font-serif); font-size: 1.25rem; line-height: 1.2; font-weight: 700; text-wrap: balance; }
-.km-tile p { margin: 0; font-size: 0.9375rem; line-height: 1.55; color: var(--km-fg2); text-wrap: pretty; }
-.km-tile--green p, .km-tile--ink p { color: rgba(243, 233, 221, 0.8); }
-
-/* ------------------------------ 1. Hero ------------------------------ */
-.km-hero { padding: 2.5rem 0 4rem; }
-@media (min-width: 1024px) { .km-hero { padding: 4rem 0 5rem; } }
-.km-hero-grid { display: grid; grid-template-columns: 1fr; gap: 3rem; align-items: center; }
-@media (min-width: 1024px) { .km-hero-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 4rem; } }
-.km-hero-copy .km-lede { max-width: 30rem; }
-.km-hero-copy .km-sub { max-width: 32rem; margin-top: 0.875rem; }
-.km-hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; margin-top: 2rem; }
-.km-proof { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem 1.5rem; margin: 2.25rem 0 0; padding: 1.25rem 0 0; border-top: 1px solid var(--km-hair-2); list-style: none; }
-@media (min-width: 640px) { .km-proof { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-.km-proof b { display: block; white-space: nowrap; font-family: var(--font-serif); font-size: clamp(1.25rem, 1.6vw, 1.5rem); line-height: 1; font-weight: 700; letter-spacing: -0.01em; color: var(--km-ink); }
-.km-proof span { display: block; margin-top: 0.375rem; font-size: 0.8125rem; line-height: 1.4; color: var(--km-fg3); }
-
-/* pravý stĺpec: video a dve karty pod ním, všetko v jednej mriežke */
-.km-stage { display: grid; gap: 1rem; }
-.km-stage-video { position: relative; display: block; width: 100%; padding: 0; border: none; border-radius: var(--km-r); overflow: hidden; background: var(--km-ink); color: var(--km-paper); cursor: pointer; text-align: left; }
-.km-stage-video img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; object-position: 50% 18%; transition: transform 0.6s var(--km-ease); }
-.km-stage-video:hover img { transform: scale(1.03); }
-.km-stage-play { position: absolute; left: 50%; top: 50%; display: inline-flex; align-items: center; justify-content: center; width: 4rem; height: 4rem; border-radius: 9999px; background: var(--km-paper); color: var(--km-ink); transform: translate(-50%, -50%); transition: transform 0.3s var(--km-ease); }
-.km-stage-video:hover .km-stage-play { transform: translate(-50%, -50%) scale(1.06); }
-.km-stage-cap { position: absolute; left: 1.125rem; right: 1.125rem; bottom: 1rem; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; font-size: 0.8125rem; font-weight: 600; }
-.km-stage-cap small { font-weight: 500; opacity: 0.72; }
-.km-stage-frame { position: relative; width: 100%; aspect-ratio: 16 / 10; border-radius: var(--km-r); overflow: hidden; background: var(--km-ink); }
-.km-stage-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
-.km-stage-row { display: grid; grid-template-columns: 1fr; gap: 1rem; }
-@media (min-width: 560px) { .km-stage-row { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-.km-stage-row .km-tile { padding: 1.25rem; }
-.km-stage-k { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.5rem; font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--km-fg3); }
-.km-stage-k b { font-family: var(--font-serif); font-size: 0.875rem; font-weight: 700; letter-spacing: 0; text-transform: none; color: var(--km-green); }
-.km-stage-row h3 { font-size: 1.125rem; }
-.km-stage-row h3 em { font-style: italic; color: var(--km-green); }
-.km-chart { display: block; width: 100%; height: auto; margin-top: 0.75rem; }
-.km-chart .l-mort { fill: none; stroke: var(--km-ink); stroke-width: 2; stroke-linecap: round; }
-.km-chart .l-res { fill: none; stroke: var(--km-green); stroke-width: 2.5; stroke-linecap: round; }
-.km-chart .l-draw { stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: km-draw 2.2s var(--km-ease) 0.9s forwards; }
-.km-chart .l-fill { fill: rgba(42, 102, 71, 0.12); }
-.km-chart .l-x { stroke: var(--km-hair-2); stroke-width: 1; }
-@keyframes km-draw { to { stroke-dashoffset: 0; } }
-.km-legend { display: flex; flex-wrap: wrap; gap: 0.375rem 1rem; margin: 0.5rem 0 0; padding: 0; list-style: none; font-size: 0.75rem; color: var(--km-fg3); }
-.km-legend i { display: inline-block; width: 0.75rem; height: 2px; margin-right: 0.375rem; vertical-align: middle; background: var(--km-ink); }
-.km-legend i.is-green { background: var(--km-green); height: 3px; }
-.km-notice { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.625rem; font-size: 0.875rem; font-weight: 600; }
-.km-pulse { position: relative; display: inline-block; width: 0.625rem; height: 0.625rem; border-radius: 9999px; background: var(--km-green); }
-.km-pulse::after { content: ""; position: absolute; inset: -0.35rem; border-radius: inherit; border: 2px solid var(--km-green); opacity: 0; animation: km-ring 2.2s ease-out infinite; }
+.km-pulse { position: relative; display: inline-block; width: 0.5rem; height: 0.5rem; border-radius: 9999px; background: var(--km-green); }
+.km-pulse::after { content: ""; position: absolute; inset: -0.3rem; border-radius: inherit; border: 2px solid var(--km-green); opacity: 0; animation: km-ring 2.2s ease-out infinite; }
 @keyframes km-ring { 0% { transform: scale(0.5); opacity: 0.8; } 100% { transform: scale(1.4); opacity: 0; } }
-.km-latest { display: flex; flex-direction: column; gap: 0.5rem; margin: 0; padding: 0; list-style: none; }
-.km-latest li { display: grid; grid-template-columns: 1fr auto; gap: 0.75rem; align-items: baseline; padding-top: 0.5rem; border-top: 1px solid var(--km-hair); font-size: 0.8125rem; line-height: 1.35; color: var(--km-fg2); }
-.km-latest li:first-child { border-top: none; padding-top: 0; }
-.km-latest small { font-size: 0.75rem; white-space: nowrap; color: var(--km-fg3); }
 
-/* ------------------------------ Bežiaci pás tém ------------------------------ */
-.km-marquee { overflow: hidden; border-top: 1px solid var(--km-hair-2); border-bottom: 1px solid var(--km-hair-2); padding: 0.875rem 0; -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
-.km-marquee-track { display: flex; width: max-content; gap: 2.25rem; animation: km-marquee 48s linear infinite; }
-.km-marquee:hover .km-marquee-track { animation-play-state: paused; }
-.km-marquee-track span { display: inline-flex; align-items: center; gap: 2.25rem; white-space: nowrap; font-family: var(--font-serif); font-size: 1.125rem; font-weight: 600; color: var(--km-fg2); }
-.km-marquee-track span::after { content: ""; width: 0.3125rem; height: 0.3125rem; border-radius: 9999px; background: var(--km-green); }
-@keyframes km-marquee { to { transform: translateX(-50%); } }
-.km-marquee--wall { padding: 0; border: none; -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); }
-.km-marquee--wall .km-marquee-track { gap: 1rem; animation-duration: 70s; }
-.km-marquee--wall.is-reverse .km-marquee-track { animation-direction: reverse; }
-.km-marquee--wall + .km-marquee--wall { margin-top: 1rem; }
-.km-wall-item { display: block; height: 14rem; width: auto; border-radius: 1rem; border: 1px solid var(--km-hair); background: var(--km-ivory); object-fit: contain; }
-@media (min-width: 768px) { .km-wall-item { height: 17rem; } }
+/* ------------------------------ 1. Hero: centrovaný, jedno video, pás čísel ------------------------------ */
+.km-hero { padding: 3rem 0 3.5rem; }
+@media (min-width: 1024px) { .km-hero { padding: 4.5rem 0 4.5rem; } }
+.km-hero-center { max-width: 52rem; margin: 0 auto; text-align: center; }
+.km-pill { display: inline-flex; align-items: center; gap: 0.5rem; margin: 0 0 1.5rem; padding: 0.4375rem 0.875rem 0.4375rem 0.75rem; border-radius: 9999px; border: 1px solid var(--km-hair-2); background: var(--km-ivory); font-size: 0.8125rem; font-weight: 500; color: var(--km-fg2); }
+.km-pill::before { content: ""; width: 0.5rem; height: 0.5rem; border-radius: 9999px; background: var(--km-green); }
+.km-hero-center .km-h1 { margin: 0 auto 1.25rem; font-size: clamp(2.75rem, 6.4vw, 5.25rem); }
+.km-hero-center .km-lede { max-width: 34rem; margin: 0 auto; }
+@media (min-width: 768px) { .km-hero-center .km-lede { font-size: 1.25rem; } }
+.km-hero-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 1rem 1.5rem; margin-top: 2rem; }
+.km-trust { display: inline-flex; align-items: center; gap: 0.75rem; margin-top: 1.75rem; font-size: 0.875rem; color: var(--km-fg3); }
+.km-trust-avatars { display: flex; }
+.km-trust-avatars img { width: 2rem; height: 2rem; margin-left: -0.5rem; border-radius: 9999px; border: 2px solid var(--km-cream); object-fit: cover; background: var(--km-sand); }
+.km-trust-avatars img:first-child { margin-left: 0; }
+.km-trust strong { font-weight: 600; color: var(--km-ink); }
+.km-stage { max-width: 62rem; margin: 3rem auto 0; }
+.km-stage-video { position: relative; display: block; width: 100%; padding: 0; border: 1px solid var(--km-hair); border-radius: var(--km-r); overflow: hidden; background: var(--km-ink); color: var(--km-paper); cursor: pointer; text-align: left; }
+.km-stage-video img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; object-position: 50% 22%; transition: transform 0.6s var(--km-ease); }
+.km-stage-video:hover img { transform: scale(1.02); }
+.km-stage-play { position: absolute; left: 50%; top: 50%; display: inline-flex; align-items: center; justify-content: center; width: 4.5rem; height: 4.5rem; border-radius: 9999px; background: var(--km-paper); color: var(--km-ink); transform: translate(-50%, -50%); transition: transform 0.3s var(--km-ease); }
+.km-stage-video:hover .km-stage-play { transform: translate(-50%, -50%) scale(1.06); }
+.km-stage-cap { position: absolute; left: 1.25rem; right: 1.25rem; bottom: 1.125rem; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; font-size: 0.875rem; font-weight: 600; }
+.km-stage-cap small { font-weight: 500; opacity: 0.72; }
+.km-stage-frame { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: var(--km-r); overflow: hidden; background: var(--km-ink); }
+.km-stage-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.km-strip { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem 1rem; max-width: 62rem; margin: 2.5rem auto 0; padding: 2rem 0 0; border-top: 1px solid var(--km-hair-2); list-style: none; text-align: center; }
+@media (min-width: 768px) { .km-strip { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.km-strip b { display: block; white-space: nowrap; font-family: var(--font-serif); font-size: clamp(1.5rem, 2.2vw, 2rem); line-height: 1; font-weight: 700; letter-spacing: -0.02em; color: var(--km-ink); }
+.km-strip span { display: block; margin-top: 0.5rem; font-size: 0.8125rem; color: var(--km-fg3); }
 
 /* ------------------------------ Vyhlásenie ------------------------------ */
 .km-pull { max-width: 52rem; margin: 0 auto; text-align: center; }
@@ -174,39 +129,84 @@
 .km-day h3 { margin: 1.25rem 0 0.5rem; font-family: var(--font-serif); font-size: 1.375rem; line-height: 1.15; font-weight: 700; color: var(--km-ink); }
 .km-day p { margin: 0; font-size: 0.9375rem; line-height: 1.55; color: var(--km-fg2); text-wrap: pretty; }
 
-/* ------------------------------ 4. Čo je vnútri: mriežka 12 stĺpcov ------------------------------ */
-.km-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
-@media (min-width: 640px) { .km-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .km-g--wide, .km-g--full { grid-column: span 2; } }
-@media (min-width: 1024px) { .km-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 1.25rem; } .km-g--wide { grid-column: span 8; } .km-g--4 { grid-column: span 4; } .km-g--full { grid-column: span 12; } }
-.km-thumbs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.625rem; margin-bottom: 1.125rem; }
-.km-thumbs img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 0.75rem; background: var(--km-stone); }
-.km-steps { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.125rem; font-family: var(--font-serif); font-size: 1.125rem; font-weight: 600; }
-.km-steps svg { opacity: 0.55; }
-.km-tile-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
-.km-count { display: block; font-family: var(--font-serif); font-size: 2.5rem; line-height: 1; font-weight: 800; letter-spacing: -0.03em; }
-.km-tile-link { display: inline-flex; align-items: center; gap: 0.375rem; margin-top: 0.75rem; font-size: 0.875rem; font-weight: 600; color: var(--km-green); text-decoration: none; }
-.km-tile-link:hover { text-decoration: underline; text-underline-offset: 3px; }
-.km-tile--chat { flex-direction: row; align-items: center; gap: 1.25rem; }
-@media (max-width: 639px) { .km-tile--chat { flex-direction: column; align-items: flex-start; } }
-.km-chat-avatar { width: 3.25rem; height: 3.25rem; border-radius: 9999px; object-fit: cover; object-position: 50% 15%; flex-shrink: 0; background: var(--km-sand); }
-.km-tile--chat p { margin-top: 0.25rem; }
-.km-bubble { margin-left: auto; padding: 0.875rem 1.125rem; border-radius: 1.125rem 1.125rem 1.125rem 0.25rem; background: var(--km-paper); color: var(--km-ink); font-family: var(--font-serif); font-size: 1.125rem; font-weight: 600; white-space: nowrap; }
-@media (max-width: 639px) { .km-bubble { margin-left: 0; white-space: normal; } }
+/* ------------------------------ 4. Čo je vnútri: zoznam + prilepený náhľad ------------------------------ */
+.km-features { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: start; }
+@media (min-width: 1024px) { .km-features { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: 3.5rem; } }
+.km-feature-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--km-hair-2); }
+.km-feature { display: grid; grid-template-columns: 2.25rem 1fr; gap: 1rem; align-items: start; width: 100%; padding: 1.125rem 0; border: none; border-bottom: 1px solid var(--km-hair); border-radius: 0; background: none; text-align: left; cursor: pointer; color: var(--km-ink); font-family: var(--font-sans); opacity: 0.62; transition: opacity 0.25s; }
+.km-feature:hover, .km-feature.is-active { opacity: 1; }
+.km-feature:focus-visible { outline: 2px solid var(--km-green); outline-offset: -2px; border-radius: 0.5rem; }
+.km-feature-icon { display: inline-flex; align-items: center; justify-content: center; width: 2.25rem; height: 2.25rem; border-radius: 9999px; background: var(--km-stone); color: var(--km-ink); transition: background 0.25s, color 0.25s; }
+.km-feature.is-active .km-feature-icon { background: var(--km-green); color: var(--km-paper); }
+.km-feature b { display: block; font-family: var(--font-serif); font-size: 1.1875rem; line-height: 1.2; font-weight: 700; }
+.km-feature span { display: block; margin-top: 0.25rem; font-size: 0.9375rem; line-height: 1.5; color: var(--km-fg2); text-wrap: pretty; }
+.km-feature-stage { position: relative; display: flex; align-items: center; min-height: 22rem; padding: 1.5rem; border-radius: var(--km-r); background: var(--km-ivory); border: 1px solid var(--km-hair); overflow: hidden; }
+@media (min-width: 1024px) { .km-feature-stage { position: sticky; top: 6rem; min-height: 30rem; padding: 2.25rem; } }
+.km-panel { width: 100%; animation: km-in 0.5s var(--km-ease) both; }
+.km-panel-label { display: inline-flex; align-items: center; gap: 0.5rem; margin: 0 0 1rem; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--km-fg3); }
+.km-panel-title { margin: 0; font-family: var(--font-serif); font-size: clamp(1.375rem, 2vw, 1.75rem); line-height: 1.15; font-weight: 700; color: var(--km-ink); text-wrap: balance; }
+.km-panel-title em { font-style: italic; color: var(--km-green); }
+.km-panel-text { margin: 0.75rem 0 0; font-size: 1rem; line-height: 1.55; color: var(--km-fg2); text-wrap: pretty; }
+.km-panel-link { display: inline-flex; align-items: center; gap: 0.375rem; margin-top: 1rem; font-size: 0.9375rem; font-weight: 600; color: var(--km-green); text-decoration: none; }
+.km-panel-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+.km-feed { list-style: none; margin: 0; padding: 0; }
+.km-feed li { display: grid; grid-template-columns: 7.5rem 1fr; gap: 1rem; align-items: center; padding: 0.875rem 0; border-top: 1px solid var(--km-hair); }
+.km-feed li:first-child { padding-top: 0; border-top: none; }
+.km-feed img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 0.625rem; background: var(--km-stone); }
+.km-feed b { display: block; font-family: var(--font-serif); font-size: 1rem; line-height: 1.25; font-weight: 700; }
+.km-feed small { display: block; margin-top: 0.25rem; font-size: 0.75rem; color: var(--km-fg3); }
+.km-panel-quote { margin: 0; font-family: var(--font-serif); font-size: clamp(1.375rem, 2vw, 1.75rem); line-height: 1.3; font-weight: 600; color: var(--km-ink); text-wrap: pretty; }
+.km-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.5rem; }
+.km-chip { padding: 0.375rem 0.75rem; border-radius: 9999px; border: 1px solid var(--km-hair-2); font-size: 0.8125rem; font-weight: 500; color: var(--km-fg2); }
+.km-chart { display: block; width: 100%; height: auto; margin-top: 1.25rem; }
+.km-chart .l-mort { fill: none; stroke: var(--km-ink); stroke-width: 2; stroke-linecap: round; }
+.km-chart .l-res { fill: none; stroke: var(--km-green); stroke-width: 2.5; stroke-linecap: round; }
+.km-chart .l-draw { stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: km-draw 2s var(--km-ease) 0.3s forwards; }
+.km-chart .l-fill { fill: rgba(42, 102, 71, 0.12); }
+.km-chart .l-x { stroke: var(--km-hair-2); stroke-width: 1; }
+@keyframes km-draw { to { stroke-dashoffset: 0; } }
+.km-legend { display: flex; flex-wrap: wrap; gap: 0.375rem 1.25rem; margin: 0.75rem 0 0; padding: 0; list-style: none; font-size: 0.8125rem; color: var(--km-fg3); }
+.km-legend i { display: inline-block; width: 0.875rem; height: 2px; margin-right: 0.5rem; vertical-align: middle; background: var(--km-ink); }
+.km-legend i.is-green { background: var(--km-green); height: 3px; }
+.km-path { list-style: none; margin: 1.25rem 0 0; padding: 0; display: grid; gap: 0.625rem; }
+.km-path li { display: grid; grid-template-columns: 2.5rem 1fr; gap: 1rem; align-items: center; padding: 1rem 1.125rem; border-radius: 1rem; background: var(--km-cream); }
+.km-path li:last-child { background: var(--km-green); color: var(--km-paper); }
+.km-path-n { font-family: var(--font-serif); font-size: 1.125rem; font-weight: 800; color: var(--km-green); }
+.km-path li:last-child .km-path-n { color: #bfe0cb; }
+.km-path b { display: block; font-family: var(--font-serif); font-size: 1.125rem; font-weight: 700; }
+.km-checklist { list-style: none; margin: 1.25rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem 1rem; }
+.km-checklist li { display: flex; align-items: center; gap: 0.625rem; font-size: 1rem; font-weight: 500; color: var(--km-ink); }
+.km-checklist svg { flex-shrink: 0; color: var(--km-green); }
+.km-chat { display: flex; flex-direction: column; gap: 1rem; }
+.km-chat-head { display: flex; align-items: center; gap: 0.75rem; }
+.km-chat-head img { width: 2.75rem; height: 2.75rem; border-radius: 9999px; object-fit: cover; object-position: 50% 15%; background: var(--km-sand); }
+.km-chat-head b { display: block; font-size: 0.9375rem; font-weight: 600; }
+.km-chat-head small { display: block; font-size: 0.8125rem; color: var(--km-fg3); }
+.km-bubble { align-self: flex-start; max-width: 28rem; padding: 1rem 1.25rem; border-radius: 1.25rem 1.25rem 1.25rem 0.25rem; background: var(--km-ink); color: var(--km-paper); font-family: var(--font-serif); font-size: 1.25rem; font-weight: 600; }
 
-/* ------------------------------ 5. Ukážky videí na piesku ------------------------------ */
-.km-videos { display: grid; grid-template-columns: 1fr; gap: 1rem; }
-@media (min-width: 640px) { .km-videos { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; } }
-.km-video-card { display: flex; flex-direction: column; padding: 0; border: 1px solid var(--km-hair); border-radius: var(--km-r); background: var(--km-ivory); color: var(--km-ink); text-align: left; cursor: pointer; overflow: hidden; transition: transform 0.35s var(--km-ease); }
-.km-video-card:hover { transform: translateY(-4px); }
-.km-video-thumb { position: relative; display: block; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; background: var(--km-ink); }
-.km-video-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--km-ease); }
-.km-video-card:hover .km-video-thumb img { transform: scale(1.04); }
-.km-video-play { position: absolute; left: 50%; top: 50%; display: inline-flex; align-items: center; justify-content: center; width: 3.25rem; height: 3.25rem; border-radius: 9999px; background: var(--km-paper); color: var(--km-ink); transform: translate(-50%, -50%); }
+/* ------------------------------ 5. Ukážky: hlavné video + zoznam ------------------------------ */
+.km-showcase { display: grid; grid-template-columns: 1fr; gap: 2rem; align-items: center; }
+@media (min-width: 1024px) { .km-showcase { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 4rem; } }
+.km-showcase-copy .km-h2 { font-size: clamp(2rem, 3.4vw, 2.75rem); }
+.km-showcase-note { margin: 1rem 0 0; font-size: 0.9375rem; color: var(--km-fg2); }
+.km-showcase-note strong { font-family: var(--font-serif); font-size: 1.125rem; font-weight: 800; color: var(--km-ink); }
+.km-showcase-media { display: grid; gap: 0.875rem; }
+.km-featured { position: relative; display: block; width: 100%; padding: 0; border: 1px solid var(--km-hair); border-radius: var(--km-r); overflow: hidden; background: var(--km-ivory); color: var(--km-ink); text-align: left; cursor: pointer; transition: transform 0.35s var(--km-ease); }
+.km-featured:hover { transform: translateY(-3px); }
+.km-featured-thumb { position: relative; display: block; aspect-ratio: 16 / 9; overflow: hidden; background: var(--km-ink); }
+.km-featured-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--km-ease); }
+.km-featured:hover .km-featured-thumb img { transform: scale(1.03); }
+.km-video-play { position: absolute; left: 50%; top: 50%; display: inline-flex; align-items: center; justify-content: center; width: 3.5rem; height: 3.5rem; border-radius: 9999px; background: var(--km-paper); color: var(--km-ink); transform: translate(-50%, -50%); }
 .km-video-dur { position: absolute; right: 0.75rem; bottom: 0.75rem; padding: 0.25rem 0.625rem; border-radius: 9999px; background: rgba(41, 36, 32, 0.8); color: var(--km-paper); font-size: 0.75rem; font-weight: 600; }
-.km-video-title { display: block; padding: 1rem 1.125rem 1.125rem; font-family: var(--font-serif); font-size: 1.0625rem; line-height: 1.3; font-weight: 700; text-wrap: pretty; }
-.km-videos-foot { display: flex; flex-direction: column; align-items: center; gap: 1rem; margin-top: 2.5rem; text-align: center; }
-.km-videos-foot p { margin: 0; font-size: 1rem; color: var(--km-fg2); }
-.km-videos-foot p strong { font-family: var(--font-serif); font-size: 1.25rem; font-weight: 800; color: var(--km-ink); }
+.km-featured-title { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.25rem; font-family: var(--font-serif); font-size: 1.125rem; line-height: 1.3; font-weight: 700; text-wrap: pretty; }
+.km-featured-title small { flex-shrink: 0; font-family: var(--font-sans); font-size: 0.8125rem; font-weight: 500; color: var(--km-fg3); }
+.km-video-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
+@media (min-width: 640px) { .km-video-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.km-video-row { display: grid; grid-template-columns: 6.5rem 1fr; gap: 0.875rem; align-items: center; width: 100%; padding: 0.625rem; border: 1px solid var(--km-hair); border-radius: 1rem; background: var(--km-ivory); color: var(--km-ink); text-align: left; cursor: pointer; transition: transform 0.3s var(--km-ease); }
+.km-video-row:hover { transform: translateY(-2px); }
+.km-video-row img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 0.625rem; background: var(--km-ink); }
+.km-video-row b { display: block; font-family: var(--font-serif); font-size: 0.9375rem; line-height: 1.25; font-weight: 700; text-wrap: pretty; }
+.km-video-row small { display: block; margin-top: 0.25rem; font-size: 0.75rem; color: var(--km-fg3); }
 
 /* ------------------------------ 6. Bonusy (zdieľaná sekcia) ------------------------------ */
 .km-bonusy #bonusy-kalkulacky { background: var(--km-cream) !important; }
@@ -233,6 +233,14 @@
 .km-avatar { width: 2.75rem; height: 2.75rem; border-radius: 9999px; object-fit: cover; background: var(--km-sand); }
 .km-wall { margin-top: 3.5rem; }
 .km-wall-cap { margin: 0 0 1rem; text-align: center; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--km-fg3); }
+.km-marquee { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); }
+.km-marquee-track { display: flex; width: max-content; gap: 1rem; animation: km-marquee 70s linear infinite; }
+.km-marquee:hover .km-marquee-track { animation-play-state: paused; }
+.km-marquee.is-reverse .km-marquee-track { animation-direction: reverse; }
+.km-marquee + .km-marquee { margin-top: 1rem; }
+@keyframes km-marquee { to { transform: translateX(-50%); } }
+.km-wall-item { display: block; height: 14rem; width: auto; border-radius: 1rem; border: 1px solid var(--km-hair); background: var(--km-ivory); object-fit: contain; }
+@media (min-width: 768px) { .km-wall-item { height: 17rem; } }
 
 /* ------------------------------ 8. Ponuka: tmavozelený plagát ------------------------------ */
 .km-offer { display: grid; grid-template-columns: 1fr; gap: 2.5rem; align-items: start; }
@@ -318,7 +326,7 @@
 @media (min-width: 900px) { .km-bar { display: none; } }
 
 @media (prefers-reduced-motion: reduce) {
-  .km-reveal, .km-w, .km-marquee-track, .km-pulse::after, .km-chart .l-draw { animation: none !important; }
+  .km-reveal, .km-w, .km-marquee-track, .km-pulse::after, .km-chart .l-draw, .km-panel { animation: none !important; }
   .km-chart .l-draw { stroke-dashoffset: 0; }
-  .km-tile, .km-mistake, .km-video-card, .km-btn, .km-bar { transition: none !important; }
+  .km-mistake, .km-featured, .km-video-row, .km-btn, .km-bar, .km-feature { transition: none !important; }
 }

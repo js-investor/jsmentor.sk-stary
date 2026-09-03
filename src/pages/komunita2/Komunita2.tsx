@@ -5,7 +5,6 @@ import {
   Calculator,
   CalendarDays,
   Check,
-  ChevronRight,
   FileCheck,
   MessageCircle,
   Play,
@@ -52,7 +51,7 @@ import { rich } from "./rich";
 import "./komunita2.css";
 
 /**
- * Komunita 3.1 — „živý klub“ v prísnej mriežke. Predajná logika (Hormozi): hook s ponukou → problém,
+ * Komunita 3.2 — „živý klub“ v prísnej mriežke. Predajná logika (Hormozi): hook s ponukou → problém,
  * v ktorom sa človek nájde → čo sa stane v prvých 14 dňoch → hodnotový stack → ukážky → dôkazy →
  * ponuka bez rizika → kto za tým stojí → otázky → porovnanie → záver. Obsah z komunitaContent.ts.
  * Vizuál (Refero): Alo Wellness Club, Patreon, Elementor/Kajabi, Wealthsimple.
@@ -61,14 +60,17 @@ import "./komunita2.css";
 const ICONS: Record<string, LucideIcon> = { PlayCircle, BarChart3, Users, Calculator, FileCheck, TrendingUp, CalendarDays, Route, Shield, MessageCircle };
 const st = (i: number) => ({ "--i": i }) as CSSProperties;
 
-const TOPICS = ["Hypotéka", "ETF", "Investičný byt", "Renta", "Poplatky", "Rezerva", "Fondy", "Daňové priznanie", "Portfólio", "Bývanie", "Slovenské produkty", "Reálne prípady"];
-
 const DAYS = [
   { badge: "Deň 0", title: "Vstúpiš dnu.", text: HODNOTA.checks[2] + ". Platba až po skončení skúšobného obdobia." },
   { badge: "Deň 1 – 3", title: "Pozrieš si prvé rozbory.", text: `${NASTROJE.benefitTabs[0].line1}: ${NASTROJE.benefitTabs[0].line2}. ${NASTROJE.benefitTabs[1].line1} – ${NASTROJE.benefitTabs[1].line2}.` },
   { badge: "Deň 4 – 7", title: "Prepočítaš si vlastné čísla.", text: `${NASTROJE.benefitTabs[3].line1}: ${NASTROJE.benefitTabs[3].line2}. ${NASTROJE.benefitTabs[4].line1} – ${NASTROJE.benefitTabs[4].line2}.` },
   { badge: "Deň 14", title: "Rozhodneš sa podľa seba.", text: "Ak zistíš, že ti to nedáva hodnotu, členstvo jednoducho zrušíš. Bez viazanosti, bez telefonátov, bez presviedčania." },
 ];
+
+/** Témy rozborov a produkty zo slovenského trhu (z FAQ). */
+const ROZBORY_CHIPS = ["Fondy", "Hypotéky", "Investičné byty", "ETF", "Poplatky", "Platformy"];
+const PRODUKTY = ["Fondy", "Investičné produkty", "Platformy", "Hypotéky", "Poplatky", "Bežné riešenia bez kontextu"];
+const PATH_STEPS = ["Rezerva", "Portfólio", "Renta"];
 
 const CtaLink = ({ cta, className = "km-btn", children }: { cta: Cta; className?: string; children?: ReactNode }) => (
   <a
@@ -160,10 +162,10 @@ const BigStat = ({ number, text }: { number: string; text: string }) => {
 const rokov = (n: number) => (n === 1 ? "rok" : n >= 2 && n <= 4 ? "roky" : "rokov");
 
 /** Mini graf z modelu Inteligentnej hypotéky (predvolený príklad): dlh klesá, rezerva rastie. */
-const HeroChart = () => {
+const HypoChart = () => {
   const r = useMemo(() => compute(DEFAULT_INPUTS), []);
   const W = 320;
-  const H = 110;
+  const H = 120;
   const years = DEFAULT_INPUTS.years;
   const max = Math.max(...r.mort, ...r.res.slice(0, r.crossM > 0 ? r.crossM + 1 : r.res.length));
   const x = (m: number) => 6 + (m / (years * 12)) * (W - 12);
@@ -179,9 +181,10 @@ const HeroChart = () => {
   const yearsEarlier = Math.round(r.monthsEarlier / 12);
   return (
     <>
-      <h3>
+      <h3 className="km-panel-title">
         Hypotéku splatíš <em>o {yearsEarlier} {rokov(yearsEarlier)} skôr.</em>
       </h3>
+      <p className="km-panel-text">Plať banke minimum a rozdiel posielaj do úverovej rezervy. V bode, kde rezerva dobehne zostatok, môžeš dlh splatiť naraz.</p>
       <svg className="km-chart" viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Dlh klesá, úverová rezerva rastie – v bode kríženia môžeš hypotéku splatiť.">
         <line className="l-x" x1="6" x2={W - 6} y1={H - 8} y2={H - 8} />
         {crossX !== null ? <line className="l-x" x1={crossX} x2={crossX} y1="8" y2={H - 8} strokeDasharray="3 4" /> : null}
@@ -198,12 +201,93 @@ const HeroChart = () => {
   );
 };
 
+/** Náhľad k položke zoznamu „Čo je vnútri“ (index = poradie v HODNOTA.benefitCards). */
+const FeaturePanel = ({ index, toolsCount }: { index: number; toolsCount: number }) => {
+  switch (index) {
+    case 0:
+      return (
+        <div className="km-panel" key="feed">
+          <p className="km-panel-label"><span className="km-pulse" aria-hidden />Nové video každý týždeň</p>
+          <ul className="km-feed">
+            {DARK_GRADIENT.items.map((v) => (
+              <li key={v.title}>
+                <img src={asset(v.image.src)} alt="" loading="lazy" decoding="async" />
+                <span><b>{v.title}</b><small>{v.duration}</small></span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      );
+    case 1:
+      return (
+        <div className="km-panel" key="rozbory">
+          <p className="km-panel-label">Rozbory cez čísla</p>
+          <blockquote className="km-panel-quote">Nebude to štýlom „toto si kúp“. Bude to cez čísla, poplatky, riziká, výhody, nevýhody a alternatívy.</blockquote>
+          <div className="km-chips" aria-hidden>
+            {ROZBORY_CHIPS.map((c) => (
+              <span key={c} className="km-chip">{c}</span>
+            ))}
+          </div>
+        </div>
+      );
+    case 2:
+      return (
+        <div className="km-panel" key="nastroje">
+          <p className="km-panel-label">Inteligentná hypotéka · jeden z {toolsCount} nástrojov</p>
+          <HypoChart />
+          <Link to={BONUSY_BASE_PATH} className="km-panel-link">Vyskúšať všetky nástroje zadarmo <ArrowRight className="h-4 w-4" aria-hidden /></Link>
+        </div>
+      );
+    case 3:
+      return (
+        <div className="km-panel" key="cesta">
+          <p className="km-panel-label">Krok za krokom</p>
+          <h3 className="km-panel-title">{HODNOTA.benefitCards[3].title}</h3>
+          <p className="km-panel-text">{HODNOTA.benefitCards[3].description}</p>
+          <ol className="km-path">
+            {PATH_STEPS.map((s, i) => (
+              <li key={s}><span className="km-path-n">0{i + 1}</span><b>{s}</b></li>
+            ))}
+          </ol>
+        </div>
+      );
+    case 4:
+      return (
+        <div className="km-panel" key="produkty">
+          <p className="km-panel-label">Slovenský trh</p>
+          <h3 className="km-panel-title">{HODNOTA.benefitCards[4].title}</h3>
+          <p className="km-panel-text">Aby si konečne vedel, čo vlastne vlastníš alebo čo sa ti niekto snaží predať.</p>
+          <ul className="km-checklist">
+            {PRODUKTY.map((p) => (
+              <li key={p}><Check className="h-4 w-4" strokeWidth={2.25} aria-hidden />{p}</li>
+            ))}
+          </ul>
+        </div>
+      );
+    default:
+      return (
+        <div className="km-panel km-chat" key="otazky">
+          <p className="km-panel-label">{HODNOTA.benefitCards[5].title}</p>
+          <div className="km-chat-head">
+            <img src={ivanPortrait} alt="" decoding="async" />
+            <span><b>Ivan Jašík</b><small>odpovedá v komunite</small></span>
+          </div>
+          <span className="km-bubble">{HODNOTA.benefitCards[5].description}</span>
+        </div>
+      );
+  }
+};
+
 const Komunita2 = () => {
   useScrollDepth();
   const toolsCount = KALKULACKY_CALCULATORS.length;
   const [playing, setPlaying] = useState(false);
   const [barOn, setBarOn] = useState(false);
+  const [active, setActive] = useState(0);
+  const [auto, setAuto] = useState(true);
+  const [hover, setHover] = useState(false);
   const heroRef = useRef<HTMLElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Lišta sa ukáže, keď hero odíde z obrazovky, a schová sa, kým je vidieť ponuku (CTA1).
@@ -220,8 +304,26 @@ const Komunita2 = () => {
     return () => { ioHero.disconnect(); ioOffer.disconnect(); };
   }, []);
 
+  useEffect(() => {
+    // Náhľady sa striedajú samy, kým sa človek nedotkne zoznamu.
+    if (!auto || hover) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const id = window.setInterval(() => setActive((a) => (a + 1) % HODNOTA.benefitCards.length), 4500);
+    return () => window.clearInterval(id);
+  }, [auto, hover]);
+
+  const pick = (i: number) => {
+    setActive(i);
+    setAuto(false);
+  };
+
+  const playHero = () => {
+    setPlaying(true);
+    stageRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
+
   const videoSrc = HERO.video.src.replace("autoplay=0", "autoplay=1");
-  const latest = DARK_GRADIENT.items.slice(0, 2);
+  const [featured, ...moreVideos] = DARK_GRADIENT.items;
 
   return (
     <PageWrapper>
@@ -243,70 +345,53 @@ const Komunita2 = () => {
           ctaUmamiEventSection="header"
         />
 
-        {/* ═══ 1. Hook: sľub + video a dve živé karty ═══ */}
+        {/* ═══ 1. Hook: sľub, jedno video, pás čísel ═══ */}
         <section className="km-hero" ref={heroRef}>
-          <div className="km-wrap km-hero-grid">
-            <div className="km-hero-copy">
-              <p className="km-kicker-line km-reveal" style={st(0)}>{HERO.eyebrow}</p>
+          <div className="km-wrap">
+            <div className="km-hero-center">
+              <p className="km-pill km-reveal" style={st(0)}>{HERO.eyebrow}</p>
               <h1 className="km-h1">
-                <Words text="Toto je cesta k bohatšiemu životu." from={1} />
+                <Words text={"Toto je cesta k\u00a0bohatšiemu životu."} from={1} />
               </h1>
               <p className="km-lede km-reveal" style={st(7)}>{HERO.subheadline}</p>
-              <p className="km-sub km-reveal" style={st(8)}>{HERO.description}</p>
-              <div className="km-hero-actions km-reveal" style={st(9)}>
+              <div className="km-hero-actions km-reveal" style={st(8)}>
                 <CtaLink cta={HERO.primaryCta} className="km-btn km-btn--lg" />
-                <button type="button" className="km-link" onClick={() => setPlaying(true)}>
+                <button type="button" className="km-link" onClick={playHero}>
                   <Play className="h-4 w-4" strokeWidth={2.25} aria-hidden /> Pozrieť video
                 </button>
               </div>
-              <ul className="km-proof km-reveal" style={st(11)} aria-label="Dôvera">
-                {HERO.trustStats.map((s) => (
-                  <li key={s.label}><b>{s.value}</b><span>{s.label}</span></li>
-                ))}
-                <li><b>900+</b><span>konzultácií o peniazoch</span></li>
-              </ul>
+              <p className="km-trust km-reveal" style={st(9)}>
+                <span className="km-trust-avatars" aria-hidden>
+                  {REVIEWS.testimonials.map((t) => (
+                    <img key={t.name} src={asset(t.avatar.src)} alt="" decoding="async" />
+                  ))}
+                </span>
+                <span>{rich(HERO.trustBanner)}</span>
+              </p>
             </div>
 
-            <div className="km-stage">
-              <div className="km-reveal" style={st(3)}>
-                {playing ? (
-                  <div className="km-stage-frame">
-                    <iframe src={videoSrc} title={HERO.video.title} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen />
-                  </div>
-                ) : (
-                  <button type="button" className="km-stage-video" onClick={() => setPlaying(true)} aria-label={`Prehrať video: ${HERO.video.title}`}>
-                    <img src={asset(CHYBY.image.src)} alt="" decoding="async" />
-                    <span className="km-stage-play" aria-hidden><Play className="h-6 w-6" strokeWidth={2.5} /></span>
-                    <span className="km-stage-cap" aria-hidden><span>{HERO.video.title}</span><small>Prehrať video</small></span>
-                  </button>
-                )}
-              </div>
-              <div className="km-stage-row">
-                <div className="km-tile km-reveal" style={st(6)}>
-                  <div className="km-stage-k"><span>Inteligentná hypotéka</span><b>zadarmo</b></div>
-                  <HeroChart />
+            <div className="km-stage km-reveal" style={st(10)} ref={stageRef}>
+              {playing ? (
+                <div className="km-stage-frame">
+                  <iframe src={videoSrc} title={HERO.video.title} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen />
                 </div>
-                <div className="km-tile km-tile--sand km-reveal" style={st(7)}>
-                  <div className="km-notice"><span className="km-pulse" aria-hidden />Nové video každý týždeň</div>
-                  <ul className="km-latest">
-                    {latest.map((v) => (
-                      <li key={v.title}><span>{v.title}</span><small>{v.duration}</small></li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
+              ) : (
+                <button type="button" className="km-stage-video" onClick={() => setPlaying(true)} aria-label={`Prehrať video: ${HERO.video.title}`}>
+                  <img src={asset(CHYBY.image.src)} alt="" decoding="async" />
+                  <span className="km-stage-play" aria-hidden><Play className="h-7 w-7" strokeWidth={2.5} /></span>
+                  <span className="km-stage-cap" aria-hidden><span>{HERO.video.title}</span><small>Prehrať video</small></span>
+                </button>
+              )}
             </div>
+
+            <ul className="km-strip km-reveal" style={st(12)} aria-label="Dôvera">
+              {HERO.trustStats.map((s) => (
+                <li key={s.label}><b>{s.value}</b><span>{s.label}</span></li>
+              ))}
+              <li><b>{toolsCount}</b><span>nástrojov a kalkulačiek zadarmo</span></li>
+            </ul>
           </div>
         </section>
-
-        {/* ═══ Bežiaci pás tém ═══ */}
-        <div className="km-marquee" aria-hidden>
-          <div className="km-marquee-track">
-            {[...TOPICS, ...TOPICS].map((t, i) => (
-              <span key={`${t}-${i}`}>{t}</span>
-            ))}
-          </div>
-        </div>
 
         {/* ═══ Pre koho to je ═══ */}
         <section className="km-section" id={SECTION_IDS.intro}>
@@ -375,62 +460,40 @@ const Komunita2 = () => {
           </div>
         </section>
 
-        {/* ═══ 4. Hodnotový stack: mriežka 12 stĺpcov ═══ */}
+        {/* ═══ 4. Hodnotový stack: zoznam + prilepený náhľad ═══ */}
         <section className="km-section" id={SECTION_IDS.nastroje} style={{ paddingTop: 0 }}>
           <div className="km-wrap">
             <AnimatedSection>
               <div className="km-head km-head--left">
                 <span className="km-kicker">Čo je vnútri</span>
                 <h2 className="km-h2">{HODNOTA.heading}</h2>
-                <p className="km-lede">{NASTROJE.subheading}</p>
+                <p className="km-lede">{HERO.description}</p>
               </div>
             </AnimatedSection>
             <AnimatedSection delay={0.06}>
-              <div className="km-grid">
-                <div className="km-tile km-tile--sand km-g--wide">
-                  <span className="km-tile-icon"><CalendarDays className="h-4 w-4" strokeWidth={1.75} aria-hidden /></span>
-                  <div className="km-thumbs" aria-hidden>
-                    {DARK_GRADIENT.items.map((v) => (
-                      <img key={v.title} src={asset(v.image.src)} alt="" loading="lazy" decoding="async" />
-                    ))}
-                  </div>
-                  <h3>{HODNOTA.benefitCards[0].title}</h3>
-                  <p>{HODNOTA.benefitCards[0].description}</p>
-                </div>
-                <div className="km-tile km-tile--green km-g--4">
-                  <span className="km-tile-icon"><Route className="h-4 w-4" strokeWidth={1.75} aria-hidden /></span>
-                  <div className="km-steps" aria-hidden>
-                    <span>Rezerva</span><ChevronRight className="h-4 w-4" /><span>Portfólio</span><ChevronRight className="h-4 w-4" /><span>Renta</span>
-                  </div>
-                  <h3>{HODNOTA.benefitCards[3].title}</h3>
-                  <p>{HODNOTA.benefitCards[3].description}</p>
-                </div>
-                <div className="km-tile km-g--4">
-                  <span className="km-tile-icon"><BarChart3 className="h-4 w-4" strokeWidth={1.75} aria-hidden /></span>
-                  <h3>{HODNOTA.benefitCards[1].title}</h3>
-                  <p>{HODNOTA.benefitCards[1].description}</p>
-                </div>
-                <div className="km-tile km-tile--stone km-g--4">
-                  <div className="km-tile-top">
-                    <span className="km-tile-icon"><Calculator className="h-4 w-4" strokeWidth={1.75} aria-hidden /></span>
-                    <span className="km-count" aria-hidden>{toolsCount}</span>
-                  </div>
-                  <h3>{HODNOTA.benefitCards[2].title}</h3>
-                  <p>{HODNOTA.benefitCards[2].description}</p>
-                  <Link to={BONUSY_BASE_PATH} className="km-tile-link">Vyskúšať nástroje <ArrowRight className="h-3.5 w-3.5" aria-hidden /></Link>
-                </div>
-                <div className="km-tile km-g--4">
-                  <span className="km-tile-icon"><Shield className="h-4 w-4" strokeWidth={1.75} aria-hidden /></span>
-                  <h3>{HODNOTA.benefitCards[4].title}</h3>
-                  <p>{HODNOTA.benefitCards[4].description}</p>
-                </div>
-                <div className="km-tile km-tile--ink km-tile--chat km-g--full">
-                  <img className="km-chat-avatar" src={ivanPortrait} alt="" decoding="async" />
-                  <div>
-                    <h3>{HODNOTA.benefitCards[5].title}</h3>
-                    <p>Nie je to len ďalší obsah. Je to systém, podľa ktorého sa vieš rozhodovať.</p>
-                  </div>
-                  <span className="km-bubble">{HODNOTA.benefitCards[5].description}</span>
+              <div className="km-features" onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
+                <ol className="km-feature-list">
+                  {HODNOTA.benefitCards.map((b, i) => {
+                    const Icon = ICONS[b.icon] ?? Check;
+                    return (
+                      <li key={b.title}>
+                        <button
+                          type="button"
+                          className={cn("km-feature", active === i && "is-active")}
+                          aria-pressed={active === i}
+                          onMouseEnter={() => setActive(i)}
+                          onFocus={() => setActive(i)}
+                          onClick={() => pick(i)}
+                        >
+                          <span className="km-feature-icon"><Icon className="h-4 w-4" strokeWidth={1.75} aria-hidden /></span>
+                          <span><b>{b.title}</b><span>{b.description}</span></span>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ol>
+                <div className="km-feature-stage" aria-live="polite">
+                  <FeaturePanel index={active} toolsCount={toolsCount} />
                 </div>
               </div>
               <div className="km-actions"><CtaLink cta={NASTROJE.cta} /></div>
@@ -438,38 +501,50 @@ const Komunita2 = () => {
           </div>
         </section>
 
-        {/* ═══ 5. Ukážky videí na piesku ═══ */}
+        {/* ═══ 5. Ukážky: hlavné video + zoznam ═══ */}
         <section className="km-band km-band--sand" id={SECTION_IDS.darkGradient}>
           <div className="km-wrap">
             <AnimatedSection>
-              <div className="km-head km-center">
-                <span className="km-kicker">Ukážky z komunity</span>
-                <h2 className="km-h2"><span aria-hidden>{DARK_GRADIENT.headingEmoji}</span> {DARK_GRADIENT.headingText}</h2>
-              </div>
-            </AnimatedSection>
-            <AnimatedSection delay={0.06}>
-              <div className="km-videos">
-                {DARK_GRADIENT.items.map((v) => (
+              <div className="km-showcase">
+                <div className="km-showcase-copy">
+                  <span className="km-kicker">Ukážky z komunity</span>
+                  <h2 className="km-h2"><span aria-hidden>{DARK_GRADIENT.headingEmoji}</span> {DARK_GRADIENT.headingText}</h2>
+                  <p className="km-lede">{NASTROJE.subheading}</p>
+                  <div className="km-actions"><CtaLink cta={DARK_GRADIENT.cta} className="km-btn km-btn--ink" /></div>
+                  <p className="km-showcase-note">{rich(DARK_GRADIENT.note)}</p>
+                </div>
+                <div className="km-showcase-media">
                   <button
-                    key={v.title}
                     type="button"
-                    className="km-video-card"
+                    className="km-featured"
                     onClick={scrollToCta}
                     data-umami-event={DARK_GRADIENT.thumbnailClick.umamiEvent}
                     data-umami-event-section={DARK_GRADIENT.thumbnailClick.umamiSection}
                   >
-                    <span className="km-video-thumb">
-                      <img src={asset(v.image.src)} alt="" loading="lazy" decoding="async" />
+                    <span className="km-featured-thumb">
+                      <img src={asset(featured.image.src)} alt="" loading="lazy" decoding="async" />
                       <span className="km-video-play" aria-hidden><Play className="h-5 w-5" strokeWidth={2.5} /></span>
-                      <span className="km-video-dur">{v.duration}</span>
+                      <span className="km-video-dur">{featured.duration}</span>
                     </span>
-                    <span className="km-video-title">{v.title}</span>
+                    <span className="km-featured-title"><span>{featured.title}</span><small>Nové</small></span>
                   </button>
-                ))}
-              </div>
-              <div className="km-videos-foot">
-                <CtaLink cta={DARK_GRADIENT.cta} className="km-btn km-btn--ink" />
-                <p>{rich(DARK_GRADIENT.note)}</p>
+                  <ul className="km-video-list">
+                    {moreVideos.map((v) => (
+                      <li key={v.title}>
+                        <button
+                          type="button"
+                          className="km-video-row"
+                          onClick={scrollToCta}
+                          data-umami-event={DARK_GRADIENT.thumbnailClick.umamiEvent}
+                          data-umami-event-section={DARK_GRADIENT.thumbnailClick.umamiSection}
+                        >
+                          <img src={asset(v.image.src)} alt="" loading="lazy" decoding="async" />
+                          <span><b>{v.title}</b><small>{v.duration}</small></span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </AnimatedSection>
           </div>
@@ -514,7 +589,7 @@ const Komunita2 = () => {
           <div className="km-wall">
             <p className="km-wall-cap">Z mojich správ po konzultáciách</p>
             {[GALERIA.images.slice(0, 5), GALERIA.images.slice(5)].map((row, r) => (
-              <div key={r} className={cn("km-marquee km-marquee--wall", r === 1 && "is-reverse")}>
+              <div key={r} className={cn("km-marquee", r === 1 && "is-reverse")}>
                 <div className="km-marquee-track">
                   {[...row, ...row].map((img, i) => (
                     <img key={`${img.src}-${i}`} className="km-wall-item" src={asset(img.src)} alt={i < row.length ? img.alt : ""} loading="lazy" decoding="async" />
