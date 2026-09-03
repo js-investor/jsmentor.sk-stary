@@ -307,7 +307,7 @@ const Komunita2 = () => {
           <div className="km-wrap">
             <div className="km-intro">
               <AnimatedSection className="km-intro-photo">
-                <img src={ivanKreslo} alt="Ivan Jašík v kresle pri rozhovore o peniazoch" loading="lazy" decoding="async" />
+                <img src={ivanKniha} alt="Ivan Jašík" loading="lazy" decoding="async" />
               </AnimatedSection>
               <AnimatedSection delay={0.06} className="km-intro-copy">
                 <span className="km-kicker">Pre koho to je</span>
@@ -567,7 +567,7 @@ const Komunita2 = () => {
             <div className="km-bio">
               <AnimatedSection>
                 <div className="km-bio-photo">
-                  <img src={ivanKniha} alt={IVAN.image.alt} decoding="async" />
+                  <img src={ivanKreslo} alt={IVAN.image.alt} decoding="async" />
                   <span className="km-bio-tag">Pod dohľadom NBS</span>
                 </div>
               </AnimatedSection>
