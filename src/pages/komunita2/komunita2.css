@@ -56,7 +56,7 @@
 .km-link:hover { text-decoration: underline; text-underline-offset: 4px; }
 .km-link svg { transition: transform 0.22s var(--km-ease); }
 .km-link:hover svg { transform: translateX(3px); }
-.km-btn:focus-visible, .km-link:focus-visible, .km-stage-video:focus-visible, .km-featured:focus-visible, .km-video-row:focus-visible { outline: 2px solid var(--km-green); outline-offset: 3px; }
+.km-btn:focus-visible, .km-link:focus-visible, .km-stage-video:focus-visible { outline: 2px solid var(--km-green); outline-offset: 3px; }
 .km-band--ink :is(.km-btn, .km-link):focus-visible, .km-band--green :is(.km-btn, .km-link):focus-visible { outline-color: var(--km-paper); }
 
 /* vstupné animácie */
@@ -129,93 +129,51 @@
 .km-day h3 { margin: 1.25rem 0 0.5rem; font-family: var(--font-serif); font-size: 1.375rem; line-height: 1.15; font-weight: 700; color: var(--km-ink); }
 .km-day p { margin: 0; font-size: 0.9375rem; line-height: 1.55; color: var(--km-fg2); text-wrap: pretty; }
 
-/* ------------------------------ 4. Čo je vnútri: bento so skutočným obsahom ------------------------------ */
-.km-bento { display: grid; grid-template-columns: 1fr; gap: 1rem; }
-@media (min-width: 640px) { .km-bento { grid-template-columns: repeat(2, minmax(0, 1fr)); } .km-span-7, .km-span-12 { grid-column: span 2; } }
-@media (min-width: 1024px) { .km-bento { grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 1.25rem; } .km-span-7 { grid-column: span 7; } .km-span-5 { grid-column: span 5; } .km-span-4 { grid-column: span 4; } .km-span-12 { grid-column: span 12; } }
-.km-card { display: flex; flex-direction: column; gap: 0.375rem; padding: 1.25rem; border-radius: var(--km-r); background: var(--km-ivory); border: 1px solid var(--km-hair); color: var(--km-ink); transition: transform 0.35s var(--km-ease); }
-.km-card:hover { transform: translateY(-3px); }
-.km-card--sand { background: var(--km-sand); border-color: transparent; }
-.km-card--stone { background: var(--km-stone); border-color: transparent; }
-.km-card--green { background: var(--km-green); border-color: transparent; color: var(--km-paper); }
-.km-card--ink { background: var(--km-ink); border-color: transparent; color: var(--km-paper); }
-.km-card h3 { margin: 1rem 0 0; font-family: var(--font-serif); font-size: 1.25rem; line-height: 1.2; font-weight: 700; text-wrap: balance; }
-.km-card p { margin: 0; font-size: 0.9375rem; line-height: 1.55; color: var(--km-fg2); text-wrap: pretty; }
-.km-card--green p, .km-card--ink p { color: rgba(243, 233, 221, 0.8); }
-.km-card-link { display: inline-flex; align-items: center; gap: 0.375rem; margin-top: 0.625rem; font-size: 0.9375rem; font-weight: 600; color: var(--km-green); text-decoration: none; }
-.km-card-link:hover { text-decoration: underline; text-underline-offset: 3px; }
-.km-visual { display: flex; flex-direction: column; justify-content: center; flex: 1; min-height: 11.5rem; padding: 1.125rem; border-radius: 0.875rem; background: var(--km-cream); border: 1px solid var(--km-hair); overflow: hidden; }
-.km-visual--tall { min-height: 14.5rem; }
-.km-card--sand .km-visual, .km-card--stone .km-visual { background: var(--km-ivory); border-color: transparent; }
-.km-card--green .km-visual { background: rgba(243, 233, 221, 0.08); border-color: rgba(243, 233, 221, 0.16); }
-.km-visual-title { margin: 0 0 0.25rem; font-family: var(--font-serif); font-size: 1.125rem; line-height: 1.2; font-weight: 700; color: var(--km-ink); }
-.km-visual-title em { font-style: italic; color: var(--km-green); }
-.km-feed-head { display: inline-flex; align-items: center; gap: 0.5rem; margin: 0 0 0.625rem; font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--km-fg3); }
-.km-feed { list-style: none; margin: 0; padding: 0; }
-.km-feed li { display: grid; grid-template-columns: 5.25rem 1fr; gap: 0.75rem; align-items: center; padding: 0.5rem 0; border-top: 1px solid var(--km-hair); }
-.km-feed li:first-child { padding-top: 0; border-top: none; }
-.km-feed li:last-child { padding-bottom: 0; }
-.km-feed img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 0.5rem; background: var(--km-stone); }
-.km-feed b { display: block; font-family: var(--font-serif); font-size: 0.9375rem; line-height: 1.25; font-weight: 700; color: var(--km-ink); text-wrap: pretty; }
-.km-feed small { display: block; margin-top: 0.125rem; font-size: 0.75rem; color: var(--km-fg3); }
-.km-chart { display: block; width: 100%; height: auto; margin-top: 0.5rem; }
-.km-chart .l-mort { fill: none; stroke: var(--km-ink); stroke-width: 2; stroke-linecap: round; }
-.km-chart .l-res { fill: none; stroke: var(--km-green); stroke-width: 2.5; stroke-linecap: round; }
-.km-chart .l-draw { stroke-dasharray: 1000; stroke-dashoffset: 1000; }
-.km-chart.is-in .l-draw { animation: km-draw 2s var(--km-ease) 0.2s forwards; }
-.km-chart .l-fill { fill: rgba(42, 102, 71, 0.12); }
-.km-chart .l-x { stroke: var(--km-hair-2); stroke-width: 1; }
-@keyframes km-draw { to { stroke-dashoffset: 0; } }
-.km-legend { display: flex; flex-wrap: wrap; gap: 0.375rem 1.25rem; margin: 0.5rem 0 0; padding: 0; list-style: none; font-size: 0.75rem; color: var(--km-fg3); }
-.km-legend i { display: inline-block; width: 0.875rem; height: 2px; margin-right: 0.5rem; vertical-align: middle; background: var(--km-ink); }
-.km-legend i.is-green { background: var(--km-green); height: 3px; }
-.km-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; }
-.km-chip { padding: 0.4375rem 0.8125rem; border-radius: 9999px; border: 1px solid var(--km-hair-2); background: var(--km-ivory); font-family: var(--font-serif); font-size: 0.9375rem; font-weight: 600; color: var(--km-ink); }
-.km-path { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
-.km-path li { display: grid; grid-template-columns: 1.75rem 1fr auto; gap: 0.75rem; align-items: center; padding: 0.75rem 0.875rem; border-radius: 0.75rem; background: rgba(243, 233, 221, 0.12); color: var(--km-paper); }
-.km-path li:last-child { background: var(--km-paper); color: var(--km-ink); }
-.km-path-n { font-family: var(--font-serif); font-size: 0.875rem; font-weight: 700; opacity: 0.7; }
-.km-path b { font-family: var(--font-serif); font-size: 1.0625rem; font-weight: 700; }
-.km-path svg { opacity: 0.7; }
-.km-checklist { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.625rem 0.75rem; }
-.km-checklist li { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9375rem; font-weight: 500; color: var(--km-ink); }
-.km-checklist svg { flex-shrink: 0; color: var(--km-green); }
-.km-card--chat { flex-direction: row; align-items: center; gap: 1.25rem; }
-@media (max-width: 767px) { .km-card--chat { flex-direction: column; align-items: flex-start; } }
-.km-chat-who { display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; }
-.km-chat-who img { width: 3rem; height: 3rem; border-radius: 9999px; object-fit: cover; object-position: 50% 15%; background: var(--km-sand); }
-.km-chat-who b { display: block; font-size: 0.9375rem; font-weight: 600; }
-.km-chat-who small { display: block; font-size: 0.8125rem; color: rgba(243, 233, 221, 0.66); }
-.km-chat-copy { flex: 1; }
-.km-chat-copy h3 { margin: 0; }
-.km-chat-copy p { margin-top: 0.25rem; }
-@media (min-width: 768px) { .km-chat-copy { padding-left: 1.25rem; border-left: 1px solid rgba(243, 233, 221, 0.18); } }
-.km-bubble { flex-shrink: 0; padding: 0.875rem 1.125rem; border-radius: 1.125rem 1.125rem 1.125rem 0.25rem; background: var(--km-paper); color: var(--km-ink); font-family: var(--font-serif); font-size: 1.125rem; font-weight: 600; white-space: nowrap; }
-@media (max-width: 767px) { .km-bubble { white-space: normal; } }
+/* ------------------------------ 4. Čo je vnútri: zoznam „čo sa naučíš“ + prilepená karta členstva (Sketch 101) ------------------------------ */
+.km-learn { display: grid; grid-template-columns: 1fr; gap: 2rem; align-items: start; }
+@media (min-width: 1024px) { .km-learn { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 4rem; } }
+.km-learn-list { list-style: none; margin: 0; padding: 0; }
+.km-learn-list li { display: grid; grid-template-columns: 1.75rem 1fr; gap: 1rem; align-items: start; padding: 1.25rem 0; border-top: 1px solid var(--km-hair); }
+.km-learn-list li:first-child { padding-top: 0; border-top: none; }
+.km-learn-list li:last-child { padding-bottom: 0; }
+.km-check { display: inline-flex; align-items: center; justify-content: center; width: 1.75rem; height: 1.75rem; margin-top: 0.125rem; border-radius: 9999px; background: var(--km-green); color: var(--km-paper); }
+.km-learn-list b { display: block; font-family: var(--font-serif); font-size: 1.25rem; line-height: 1.2; font-weight: 700; color: var(--km-ink); text-wrap: balance; }
+.km-learn-list p { margin: 0.25rem 0 0; font-size: 0.9375rem; line-height: 1.55; color: var(--km-fg2); text-wrap: pretty; }
+.km-summary { padding: 1.5rem; border-radius: var(--km-r); background: var(--km-ivory); border: 1px solid var(--km-hair); }
+@media (min-width: 1024px) { .km-summary { position: sticky; top: 6rem; padding: 1.75rem; } }
+.km-summary-head { display: flex; align-items: center; gap: 0.875rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--km-hair); }
+.km-summary-head img { width: 3rem; height: 3rem; border-radius: 9999px; object-fit: cover; object-position: 50% 15%; background: var(--km-sand); }
+.km-summary-head b { display: block; font-size: 1rem; font-weight: 600; color: var(--km-ink); }
+.km-summary-head small { display: block; margin-top: 0.125rem; font-size: 0.8125rem; color: var(--km-fg3); }
+.km-summary-meta { list-style: none; margin: 0; padding: 0.5rem 0; }
+.km-summary-meta li { display: flex; align-items: center; gap: 0.75rem; padding: 0.625rem 0; font-size: 0.9375rem; color: var(--km-ink); }
+.km-summary-meta svg { flex-shrink: 0; color: var(--km-green); }
+.km-summary-price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.375rem 0.5rem; padding: 1.25rem 0 1rem; border-top: 1px solid var(--km-hair); }
+.km-summary-price b { font-family: var(--font-serif); font-size: 2.5rem; line-height: 1; font-weight: 800; letter-spacing: -0.02em; color: var(--km-ink); }
+.km-summary-price span { font-size: 0.9375rem; color: var(--km-fg2); }
+.km-summary-price small { flex-basis: 100%; font-size: 0.875rem; font-weight: 600; color: var(--km-green); }
+.km-summary .km-btn { width: 100%; justify-content: center; }
+.km-summary-note { margin: 0.875rem 0 0; text-align: center; font-size: 0.8125rem; line-height: 1.5; color: var(--km-fg3); }
 
-/* ------------------------------ 5. Ukážky: hlavné video + zoznam ------------------------------ */
-.km-showcase { display: grid; grid-template-columns: 1fr; gap: 2rem; align-items: center; }
-@media (min-width: 1024px) { .km-showcase { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 4rem; } }
-.km-showcase-copy .km-h2 { font-size: clamp(2rem, 3.4vw, 2.75rem); }
-.km-showcase-note { margin: 1rem 0 0; font-size: 0.9375rem; color: var(--km-fg2); }
-.km-showcase-note strong { font-family: var(--font-serif); font-size: 1.125rem; font-weight: 800; color: var(--km-ink); }
-.km-showcase-media { display: grid; gap: 0.875rem; }
-.km-featured { position: relative; display: block; width: 100%; padding: 0; border: 1px solid var(--km-hair); border-radius: var(--km-r); overflow: hidden; background: var(--km-ivory); color: var(--km-ink); text-align: left; cursor: pointer; transition: transform 0.35s var(--km-ease); }
-.km-featured:hover { transform: translateY(-3px); }
-.km-featured-thumb { position: relative; display: block; aspect-ratio: 16 / 9; overflow: hidden; background: var(--km-ink); }
-.km-featured-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--km-ease); }
-.km-featured:hover .km-featured-thumb img { transform: scale(1.03); }
-.km-video-play { position: absolute; left: 50%; top: 50%; display: inline-flex; align-items: center; justify-content: center; width: 3.5rem; height: 3.5rem; border-radius: 9999px; background: var(--km-paper); color: var(--km-ink); transform: translate(-50%, -50%); }
-.km-video-dur { position: absolute; right: 0.75rem; bottom: 0.75rem; padding: 0.25rem 0.625rem; border-radius: 9999px; background: rgba(41, 36, 32, 0.8); color: var(--km-paper); font-size: 0.75rem; font-weight: 600; }
-.km-featured-title { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.25rem; font-family: var(--font-serif); font-size: 1.125rem; line-height: 1.3; font-weight: 700; text-wrap: pretty; }
-.km-featured-title small { flex-shrink: 0; font-family: var(--font-sans); font-size: 0.8125rem; font-weight: 500; color: var(--km-fg3); }
-.km-video-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
-@media (min-width: 640px) { .km-video-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-.km-video-row { display: grid; grid-template-columns: 6.5rem 1fr; gap: 0.875rem; align-items: center; width: 100%; padding: 0.625rem; border: 1px solid var(--km-hair); border-radius: 1rem; background: var(--km-ivory); color: var(--km-ink); text-align: left; cursor: pointer; transition: transform 0.3s var(--km-ease); }
-.km-video-row:hover { transform: translateY(-2px); }
-.km-video-row img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 0.625rem; background: var(--km-ink); }
-.km-video-row b { display: block; font-family: var(--font-serif); font-size: 0.9375rem; line-height: 1.25; font-weight: 700; text-wrap: pretty; }
-.km-video-row small { display: block; margin-top: 0.25rem; font-size: 0.75rem; color: var(--km-fg3); }
+/* ------------------------------ 5. Ukážky: zoznam lekcií (MasterClass) ------------------------------ */
+.km-lessons { max-width: 58rem; margin: 0 auto; padding: 0; list-style: none; border-top: 1px solid rgba(41, 36, 32, 0.16); }
+.km-lesson { display: grid; grid-template-columns: 1fr; gap: 1rem; width: 100%; padding: 1.25rem 0; border: none; border-bottom: 1px solid rgba(41, 36, 32, 0.16); background: none; color: var(--km-ink); text-align: left; cursor: pointer; font-family: var(--font-sans); }
+@media (min-width: 640px) { .km-lesson { grid-template-columns: 14rem minmax(0, 1fr) auto; gap: 1.5rem; align-items: center; padding: 1.5rem 0; } }
+.km-lesson-thumb { position: relative; display: block; aspect-ratio: 16 / 9; border-radius: 0.75rem; overflow: hidden; background: var(--km-ink); }
+.km-lesson-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--km-ease); }
+.km-lesson:hover .km-lesson-thumb img { transform: scale(1.04); }
+.km-video-dur { position: absolute; right: 0.5rem; bottom: 0.5rem; padding: 0.2rem 0.5rem; border-radius: 9999px; background: rgba(41, 36, 32, 0.82); color: var(--km-paper); font-size: 0.75rem; font-weight: 600; }
+.km-lesson-n { display: block; margin-bottom: 0.375rem; font-family: var(--font-serif); font-size: 0.875rem; font-weight: 600; letter-spacing: 0.04em; color: var(--km-fg3); }
+.km-lesson-body b { display: block; font-family: var(--font-serif); font-size: 1.25rem; line-height: 1.25; font-weight: 700; text-wrap: pretty; }
+@media (min-width: 768px) { .km-lesson-body b { font-size: 1.375rem; } }
+.km-lesson-meta { display: block; margin-top: 0.375rem; font-size: 0.875rem; color: var(--km-fg3); }
+.km-lesson-play { display: none; align-items: center; justify-content: center; width: 2.75rem; height: 2.75rem; border-radius: 9999px; background: var(--km-ink); color: var(--km-paper); transition: transform 0.3s var(--km-ease); }
+@media (min-width: 640px) { .km-lesson-play { display: inline-flex; } }
+.km-lesson:hover .km-lesson-play { transform: scale(1.08); }
+.km-lesson:focus-visible { outline: 2px solid var(--km-green); outline-offset: 2px; border-radius: 0.5rem; }
+.km-lessons-foot { display: flex; flex-direction: column; align-items: center; gap: 1rem; margin-top: 2.5rem; text-align: center; }
+.km-lessons-foot p { margin: 0; font-size: 1rem; color: var(--km-fg2); }
+.km-lessons-foot p strong { font-family: var(--font-serif); font-size: 1.25rem; font-weight: 800; color: var(--km-ink); }
 
 /* ------------------------------ 6. Bonusy (zdieľaná sekcia) ------------------------------ */
 .km-bonusy #bonusy-kalkulacky { background: var(--km-cream) !important; }
@@ -335,7 +293,6 @@
 @media (min-width: 900px) { .km-bar { display: none; } }
 
 @media (prefers-reduced-motion: reduce) {
-  .km-reveal, .km-w, .km-marquee-track, .km-pulse::after, .km-chart .l-draw { animation: none !important; }
-  .km-chart .l-draw { stroke-dashoffset: 0; }
-  .km-mistake, .km-featured, .km-video-row, .km-btn, .km-bar, .km-card { transition: none !important; }
+  .km-reveal, .km-w, .km-marquee-track, .km-pulse::after { animation: none !important; }
+  .km-mistake, .km-lesson-thumb img, .km-lesson-play, .km-btn, .km-bar { transition: none !important; }
 }
