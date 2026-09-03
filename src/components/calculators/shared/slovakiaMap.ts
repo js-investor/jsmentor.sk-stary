@@ -12,7 +12,9 @@ export const MAP_PATHS: Record<string, string> = {
 };
 
 export const MAP_LABELS: Record<string, { x: number; y: number }> = {
-  BA: { x: 98,  y: 338 }, TT: { x: 146, y: 240 }, TN: { x: 240, y: 200 },
-  NR: { x: 290, y: 375 }, ZA: { x: 420, y: 125 }, BB: { x: 470, y: 310 },
-  PO: { x: 735, y: 135 }, KE: { x: 770, y: 275 },
+  /* Vizuálny stred každého kraja: bod s najväčším odstupom od hraníc, priblížený k ťažisku,
+     aby skratka sedela dovnútra aj pri úzkych krajoch (BA, TT) a pretiahnutom KE. */
+  BA: { x: 60,  y: 344 }, TT: { x: 146, y: 318 }, TN: { x: 241, y: 200 },
+  NR: { x: 256, y: 392 }, ZA: { x: 410, y: 116 }, BB: { x: 465, y: 290 },
+  PO: { x: 766, y: 129 }, KE: { x: 748, y: 245 },
 };

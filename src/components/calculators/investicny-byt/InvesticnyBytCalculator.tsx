@@ -233,7 +233,7 @@ const InvesticnyBytCalculator = () => {
                   <path key={k} d={d} className={`iby-kraj${k === kraj ? " active" : ""}`} fill={k === kraj ? "#f7efe2" : "#e3d5bd"} onClick={() => handleKrajClick(k)} />
                 ))}
                 {Object.entries(MAP_LABELS).map(([k, pos]) => (
-                  <text key={k} pointerEvents="none" fontFamily="Matter, Gilroy, sans-serif" fontSize="30" fontWeight="700" fill="#292420" textAnchor="middle" x={pos.x} y={pos.y + 12}>{k}</text>
+                  <text key={k} pointerEvents="none" fontFamily="Matter, Gilroy, sans-serif" fontSize="30" fontWeight="700" fill="#292420" textAnchor="middle" dominantBaseline="central" x={pos.x} y={pos.y}>{k}</text>
                 ))}
               </svg>
             </div>
