@@ -23,7 +23,7 @@ import PageWrapper from "@/components/layout/PageWrapper";
 import BonusyHeader from "@/components/layout/BonusyHeader";
 import HeroHeroKalkulackySection from "@/components/sections/HeroHeroKalkulackySection";
 import useScrollDepth from "@/hooks/useScrollDepth";
-import { KALKULACKY_CALCULATORS } from "@/pages/kalkulacky/kalkulackyConfig";
+import { BONUSY_TOTAL_VALUE, KALKULACKY_CALCULATORS } from "@/pages/kalkulacky/kalkulackyConfig";
 import { cn } from "@/lib/utils";
 import jsLogo from "@/assets/images/js-mentor-logo.png";
 import videoPoster from "@/assets/images/komunita-video-poster.jpg";
@@ -165,11 +165,11 @@ const CountUp = ({ text }: { text: string }) => {
 
 
 /** Pás čísel pod videom (variant A – editoriál bez karty). Prvé číslo podľa Ivana: stiahnutia online kurzov. */
-const STRIP = (tools: number) => [
+const STRIP = [
   { kicker: "Online kurzy", value: "4\u00a0000+", text: "stiahnutí online kurzov" },
   { kicker: "Skúsenosti", value: "8 rokov", text: "pomáham ľuďom rozumne investovať" },
   { kicker: "V starostlivosti", value: "3,5\u00a0mil.\u00a0€", text: "klientskych aktív pod dohľadom NBS" },
-  { kicker: "Bonusy", value: String(tools), text: "nástrojov a kalkulačiek zadarmo" },
+  { kicker: "Dosah", value: "123\u00a0000+", text: "sledovateľov na Instagrame" },
 ];
 
 /** Jedna recenzia naraz – veľký citát, šípky, bodky, samo sa strieda (Alo Wellness Club). */
@@ -296,7 +296,7 @@ const Komunita2 = () => {
             </div>
 
             <ul className="km-strip km-reveal" style={st(12)} aria-label="Dôvera">
-              {STRIP(toolsCount).map((item) => (
+              {STRIP.map((item) => (
                 <li key={item.kicker}>
                   <small>{item.kicker}</small>
                   <b><CountUp text={item.value} /></b>
@@ -411,7 +411,7 @@ const Komunita2 = () => {
                   </div>
                   <ul className="km-summary-meta">
                     <li><PlayCircle className="h-5 w-5" strokeWidth={1.75} aria-hidden />Nové video každý týždeň</li>
-                    <li><Calculator className="h-5 w-5" strokeWidth={1.75} aria-hidden />{toolsCount} nástrojov a kalkulačiek</li>
+                    <li><Calculator className="h-5 w-5" strokeWidth={1.75} aria-hidden />{toolsCount} nástrojov v hodnote {BONUSY_TOTAL_VALUE}</li>
                     <li><FileCheck className="h-5 w-5" strokeWidth={1.75} aria-hidden />{NASTROJE.benefitTabs[4].line1}: {NASTROJE.benefitTabs[4].line2}</li>
                     <li><MessageCircle className="h-5 w-5" strokeWidth={1.75} aria-hidden />{HODNOTA.benefitCards[5].title}</li>
                     <li><Shield className="h-5 w-5" strokeWidth={1.75} aria-hidden />{HODNOTA.checks[1]}</li>
@@ -538,7 +538,7 @@ const Komunita2 = () => {
                     })}
                     <li>
                       <span className="km-benefit-icon"><Calculator className="h-4 w-4" strokeWidth={1.75} aria-hidden /></span>
-                      <span><b>Bonusy: {toolsCount} nástrojov</b><small>kalkulačky, semafory, röntgen, mapa bytov</small></span>
+                      <span><b>Bonusy: {toolsCount} nástrojov v hodnote {BONUSY_TOTAL_VALUE}</b><small>kalkulačky, semafory, röntgen, mapa bytov</small></span>
                     </li>
                   </ul>
                   <p className="km-guarantee"><Shield className="h-4 w-4" strokeWidth={1.75} aria-hidden />Vojdeš dnu, pozrieš si videá, vyskúšaš nástroje, stiahneš si bonusy a rozhodneš sa podľa seba.</p>

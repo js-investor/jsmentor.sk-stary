@@ -3,6 +3,9 @@ import { BarChart3, FileDown, House, Percent, Receipt, Wallet, MapPin, TrendingU
 
 export const BONUSY_BASE_PATH = "/bonusy";
 
+/** Orientačná hodnota všetkých bonusových nástrojov (komunita: „12 nástrojov v hodnote 390 € úplne zadarmo“). */
+export const BONUSY_TOTAL_VALUE = "390\u00a0€";
+
 /** Externá stránka rezervácie konzultácie — používa sa na /bonusy a podstránkach nástrojov. */
 export const KONZULTACIA_URL = "https://konzultacia.jsmentor.sk/";
 export const BONUSY_CTA_LABEL = "Rezervovať konzultáciu s Ivanom";

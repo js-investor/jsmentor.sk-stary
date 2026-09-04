@@ -35,3 +35,9 @@
 /* Komunita: tvary na kartách o ~10 % menšie (karty na /bonusy ostávajú bez zmeny). */
 .bonusy.kb-locked .bz-glyph { width: 9.5rem; height: 9.5rem; }
 .bonusy.kb-locked .bz-glyph--map { width: 13.5rem; height: 7rem; margin-left: -6.75rem; }
+
+/* Hodnota bonusov v komunite: „12 nástrojov · v hodnote 390 € · úplne zadarmo“ (tmavohnedý odznak, zlatý štítok). */
+.kb-value { display: inline-flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.5rem 0.875rem; margin: 1.5rem auto 0; padding: 0.625rem 0.75rem 0.625rem 1.25rem; border-radius: 2rem; background: #292420; color: #f3e9dd; font-family: 'Matter', 'Gilroy', sans-serif; font-size: 0.9375rem; font-weight: 500; line-height: 1.3; text-align: center; }
+.kb-value-n { font-family: 'Calvino', 'Recoleta', serif; font-size: 1.125rem; font-weight: 700; }
+.kb-value-worth s { color: rgba(243, 233, 221, 0.72); text-decoration-thickness: 1.5px; }
+.kb-value-free { padding: 0.3125rem 0.75rem; border-radius: 9999px; background: #d9b15c; color: #292420; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; }

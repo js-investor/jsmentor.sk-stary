@@ -2,7 +2,7 @@ import AnimatedSection from "@/components/AnimatedSection";
 import { CENNIK_SECTION_HREF } from "@/lib/cennikCta";
 import { ArrowRight, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
-import { BONUSY_BASE_PATH, KALKULACKY_CALCULATORS } from "@/pages/kalkulacky/kalkulackyConfig";
+import { BONUSY_BASE_PATH, BONUSY_TOTAL_VALUE, KALKULACKY_CALCULATORS } from "@/pages/kalkulacky/kalkulackyConfig";
 import { ToolCard } from "@/pages/kalkulacky/bonusyCards";
 import "@/pages/kalkulacky/bonusy-dashboard.css";
 import "./komunita-bonusy.css";
@@ -41,7 +41,7 @@ const HeroHeroKalkulackySection = ({ locked = false }: { locked?: boolean }) => 
       <div className="section-container relative z-10">
         <AnimatedSection className="flex w-full flex-col items-center">
           <span className="inline-block rounded-full bg-primary px-5 py-2 text-[13px] font-extrabold uppercase tracking-[0.14em] text-white md:text-[14px]">
-            Bonusy · {KALKULACKY_CALCULATORS.length} nástrojov
+            {locked ? "Bonusy pre členov" : `Bonusy · ${KALKULACKY_CALCULATORS.length} nástrojov`}
           </span>
           <h2 className="headline-landing-section mx-auto mt-5 max-w-4xl text-pretty text-center text-[2.125rem] leading-[1.12] text-foreground md:max-w-xl md:text-[3.375rem] lg:max-w-2xl">
             <span className="font-[500]">A k tomu dostaneš aj</span> <strong className="font-bold">praktické bonusy</strong> <span aria-hidden>🎁</span>
@@ -51,6 +51,13 @@ const HeroHeroKalkulackySection = ({ locked = false }: { locked?: boolean }) => 
               ? "Dvanásť kalkulačiek a nástrojov, ktoré dostaneš ako bonus hneď po pripojení do komunity. Ukážem ti, ako z nich vyťažiť maximum na tvojich vlastných číslach."
               : "Dvanásť kalkulačiek a nástrojov priamo v prehliadači. Žiadna registrácia, presné čísla hneď. V komunite ti ukážem, ako z nich vyťažiť maximum na tvojich vlastných číslach."}
           </p>
+          {locked ? (
+            <p className="kb-value" aria-label={`${KALKULACKY_CALCULATORS.length} nástrojov v hodnote ${BONUSY_TOTAL_VALUE}, pre členov úplne zadarmo`}>
+              <span className="kb-value-n">{KALKULACKY_CALCULATORS.length} nástrojov</span>
+              <span className="kb-value-worth">v hodnote <s>{BONUSY_TOTAL_VALUE}</s></span>
+              <span className="kb-value-free">úplne zadarmo</span>
+            </p>
+          ) : null}
         </AnimatedSection>
 
         <AnimatedSection delay={0.06}>
