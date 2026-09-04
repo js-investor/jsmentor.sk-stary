@@ -83,6 +83,9 @@
 .km-hero-center .km-h1 { margin: 0 auto 1.25rem; font-size: clamp(2.75rem, 6.4vw, 5.25rem); }
 .km-hero-center .km-lede { max-width: 34rem; margin: 0 auto; }
 @media (min-width: 768px) { .km-hero-center .km-lede { font-size: 1.25rem; } }
+/* Pôvodný odsek pod podnadpisom: čo v komunite ukážem (HERO.description). */
+.km-hero-desc { max-width: 40rem; margin: 1.25rem auto 0; font-size: 1rem; line-height: 1.6; color: var(--km-fg3); text-wrap: pretty; }
+@media (min-width: 768px) { .km-hero-desc { font-size: 1.0625rem; } }
 .km-hero-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 1rem 1.5rem; margin-top: 2rem; }
 .km-trust { display: inline-flex; align-items: center; gap: 0.75rem; margin-top: 1.75rem; font-size: 0.875rem; color: var(--km-fg3); }
 .km-trust-avatars { display: flex; }

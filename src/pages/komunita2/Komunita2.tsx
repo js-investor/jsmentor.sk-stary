@@ -296,6 +296,7 @@ const Komunita2 = () => {
                 <Words text={"Toto je cesta k\u00a0bohatšiemu životu."} from={1} />
               </h1>
               <p className="km-lede km-reveal" style={st(7)}>{HERO.subheadline}</p>
+              <p className="km-hero-desc km-reveal" style={st(8)}>{HERO.description}</p>
               <div className="km-hero-actions km-reveal" style={st(8)}>
                 <CtaLink cta={HERO.primaryCta} className="km-btn km-btn--lg" />
               </div>
