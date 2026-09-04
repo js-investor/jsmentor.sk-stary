@@ -207,6 +207,34 @@ const Testimonials = () => {
   );
 };
 
+/* ------------------------------ „Čo získaš“: živé riadky ------------------------------ */
+/** Tóny dlaždíc s ikonou: zelená → piesok → hnedá (zlatá ikona), opakujú sa. */
+const LEARN_TONES = ["", "km-tile--sand", "km-tile--ink"];
+const stripEmoji = (text: string) => text.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, "").trim();
+/** Štyri kalkulačky ako čipy pod „Kalkulačky a aplikácie“ (zvyšok ako „+N ďalších“). */
+const LEARN_CALC_SLUGS = ["inteligentna-hypoteka", "etf-semafor", "financny-checkup", "investicny-byt"];
+const LEARN_CALCS = LEARN_CALC_SLUGS.map((slug) => KALKULACKY_CALCULATORS.find((c) => c.slug === slug)?.title)
+  .filter((t): t is string => Boolean(t))
+  .map(stripEmoji);
+
+/** Jeden riadok zoznamu: dlaždica s ikonou a odškrtnutím, názov a „dôkaz“ (children). Odhalí sa, keď sa dostane na obrazovku. */
+const LearnItem = ({ item, index, children }: { item: { icon: string; title: string }; index: number; children?: ReactNode }) => {
+  const [ref, seen] = useInView<HTMLLIElement>("-40px 0px");
+  const Icon = ICONS[item.icon] ?? Check;
+  return (
+    <li ref={ref} className={cn(seen && "is-in")} style={st(index)}>
+      <span className={cn("km-tile", LEARN_TONES[index % LEARN_TONES.length])} aria-hidden>
+        <Icon className="h-5 w-5" strokeWidth={1.75} />
+        <span className="km-tile-check"><Check className="h-3 w-3" strokeWidth={3} /></span>
+      </span>
+      <div>
+        <b>{item.title}</b>
+        {children}
+      </div>
+    </li>
+  );
+};
+
 const Komunita2 = () => {
   useScrollDepth();
   const toolsCount = KALKULACKY_CALCULATORS.length;
@@ -394,14 +422,54 @@ const Komunita2 = () => {
             <AnimatedSection delay={0.06}>
               <div className="km-learn">
                 <ul className="km-learn-list">
-                  {HODNOTA.benefitCards.map((b) => (
-                    <li key={b.title}>
-                      <span className="km-check" aria-hidden><Check className="h-4 w-4" strokeWidth={2.5} /></span>
-                      <div>
-                        <b>{b.title}</b>
-                        <p>{b.description}</p>
-                      </div>
-                    </li>
+                  {HODNOTA.benefitCards.map((b, i) => (
+                    <LearnItem key={b.title} item={b} index={i}>
+                      {i === 5 ? (
+                        <div className="km-proof">
+                          <span className="km-bubble"><img src={ivanPolo} alt="" decoding="async" />{b.description}</span>
+                        </div>
+                      ) : (
+                        <>
+                          <p>{b.description}</p>
+                          {i === 0 ? (
+                            <div className="km-proof">
+                              <span className="km-film" aria-hidden>
+                                {DARK_GRADIENT.items.slice(0, 3).map((v) => (
+                                  <img key={v.title} src={asset(v.image.src)} alt="" loading="lazy" decoding="async" />
+                                ))}
+                              </span>
+                              <span className="km-chip km-chip--more">Nové každý týždeň</span>
+                            </div>
+                          ) : null}
+                          {i === 1 ? (
+                            <div className="km-proof">
+                              {["Poplatky", "Riziká", "Rozhodnutia"].map((t) => <span key={t} className="km-chip">{t}</span>)}
+                            </div>
+                          ) : null}
+                          {i === 2 ? (
+                            <div className="km-proof">
+                              {LEARN_CALCS.map((t) => <span key={t} className="km-chip">{t}</span>)}
+                              <span className="km-chip km-chip--more">+{toolsCount - LEARN_CALCS.length} ďalších</span>
+                            </div>
+                          ) : null}
+                          {i === 3 ? (
+                            <div className="km-proof">
+                              <span className="km-steps">
+                                {["Rezerva", "Portfólio", "Renta"].map((t, j) => (
+                                  <span key={t} className={cn("km-step", j === 2 && "km-step--last")}>{t}</span>
+                                ))}
+                              </span>
+                            </div>
+                          ) : null}
+                          {i === 4 ? (
+                            <div className="km-proof">
+                              <span className="km-chip km-chip--muted"><X className="h-3.5 w-3.5" strokeWidth={2.5} aria-hidden />Čo majú bežní ľudia</span>
+                              <span className="km-chip km-chip--good"><Check className="h-3.5 w-3.5" strokeWidth={2.5} aria-hidden />Čo dáva skutočný zmysel</span>
+                            </div>
+                          ) : null}
+                        </>
+                      )}
+                    </LearnItem>
                   ))}
                 </ul>
                 <aside className="km-summary" aria-label="Členstvo v skratke">
