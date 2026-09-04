@@ -31,3 +31,7 @@
 .kb-chip--locked { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.4375rem 0.875rem; border: 1px solid rgba(41, 36, 32, 0.14); border-radius: 9999px; background: transparent; font-family: 'Matter', 'Gilroy', sans-serif; font-size: 0.875rem; font-weight: 500; color: #6b625a; }
 .kb-chip--locked svg { color: #2a6647; }
 .kb-note { font-family: 'Matter', 'Gilroy', sans-serif; font-size: 0.9375rem; color: #4a4239; }
+
+/* Komunita: tvary na kartách o ~10 % menšie (karty na /bonusy ostávajú bez zmeny). */
+.bonusy.kb-locked .bz-glyph { width: 9.5rem; height: 9.5rem; }
+.bonusy.kb-locked .bz-glyph--map { width: 13.5rem; height: 7rem; margin-left: -6.75rem; }

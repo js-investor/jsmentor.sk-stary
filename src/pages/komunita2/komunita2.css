@@ -325,3 +325,10 @@
   .km-reveal, .km-w, .km-marquee-track, .km-pulse::after { animation: none !important; }
   .km-mistake, .km-show-frame, .km-show-frame img, .km-show-play, .km-btn, .km-bar { transition: none !important; }
 }
+
+/* Mobil (iOS): stránka sa nesmie posúvať do strán – dotykové gestá len zvislo, obsah orezaný na šírku okna. */
+.km-page { overflow-x: clip; touch-action: pan-y pinch-zoom; }
+
+/* Cookiebot widget (vľavo dole) sa zdvihne nad prilepenú lištu, kým je lišta viditeľná. */
+#CookiebotWidget { transition: bottom 0.35s cubic-bezier(0.22, 1, 0.36, 1) !important; }
+@media (max-width: 899px) { html.km-bar-on #CookiebotWidget { bottom: 5.5rem !important; } }

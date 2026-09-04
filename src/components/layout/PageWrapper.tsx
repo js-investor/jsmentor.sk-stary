@@ -4,10 +4,11 @@ import type { ReactNode } from "react";
 type PageWrapperProps = {
   children: ReactNode;
   showFooter?: boolean;
+  className?: string;
 };
 
-const PageWrapper = ({ children, showFooter = true }: PageWrapperProps) => (
-  <main>
+const PageWrapper = ({ children, showFooter = true, className }: PageWrapperProps) => (
+  <main className={className}>
     {children}
     {showFooter ? <FooterSection /> : null}
   </main>

@@ -98,7 +98,8 @@ const Words = ({ text, from = 0 }: { text: string; from?: number }) => (
 const scrollToCta = () => document.getElementById(LINKS.cennikSectionId)?.scrollIntoView({ behavior: "smooth", block: "start" });
 
 /** Jednorazové „videl som ťa“ cez IntersectionObserver. */
-function useInView<T extends HTMLElement>(margin = "-60px") {
+// Okraj len zvislo: vodorovný záporný okraj by na mobile vynechal úzke prvky pri ľavom kraji (číslo „0+“ sa nikdy nenapočítalo).
+function useInView<T extends HTMLElement>(margin = "-60px 0px") {
   const ref = useRef<T>(null);
   const [seen, setSeen] = useState(false);
   useEffect(() => {
@@ -228,10 +229,16 @@ const Komunita2 = () => {
     return () => { ioHero.disconnect(); ioOffer.disconnect(); };
   }, []);
 
+  useEffect(() => {
+    // Kým je lišta viditeľná, Cookiebot widget (vľavo dole) sa posunie nad ňu (CSS html.km-bar-on).
+    document.documentElement.classList.toggle("km-bar-on", barOn);
+    return () => document.documentElement.classList.remove("km-bar-on");
+  }, [barOn]);
+
   const videoSrc = HERO.video.src.replace("autoplay=0", "autoplay=1");
 
   return (
-    <PageWrapper>
+    <PageWrapper className="km-page">
       <div className="km">
         <BonusyHeader
           logoHref={LINKS.homeUrl}

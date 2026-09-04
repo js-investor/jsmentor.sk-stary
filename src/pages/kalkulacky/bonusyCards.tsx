@@ -27,10 +27,10 @@ export const TONES: Record<ToneId, { bg: string; fg: string; fg2: string; text?:
   brown: { bg: "#292420", fg: "#d9b15c", fg2: "rgba(217,177,92,0.3)", text: "#f3e9dd", muted: "rgba(243,233,221, 0.88)" },
 };
 
-export const TOOL_META: Record<string, { category: string; tone: ToneId; glyph: Glyph }> = {
-  "financny-checkup": { category: "Začni tu", tone: "sage", glyph: "ring" },
+export const TOOL_META: Record<string, { category: string; tone: ToneId; glyph: Glyph; score?: number }> = {
+  "financny-checkup": { category: "Začni tu", tone: "sage", glyph: "ring", score: 72 },
   "etf-semafor": { category: "Investovanie", tone: "sage", glyph: "dots" },
-  "skoring-bytov": { category: "Nehnuteľnosti", tone: "sand", glyph: "ring" },
+  "skoring-bytov": { category: "Nehnuteľnosti", tone: "sand", glyph: "ring", score: 84 },
   "inteligentna-hypoteka": { category: "Hypotéka", tone: "sand", glyph: "cross" },
   "investicna-kalkulacka": { category: "Investovanie", tone: "green", glyph: "steps" },
   "mzdova-kalkulacka": { category: "Mzda", tone: "stone", glyph: "euro" },
@@ -49,7 +49,7 @@ export const toneStyle = (t: ToneId, i = 0) => ({ "--i": i, "--tone-bg": TONES[t
 
 /* ------------------------------ Tvary (poster, dvojtón) ------------------------------ */
 
-export const GlyphArt = ({ glyph, tone }: { glyph: Glyph; tone: ToneId }) => {
+export const GlyphArt = ({ glyph, tone, score }: { glyph: Glyph; tone: ToneId; score?: number }) => {
   const { fg, fg2, bg } = TONES[tone];
   switch (glyph) {
     case "venn":
@@ -149,7 +149,7 @@ export const GlyphArt = ({ glyph, tone }: { glyph: Glyph; tone: ToneId }) => {
       );
     case "ring":
       return (
-        <svg viewBox="0 0 120 120" aria-hidden><circle cx="60" cy="60" r="40" fill="none" stroke={fg2} strokeWidth="12" /><circle className="g-arc g-rot" cx="60" cy="60" r="40" pathLength={100} fill="none" stroke={fg} strokeWidth="12" strokeLinecap="round" strokeDasharray="100" strokeDashoffset="22" /><text x="60" y="70" textAnchor="middle" fontFamily="Calvino, serif" fontWeight="700" fontSize="30" fill={fg}>84</text></svg>
+        <svg viewBox="0 0 120 120" aria-hidden><circle cx="60" cy="60" r="40" fill="none" stroke={fg2} strokeWidth="12" /><circle className="g-arc g-rot" cx="60" cy="60" r="40" pathLength={100} fill="none" stroke={fg} strokeWidth="12" strokeLinecap="round" strokeDasharray="100" strokeDashoffset={100 - (score ?? 84)} /><text x="60" y="70" textAnchor="middle" fontFamily="Calvino, serif" fontWeight="700" fontSize="30" fill={fg}>{score ?? 84}</text></svg>
       );
   }
 };
@@ -161,7 +161,7 @@ export const ToolCard = ({ meta, index = 0, locked = false }: { meta: Kalkulacka
   const info = TOOL_META[meta.slug] ?? { category: "Nástroj", tone: "stone" as ToneId, glyph: "arcs" as Glyph };
   const inner = (
     <>
-      <span className={cn("bz-glyph", info.glyph === "map" && "bz-glyph--map")} aria-hidden><GlyphArt glyph={info.glyph} tone={info.tone} /></span>
+      <span className={cn("bz-glyph", info.glyph === "map" && "bz-glyph--map")} aria-hidden><GlyphArt glyph={info.glyph} tone={info.tone} score={info.score} /></span>
       <span className="bz-card-head">
         <span className="bz-cat">{info.category}</span>
         {locked ? (
