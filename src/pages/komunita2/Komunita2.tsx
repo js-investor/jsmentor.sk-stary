@@ -28,7 +28,7 @@ import { cn } from "@/lib/utils";
 import jsLogo from "@/assets/images/js-mentor-logo.png";
 import videoPoster from "@/assets/images/komunita-video-poster.jpg";
 import ivanKniha from "@/assets/images/js-investor-ivan-kniha.jpg";
-import ivanPolo from "@/assets/images/jsmentor-casual-biznis-muz-biela-kosela.jpg";
+import ivanRolak from "@/assets/images/komunita-ivan-rolak.jpg";
 import vitajWide from "@/assets/images/komunita-vitaj.jpg";
 import ivanKreslo from "@/assets/images/komunita-ivan-kreslo.jpg";
 import {
@@ -426,7 +426,7 @@ const Komunita2 = () => {
                     <LearnItem key={b.title} item={b} index={i}>
                       {i === 5 ? (
                         <div className="km-proof">
-                          <span className="km-bubble"><img src={ivanPolo} alt="" decoding="async" />{b.description}</span>
+                          <span className="km-bubble"><img src={ivanRolak} alt="" decoding="async" />{b.description}</span>
                         </div>
                       ) : (
                         <>
@@ -474,7 +474,7 @@ const Komunita2 = () => {
                 </ul>
                 <aside className="km-summary" aria-label="Členstvo v skratke">
                   <div className="km-summary-head">
-                    <img src={ivanPolo} alt="" decoding="async" />
+                    <img src={ivanRolak} alt="" decoding="async" />
                     <div><b>Ivan Jašík</b><small>Pod dohľadom NBS · viac ako 8 rokov skúseností</small></div>
                   </div>
                   <ul className="km-summary-meta">
