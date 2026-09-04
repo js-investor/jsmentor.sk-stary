@@ -182,6 +182,8 @@ export const HERO = {
     src: LINKS.heroVideoUrl,
     /** iframe title attribute. */
     title: "Prečo väčšina neuspeje",
+    /** Veľký titulok cez plagát videa (návrh, 2 riadky); zhŕňa tézu stránky: nie príjem, ale rozhodnutia. */
+    overlayTitle: "Nie je to o príjme.\nJe to o rozhodnutiach.",
   },
   /** Three-up stats panel under the video (HeroTrustStatsBar). */
   trustStats: [

@@ -318,6 +318,8 @@ const Komunita2 = () => {
                 <button type="button" className="km-stage-video" onClick={() => setPlaying(true)} aria-label={`Prehrať video: ${HERO.video.title}`}>
                   <img src={videoPoster} alt="" decoding="async" />
                   <span className="km-stage-play" aria-hidden><Play className="h-7 w-7" strokeWidth={2.5} /></span>
+                  <span className="km-stage-scrim" aria-hidden />
+                  <span className="km-stage-title" aria-hidden>{rich(HERO.video.overlayTitle)}</span>
                   <span className="km-stage-cap" aria-hidden><span>{HERO.video.title}</span><small>Prehrať video</small></span>
                 </button>
               )}
