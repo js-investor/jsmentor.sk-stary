@@ -631,7 +631,7 @@ const Komunita2 = () => {
               <AnimatedSection>
                 <div className="km-bio-photo">
                   <img src={ivanKreslo} alt={IVAN.image.alt} decoding="async" />
-                  <span className="km-bio-tag">Pod dohľadom NBS</span>
+                  <span className="km-bio-tags"><span className="km-bio-tag">Pod dohľadom NBS</span><span className="km-bio-tag">EFA vzdelanie</span></span>
                 </div>
               </AnimatedSection>
               <AnimatedSection delay={0.06}>

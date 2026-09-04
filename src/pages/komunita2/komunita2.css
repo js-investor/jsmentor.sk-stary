@@ -293,7 +293,8 @@
 .km-bio-photo { position: relative; border-radius: var(--km-r); overflow: hidden; background: var(--km-ink-2); }
 .km-bio-photo img { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 22%; }
 .km-bio-photo::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgba(41, 36, 32, 0.10) 0%, rgba(41, 36, 32, 0) 28%, rgba(41, 36, 32, 0) 58%, rgba(41, 36, 32, 0.58) 100%), radial-gradient(135% 115% at 50% 42%, rgba(41, 36, 32, 0) 60%, rgba(41, 36, 32, 0.42) 100%); }
-.km-bio-tag { position: absolute; z-index: 1; left: 1.25rem; bottom: 1.25rem; padding: 0.5rem 0.875rem; border-radius: 9999px; background: var(--km-ink); color: var(--km-paper); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; }
+.km-bio-tags { position: absolute; z-index: 1; left: 1.25rem; right: 1.25rem; bottom: 1.25rem; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.km-bio-tag { display: inline-flex; align-items: center; padding: 0.5rem 0.875rem; border-radius: 9999px; background: var(--km-ivory); color: var(--km-ink); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; white-space: nowrap; }
 .km-bio p { margin: 0; font-size: 1.0625rem; line-height: 1.65; color: var(--km-fg2); text-wrap: pretty; }
 .km-bio p + p { margin-top: 1rem; }
 .km-bio p strong { font-weight: 600; color: var(--km-ink); }
