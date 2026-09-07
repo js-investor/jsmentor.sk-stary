@@ -1,323 +1,155 @@
 /**
- * Rentová kalkulačka — scoped pod #rentova-calc-root, jazyk /bonusy 2.0 (vzor Výnosnosť bytu).
- * Vstupy vľavo v ivory karte s hairline skupinami, výsledok vpravo: veľké číslo, tónovaný
- * ukazovateľ cieľa, klikateľné karty spôsobu čerpania, graf, kľúčové čísla. Bez tieňov,
- * bez farebných líšt, bez zlatej na svetlom.
+ * Rentová kalkulačka 2.0 — otázky zhora nadol, potom výsledok. Scoped pod #rn-root.
+ * Rovnaký jazyk ako Inteligentná hypotéka: atrament (#292420), krém, ivory, hairline a jediný akcent (zelená #2a6647).
+ * Bez červenej, zlatej, tmavých blokov, tieňov a gradientových textúr.
  */
 
-#rentova-calc-root *,
-#rentova-calc-root *::before,
-#rentova-calc-root *::after { box-sizing: border-box; }
+#rn-root *, #rn-root *::before, #rn-root *::after { box-sizing: border-box; }
+#rn-root { position: relative; isolation: isolate; font-family: var(--font-sans); color: var(--wm-brown-text); width: 100%; --rn-ink: #292420; --rn-muted: #6b625a; --rn-hair: rgba(41, 36, 32, 0.1); --rn-hair-2: rgba(41, 36, 32, 0.18); --rn-accent: #2a6647; --rn-ivory: #fffcf7; }
+#rn-root .rn-page { max-width: 46rem; margin: 0 auto; }
 
-#rentova-calc-root { font-family: var(--font-sans); color: var(--wm-brown); width: 100%; max-width: 100%; }
+/* ------------------------------ Tok otázok ------------------------------ */
+#rn-root .rn-flow { padding: 1.375rem 1.375rem 1.25rem; border: 1px solid var(--rn-hair); border-radius: 1.5rem; background: var(--rn-ivory); }
+@media (min-width: 768px) { #rn-root .rn-flow { padding: 1.75rem 2rem 1.625rem; } }
+#rn-root .rn-progress { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem; }
+#rn-root .rn-progress-label { flex-shrink: 0; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--rn-muted); }
+#rn-root .rn-progress-track { flex: 1; height: 2px; border-radius: 999px; background: var(--rn-hair-2); overflow: hidden; }
+#rn-root .rn-progress-fill { display: block; height: 100%; background: var(--rn-accent); transition: width 0.5s cubic-bezier(0.2, 0.7, 0.2, 1); }
 
-/* ------------------------------ Layout: vstupy | výsledok ------------------------------ */
+#rn-root .rn-done { list-style: none; margin: 0 0 0.75rem; padding: 0; }
+#rn-root .rn-done li { display: grid; grid-template-columns: 1fr auto auto; align-items: baseline; gap: 0.75rem; padding: 0.625rem 0; border-bottom: 1px solid var(--rn-hair); font-size: 0.875rem; animation: rn-in 0.4s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+#rn-root .rn-done li.is-editing { opacity: 0.5; }
+#rn-root .rn-done-q { color: var(--rn-muted); }
+#rn-root .rn-done-v { font-family: var(--font-serif); font-size: 1rem; font-weight: 600; color: var(--rn-ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+#rn-root .rn-done-edit { padding: 0; border: none; background: none; font-family: var(--font-sans); font-size: 0.8125rem; font-weight: 500; color: var(--rn-accent); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+#rn-root .rn-done-edit:disabled { opacity: 0.4; cursor: default; }
+@media (max-width: 480px) { #rn-root .rn-done li { grid-template-columns: 1fr auto; } #rn-root .rn-done-v { white-space: normal; text-align: right; } #rn-root .rn-done-edit { grid-column: 1 / -1; justify-self: start; } }
 
-#rentova-calc-root .rn-layout { display: grid; grid-template-columns: 1fr; gap: 1.25rem; align-items: start; }
+@keyframes rn-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+#rn-root .rn-q { padding-top: 0.75rem; animation: rn-in 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+#rn-root .rn-q-title { margin: 0 0 0.375rem; font-family: var(--font-serif); font-size: clamp(1.5rem, 3.6vw, 2rem); line-height: 1.15; font-weight: 700; letter-spacing: -0.01em; color: var(--rn-ink); text-wrap: balance; }
+#rn-root .rn-q-help { margin: 0 0 1.25rem; font-size: 0.9375rem; line-height: 1.5; color: var(--rn-muted); max-width: 34rem; }
+#rn-root .rn-answer { max-width: 34rem; }
+#rn-root .rn-answer-row { display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 0.625rem; }
+#rn-root .rn-answer-input { min-width: 4ch; max-width: 100%; padding: 0; border: none; border-bottom: 2px solid var(--rn-hair-2); background: transparent; font-family: var(--font-serif); font-size: clamp(2.25rem, 6vw, 3rem); line-height: 1.1; font-weight: 700; letter-spacing: -0.02em; color: var(--rn-ink); font-variant-numeric: tabular-nums; transition: border-color 0.2s; }
+#rn-root .rn-answer-input:focus { outline: none; border-bottom-color: var(--rn-accent); }
+#rn-root .rn-answer-unit { font-size: 1rem; font-weight: 500; color: var(--rn-muted); white-space: nowrap; }
+#rn-root .rn-slider { --p: 0%; }
+#rn-root .rn-scale { display: flex; justify-content: space-between; margin-top: 0.25rem; font-size: 0.6875rem; color: var(--rn-muted); }
+#rn-root .rn-chips { display: flex; flex-wrap: wrap; gap: 0.375rem; margin-top: 0.875rem; }
+#rn-root .rn-chip { padding: 0.375rem 0.75rem; border: 1px solid var(--rn-hair-2); border-radius: 999px; background: transparent; font-family: var(--font-sans); font-size: 0.8125rem; font-weight: 500; color: var(--rn-ink); cursor: pointer; transition: background 0.15s, border-color 0.15s, color 0.15s; }
+#rn-root .rn-chip:hover { background: var(--wm-beige); }
+#rn-root .rn-chip.is-on { background: var(--rn-ink); border-color: var(--rn-ink); color: #f3e9dd; }
 
-@media (min-width: 1024px) {
-  #rentova-calc-root .rn-layout { grid-template-columns: minmax(18rem, 21rem) minmax(0, 1fr); gap: 1.5rem; }
-  #rentova-calc-root .rn-inputs { position: sticky; top: 6rem; max-height: calc(100vh - 7rem); overflow: auto; }
-}
+/* dve polia v jednej otázke (úrok + splatnosť, nájom + náklady) */
+#rn-root .rn-pair { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+@media (min-width: 640px) { #rn-root .rn-pair { grid-template-columns: 1fr 1fr; gap: 2rem; } }
+#rn-root .rn-answer.is-compact .rn-answer-input { font-size: clamp(1.75rem, 4vw, 2.25rem); }
+#rn-root .rn-answer-label { display: block; margin-bottom: 0.25rem; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--rn-muted); }
 
-#rentova-calc-root .rn-inputs,
-#rentova-calc-root .rn-result { background: var(--wm-ivory); border: 1px solid var(--hair); border-radius: 1.5rem; min-width: 0; }
+/* áno / nie */
+#rn-root .rn-choice { display: grid; grid-template-columns: 1fr; gap: 0.625rem; max-width: 34rem; }
+@media (min-width: 560px) { #rn-root .rn-choice { grid-template-columns: 1fr 1fr; } }
+#rn-root .rn-option { display: flex; flex-direction: column; align-items: flex-start; gap: 0.125rem; padding: 1rem 1.125rem; border: 1px solid var(--rn-hair-2); border-radius: 1rem; background: transparent; font-family: var(--font-sans); text-align: left; color: var(--rn-ink); cursor: pointer; transition: background 0.15s, border-color 0.15s, color 0.15s; }
+#rn-root .rn-option b { font-family: var(--font-serif); font-size: 1.25rem; font-weight: 700; }
+#rn-root .rn-option small { font-size: 0.8125rem; color: var(--rn-muted); }
+#rn-root .rn-option:hover { background: var(--wm-beige); }
+#rn-root .rn-option.is-on { background: var(--rn-ink); border-color: var(--rn-ink); color: #f3e9dd; }
+#rn-root .rn-option.is-on small { color: rgba(243, 233, 221, 0.75); }
+#rn-root .rn-option:focus-visible { outline: 2px solid var(--rn-accent); outline-offset: 2px; }
 
-#rentova-calc-root .rn-inputs { padding: 1.375rem 1.375rem 1rem; }
-#rentova-calc-root .rn-result { padding: 1.5rem 1.5rem 1.25rem; }
-
-@media (min-width: 768px) {
-  #rentova-calc-root .rn-result { padding: 1.75rem 2rem 1.5rem; }
-}
-
-/* ------------------------------ Vstupy ------------------------------ */
-
-#rentova-calc-root .rn-inputs-head { margin-bottom: 0.875rem; }
-#rentova-calc-root .rn-inputs-head .calc-panel-title { margin-bottom: 0.125rem; font-size: 1.375rem; }
-#rentova-calc-root .rn-inputs-head .calc-panel-sub { margin: 0; color: var(--fg3); }
-
-#rentova-calc-root .rn-group { padding: 1rem 0 0.375rem; border-top: 1px solid var(--hair); }
-
-#rentova-calc-root .rn-group-title {
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--wm-green);
-  margin: 0 0 0.875rem;
-}
-
-#rentova-calc-root .rn-field { margin-bottom: 0.875rem; }
-#rentova-calc-root .rn-field .calc-label { margin-bottom: 0.375rem; font-size: 0.875rem; }
-#rentova-calc-root .rn-field .calc-input { font-size: 1rem; padding: 0.5rem 0.75rem; border-radius: 0.75rem; }
-/* Stepper a jednotka nesmú prekryť text vstupu (kompaktný padding vyššie) */
-#rentova-calc-root .rn-field .calc-input-wrap--stepper .calc-input { padding-right: 6.25rem; }
-#rentova-calc-root .rn-field .calc-input--unit { padding-right: 2.75rem; }
-#rentova-calc-root .rn-field .calc-slider { height: 1.5rem; }
-
-#rentova-calc-root .rn-fields-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-
-#rentova-calc-root .rn-field-note { font-size: 0.8125rem; line-height: 1.45; color: var(--fg3); margin: 0.25rem 0 0; }
-
-#rentova-calc-root .rn-inputs .calc-collapse-toggle { padding-top: 0.75rem; padding-bottom: 0.25rem; font-size: 0.875rem; }
-#rentova-calc-root .rn-advanced { padding: 0.75rem 0 0.25rem; }
-
-#rentova-calc-root .rn-warning { margin: 0.75rem 0 0; font-size: 0.8125rem; line-height: 1.45; color: var(--wm-red); }
+#rn-root .rn-q-hint { margin: 1rem 0 0; font-size: 0.875rem; line-height: 1.5; color: var(--rn-muted); max-width: 34rem; }
+#rn-root .rn-q-actions { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 1.5rem; padding-top: 1.125rem; border-top: 1px solid var(--rn-hair); }
+#rn-root .rn-back { padding: 0; border: none; background: none; font-family: var(--font-sans); font-size: 0.875rem; font-weight: 500; color: var(--rn-muted); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+#rn-root .rn-back:hover { color: var(--rn-ink); }
+#rn-root .rn-next { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.375rem; font-size: 0.9375rem; }
+#rn-root .rn-next svg { transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1); }
+#rn-root .rn-next:hover svg { transform: translateX(3px); }
+#rn-root .rn-flow-foot { display: flex; justify-content: flex-end; padding-top: 0.25rem; }
 
 /* ------------------------------ Výsledok ------------------------------ */
+#rn-root .rn-result { margin-top: 1.25rem; padding: 1.5rem 1.375rem 1.25rem; border: 1px solid var(--rn-hair); border-radius: 1.5rem; background: var(--rn-ivory); scroll-margin-top: 5rem; }
+@media (min-width: 768px) { #rn-root .rn-result { padding: 2rem 2rem 1.5rem; } }
+#rn-root .rn-kicker { display: block; margin-bottom: 0.75rem; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--rn-muted); }
+#rn-root .rn-verdict-title { margin: 0 0 0.75rem; font-family: var(--font-serif); font-size: clamp(1.75rem, 4.4vw, 2.5rem); line-height: 1.12; font-weight: 700; letter-spacing: -0.015em; color: var(--rn-ink); text-wrap: balance; }
+#rn-root .rn-verdict-title em { font-style: normal; color: var(--rn-accent); white-space: nowrap; }
+#rn-root .rn-verdict-text { margin: 0; font-size: 1rem; line-height: 1.6; color: var(--rn-muted); max-width: 38rem; }
+#rn-root .rn-verdict-text strong { font-weight: 600; color: var(--rn-ink); }
 
-#rentova-calc-root .rn-result-eyebrow {
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--wm-green);
-  margin: 0 0 0.5rem;
-}
+#rn-root .rn-stats { display: grid; grid-template-columns: 1fr; margin-top: 1.5rem; border-top: 1px solid var(--rn-hair); border-bottom: 1px solid var(--rn-hair); }
+@media (min-width: 640px) { #rn-root .rn-stats { grid-template-columns: repeat(3, 1fr); } }
+#rn-root .rn-stats > div { display: flex; flex-direction: column; gap: 0.125rem; padding: 0.875rem 1rem 0.875rem 0; min-width: 0; }
+@media (min-width: 640px) { #rn-root .rn-stats > div + div { padding-left: 1rem; border-left: 1px solid var(--rn-hair); } }
+@media (max-width: 639px) { #rn-root .rn-stats > div + div { border-top: 1px solid var(--rn-hair); } }
+#rn-root .rn-stat-label { font-size: 0.75rem; font-weight: 500; color: var(--rn-muted); }
+#rn-root .rn-stats strong { font-family: var(--font-serif); font-size: 1.5rem; line-height: 1.1; font-weight: 700; color: var(--rn-ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+#rn-root .rn-stats small { font-size: 0.75rem; line-height: 1.4; color: var(--rn-muted); }
+#rn-root .is-accent { color: var(--rn-accent) !important; }
 
-#rentova-calc-root .rn-result-label { font-size: 1.0625rem; line-height: 1.4; color: var(--fg2); margin: 0; }
-#rentova-calc-root .rn-result-label strong { color: var(--wm-brown); font-weight: 600; }
+/* spôsob čerpania */
+#rn-root .rn-strats { display: grid; grid-template-columns: 1fr; gap: 0.5rem; margin-top: 1.25rem; }
+@media (min-width: 560px) { #rn-root .rn-strats { grid-template-columns: repeat(3, 1fr); } }
+#rn-root .rn-strat { display: flex; flex-direction: column; align-items: flex-start; gap: 0.125rem; padding: 0.75rem 0.9375rem; border: 1px solid var(--rn-hair-2); border-radius: 1rem; background: transparent; font-family: var(--font-sans); color: var(--rn-ink); text-align: left; cursor: pointer; transition: background 0.15s, border-color 0.15s, color 0.15s; min-width: 0; }
+#rn-root .rn-strat span { font-size: 0.75rem; font-weight: 500; color: var(--rn-muted); }
+#rn-root .rn-strat b { font-family: var(--font-serif); font-size: 1.25rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+#rn-root .rn-strat:hover { background: var(--wm-beige); }
+#rn-root .rn-strat.is-on { background: var(--rn-ink); border-color: var(--rn-ink); color: #f3e9dd; }
+#rn-root .rn-strat.is-on span { color: rgba(243, 233, 221, 0.75); }
+#rn-root .rn-strat:focus-visible { outline: 2px solid var(--rn-accent); outline-offset: 2px; }
+#rn-root .rn-strat-desc { margin: 0.625rem 0 0; font-size: 0.875rem; line-height: 1.5; color: var(--rn-muted); }
 
-#rentova-calc-root .rn-result-value { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.625rem; margin: 0.25rem 0 0; }
-#rentova-calc-root .rn-result-value .calc-hero-xl-value { font-size: clamp(2.75rem, 6vw, 4.25rem); margin: 0; white-space: nowrap; }
+/* graf */
+#rn-root .rn-chart-block { margin-top: 1.5rem; }
+#rn-root .rn-chart-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.25rem 1rem; margin-bottom: 0.5rem; }
+#rn-root .rn-chart-head h3 { margin: 0; font-family: var(--font-serif); font-size: 1.25rem; font-weight: 700; color: var(--rn-ink); }
+#rn-root .rn-legend { display: flex; gap: 1rem; font-size: 0.8125rem; color: var(--rn-muted); }
+#rn-root .rn-legend span { display: inline-flex; align-items: center; gap: 0.375rem; }
+#rn-root .rn-legend i { display: inline-block; width: 0.875rem; height: 3px; border-radius: 2px; }
+#rn-root .rn-legend-ink { background: var(--rn-ink); }
+#rn-root .rn-legend-accent { background: var(--rn-accent); }
+#rn-root .rn-chart-host { position: relative; }
+#rn-root .rn-chart { display: block; width: 100%; height: auto; overflow: visible; touch-action: none; cursor: crosshair; }
+#rn-root .rn-grid { stroke: rgba(41, 36, 32, 0.08); stroke-width: 1; }
+#rn-root .rn-ax { font-family: Matter, sans-serif; font-size: 12px; fill: rgba(41, 36, 32, 0.55); }
+#rn-root .rn-cross-t { font-family: Calvino, serif; font-size: 16px; font-weight: 700; fill: var(--rn-ink); }
+#rn-root .rn-cross-s { font-family: Matter, sans-serif; font-size: 11.5px; fill: rgba(41, 36, 32, 0.6); }
+@media (max-width: 640px) { #rn-root .rn-ax { font-size: 20px; } #rn-root .rn-cross-t { font-size: 24px; } #rn-root .rn-cross-s { font-size: 17px; } }
+@keyframes rn-pulse { 0% { r: 6; opacity: 0.9; } 70% { r: 18; opacity: 0; } 100% { r: 18; opacity: 0; } }
+#rn-root .rn-pulse { animation: rn-pulse 2.2s ease-out infinite; }
+#rn-root .rn-tooltip { position: absolute; z-index: 5; padding: 0.5rem 0.75rem; border-radius: 0.625rem; background: rgba(41, 36, 32, 0.96); color: #f3e9dd; font-size: 0.8125rem; line-height: 1.5; white-space: nowrap; pointer-events: none; }
+#rn-root .rn-tooltip b { font-weight: 600; margin-left: 0.25rem; }
+#rn-root .rn-tt-d { margin-bottom: 0.125rem; font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; color: rgba(243, 233, 221, 0.72); }
 
-/* „mesačne" ako italic dôraz (na svetlom zelený, nie zlatý) */
-#rentova-calc-root .rn-result-unit { font-family: var(--font-serif); font-style: italic; font-size: 1.25rem; font-weight: 600; color: var(--wm-green); }
+/* riadky (byt, plán) */
+#rn-root .rn-flat, #rn-root .rn-plan { margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--rn-hair); }
+#rn-root .rn-flat h3, #rn-root .rn-plan h3 { margin: 0 0 0.5rem; font-family: var(--font-serif); font-size: 1.25rem; font-weight: 700; color: var(--rn-ink); }
+#rn-root .rn-plan-sub { margin: 0 0 0.25rem; font-size: 0.9375rem; line-height: 1.5; color: var(--rn-muted); }
+#rn-root .rn-rows { list-style: none; margin: 0; padding: 0; }
+#rn-root .rn-rows li { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: 0.75rem 0; border-top: 1px solid var(--rn-hair); }
+#rn-root .rn-rows li:first-child { border-top: none; }
+#rn-root .rn-rows li > div { display: flex; flex-direction: column; gap: 0.125rem; min-width: 0; }
+#rn-root .rn-row-t { font-size: 0.9375rem; font-weight: 500; color: var(--rn-ink); }
+#rn-root .rn-row-s { font-size: 0.8125rem; line-height: 1.45; color: var(--rn-muted); }
+#rn-root .rn-rows b { flex-shrink: 0; font-family: var(--font-serif); font-size: 1.25rem; font-weight: 700; color: var(--rn-ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+#rn-root .rn-rows li.is-total { border-top: 1px solid var(--rn-hair-2); }
+#rn-root .rn-rows li.is-total b { font-size: 1.5rem; }
+@media (max-width: 480px) { #rn-root .rn-rows li { flex-direction: column; align-items: flex-start; gap: 0.25rem; } }
 
-#rentova-calc-root .rn-result-sub { font-size: 0.875rem; color: var(--fg3); margin: 0.25rem 0 0; }
+/* predpoklady */
+#rn-root .rn-assume { margin: 1.25rem 0 0; padding-top: 1.125rem; border-top: 1px solid var(--rn-hair); font-size: 0.8125rem; line-height: 2; color: var(--rn-muted); }
+#rn-root .rn-seg { display: inline-flex; gap: 0.125rem; margin: 0 0.375rem; padding: 0.125rem; border-radius: 999px; background: var(--wm-beige); vertical-align: middle; }
+#rn-root .rn-seg button { padding: 0.125rem 0.5rem; border: none; border-radius: 999px; background: transparent; font-family: var(--font-sans); font-size: 0.75rem; font-weight: 600; color: var(--rn-ink); cursor: pointer; white-space: nowrap; }
+#rn-root .rn-seg button[aria-pressed="true"] { background: var(--rn-ink); color: #f3e9dd; }
 
-/* Ukazovateľ cieľa: tónovaná plocha bez rámika (šalvia = splnené, ružovkastá = chýba) */
-#rentova-calc-root .rn-meter {
-  margin-top: 1.25rem;
-  padding: 1rem 1.125rem;
-  border: none;
-  border-radius: 1.25rem;
-  background: var(--tone-stone);
-  transition: background-color 0.3s;
-}
-
-#rentova-calc-root .rn-meter.is-good { background: var(--wm-green); }
-#rentova-calc-root .rn-meter.is-good, #rentova-calc-root .rn-meter.is-good * { color: #f3e9dd; }
-#rentova-calc-root .rn-meter.is-bad { background: var(--tone-blush); }
-
-#rentova-calc-root .rn-meter-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.25rem 1rem;
-  font-size: 0.9375rem;
-  color: var(--fg2);
-}
-
-#rentova-calc-root .rn-meter-head strong { font-weight: 600; color: var(--wm-brown); }
-#rentova-calc-root .rn-meter-other { display: block; font-size: 0.8125rem; color: var(--fg3); }
-#rentova-calc-root .rn-meter-gap { font-weight: 600; white-space: nowrap; color: var(--wm-brown); }
-#rentova-calc-root .rn-meter.is-good .rn-meter-gap { color: var(--wm-green); }
-#rentova-calc-root .rn-meter.is-bad .rn-meter-gap { color: var(--wm-red); }
-
-#rentova-calc-root .rn-meter-track {
-  position: relative;
-  height: 0.625rem;
-  margin-top: 0.625rem;
-  border-radius: 9999px;
-  background: rgba(41, 36, 32, 0.1);
-  overflow: hidden;
-}
-
-#rentova-calc-root .rn-meter-fill {
-  height: 100%;
-  width: 0;
-  border-radius: 9999px;
-  background: var(--wm-red);
-  transition: width 0.5s var(--ease-out), background-color 0.3s ease;
-}
-
-#rentova-calc-root .rn-meter.is-good .rn-meter-fill { background: var(--wm-green); }
-
-#rentova-calc-root .rn-meter-goalmark { position: absolute; top: 0; bottom: 0; left: calc(100% - 2px); width: 2px; background: rgba(41, 36, 32, 0.35); }
-
-#rentova-calc-root .rn-meter-foot { display: flex; justify-content: space-between; margin-top: 0.375rem; font-size: 0.75rem; color: var(--fg3); }
-#rentova-calc-root .rn-meter-foot span:first-child { font-weight: 600; color: var(--wm-brown); }
-
-/* Spôsob čerpania: klikateľné karty (aktívna = šalvia) */
-#rentova-calc-root .rn-strats-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.25rem 1rem;
-  margin-top: 1.5rem;
-  margin-bottom: 0.625rem;
-}
-
-#rentova-calc-root .rn-strats-title { font-family: var(--font-serif); font-size: 1.125rem; font-weight: 700; color: var(--wm-brown); }
-#rentova-calc-root .rn-strats-desc { font-size: 0.8125rem; color: var(--fg3); }
-
-#rentova-calc-root .rn-strats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
-
-#rentova-calc-root .rn-strat {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.125rem;
-  padding: 0.75rem 0.9375rem;
-  border: 1px solid var(--hair-2);
-  border-radius: 1rem;
-  background: transparent;
-  font-family: var(--font-sans);
-  color: var(--wm-brown);
-  text-align: left;
-  cursor: pointer;
-  transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.3s var(--ease-out);
-  min-width: 0;
-}
-
-#rentova-calc-root .rn-strat:hover { background: var(--wm-taupe-soft); transform: translateY(-2px); }
-#rentova-calc-root .rn-strat[aria-pressed="true"] { background: var(--wm-green); border-color: transparent; }
-#rentova-calc-root .rn-strat[aria-pressed="true"], #rentova-calc-root .rn-strat[aria-pressed="true"] * { color: #f3e9dd; }
-#rentova-calc-root .rn-strat:focus-visible { outline: 2px solid var(--wm-green); outline-offset: 2px; }
-
-#rentova-calc-root .rn-strat-title {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--fg3);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
-}
-
-#rentova-calc-root .rn-strat[aria-pressed="true"] .rn-strat-title { color: var(--wm-green); }
-
-#rentova-calc-root .rn-strat-value {
-  font-family: var(--font-serif);
-  font-size: 1.25rem;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  color: var(--wm-brown);
-}
-
-#rentova-calc-root .rn-strat.is-warn .rn-strat-value { color: var(--wm-red); }
-
-@media (max-width: 480px) {
-  #rentova-calc-root .rn-strats { grid-template-columns: 1fr; }
-}
+/* CTA + poznámka */
+#rn-root .rn-cta { display: flex; flex-direction: column; align-items: flex-start; gap: 0.875rem; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--rn-hair); }
+@media (min-width: 640px) { #rn-root .rn-cta { flex-direction: row; align-items: center; justify-content: space-between; } }
+#rn-root .rn-cta p { margin: 0; font-size: 0.9375rem; line-height: 1.5; color: var(--rn-muted); max-width: 26rem; }
+#rn-root .rn-cta-btn { display: inline-flex; align-items: center; gap: 0.5rem; flex-shrink: 0; padding: 0.75rem 1.25rem; font-size: 0.9375rem; }
+#rn-root .rn-foot { margin-top: 1.25rem; color: var(--rn-muted); }
 
 @media (prefers-reduced-motion: reduce) {
-  #rentova-calc-root .rn-strat:hover { transform: none; }
+  #rn-root .rn-q, #rn-root .rn-done li { animation: none !important; }
+  #rn-root .rn-pulse { animation: none !important; }
+  #rn-root .rn-progress-fill, #rn-root .rn-next svg { transition: none !important; }
 }
-
-/* Graf */
-#rentova-calc-root .rn-chart-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.25rem 1rem;
-  margin-top: 1.5rem;
-  margin-bottom: 0.5rem;
-}
-
-#rentova-calc-root .rn-chart { position: relative; height: 17rem; }
-
-@media (min-width: 768px) {
-  #rentova-calc-root .rn-chart { height: 19rem; }
-}
-
-/* Kľúčové čísla */
-#rentova-calc-root .rn-kpis {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.75rem 1rem;
-  margin-top: 1.25rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--hair);
-}
-
-@media (min-width: 640px) {
-  #rentova-calc-root .rn-kpis { grid-template-columns: repeat(4, 1fr); }
-  #rentova-calc-root .rn-kpis > div + div { border-left: 1px solid var(--hair); padding-left: 1rem; }
-}
-
-#rentova-calc-root .rn-kpis .calc-stat-value { font-size: 1.25rem; white-space: nowrap; }
-
-#rentova-calc-root .rn-neg { color: var(--wm-red); }
-#rentova-calc-root .rn-pos { color: var(--wm-green); }
-
-/* ------------------------------ Plán ------------------------------ */
-
-#rentova-calc-root #rn-plan-panel .calc-panel-sub { margin: 0; }
-#rentova-calc-root .rn-plan .calc-stat-value { font-size: 1.5rem; color: var(--wm-green); }
-
-/* ------------------------------ Rozpis po rokoch ------------------------------ */
-
-#rentova-calc-root .rn-table-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  width: 100%;
-  cursor: pointer;
-  user-select: none;
-}
-
-#rentova-calc-root .rn-table-toggle:focus-visible { outline: 2px solid var(--wm-green); outline-offset: 4px; border-radius: 0.5rem; }
-
-#rentova-calc-root .rn-table-toggle-main { display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; }
-#rentova-calc-root .rn-table-toggle-main .calc-panel-title { margin: 0; }
-#rentova-calc-root .rn-table-toggle-main .calc-panel-sub { margin: 0; }
-
-#rentova-calc-root .rn-table-toggle-action {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-shrink: 0;
-  padding: 0.5rem 0.9375rem;
-  border: 1px solid var(--hair-2);
-  border-radius: 9999px;
-  background: transparent;
-  font-family: var(--font-sans);
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: var(--wm-brown);
-  transition: background-color 0.2s, border-color 0.2s;
-}
-
-#rentova-calc-root .rn-table-toggle:hover .rn-table-toggle-action { background: var(--wm-taupe-soft); border-color: rgba(41, 36, 32, 0.35); }
-
-#rentova-calc-root .rn-table-wrap { margin-top: 1rem; max-height: 26rem; overflow: auto; border: 1px solid var(--hair); border-radius: 0.75rem; }
-
-#rentova-calc-root .rn-table { width: 100%; border-collapse: collapse; font-family: var(--font-sans); font-size: 0.875rem; font-variant-numeric: tabular-nums; }
-
-#rentova-calc-root .rn-table th {
-  position: sticky;
-  top: 0;
-  padding: 0.625rem 0.875rem;
-  text-align: right;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--fg3);
-  background: var(--wm-taupe-soft);
-  border-bottom: 1px solid var(--hair-2);
-  white-space: nowrap;
-}
-
-#rentova-calc-root .rn-table th:first-child,
-#rentova-calc-root .rn-table th:nth-child(2),
-#rentova-calc-root .rn-table td:first-child,
-#rentova-calc-root .rn-table td:nth-child(2) { text-align: left; }
-
-#rentova-calc-root .rn-table td { padding: 0.5rem 0.875rem; text-align: right; border-bottom: 1px solid var(--hair); white-space: nowrap; color: var(--wm-brown); }
-#rentova-calc-root .rn-table td strong { font-weight: 600; }
-#rentova-calc-root .rn-table tr.is-rent td { background: rgba(171,65,50, 0.05); }
-#rentova-calc-root .rn-table tbody tr:last-child td { border-bottom: none; }
-
-@media (max-width: 560px) {
-  #rentova-calc-root .rn-table-toggle { flex-direction: column; align-items: flex-start; }
-}
-
-/* aktívna stratégia: krémový text na zelenej (oprava po QA) */
-#rentova-calc-root .rn-strat[aria-pressed="true"] .rn-strat-title, #rentova-calc-root .rn-strat[aria-pressed="true"] .rn-strat-val, #rentova-calc-root .rn-strat[aria-pressed="true"] .rn-strat-sub, #rentova-calc-root .rn-strat[aria-pressed="true"] span, #rentova-calc-root .rn-strat[aria-pressed="true"] b, #rentova-calc-root .rn-strat[aria-pressed="true"] small { color: #f3e9dd !important; }
