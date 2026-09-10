@@ -1,4 +1,8 @@
-/* Samostatná verzia kalkulačiek JS Mentor: písma, tokeny a základné štýly bez zvyšku webu. */
+/* Samostatná verzia kalkulačiek JS Mentor: Tailwind (len triedy z kalkulačiek), písma, tokeny a základné štýly bez zvyšku webu. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @font-face { font-family: 'Matter'; src: url('./fonts/matter-400.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
 @font-face { font-family: 'Matter'; src: url('./fonts/matter-500.woff2') format('woff2'); font-weight: 500; font-style: normal; font-display: swap; }
 @font-face { font-family: 'Matter'; src: url('./fonts/matter-600.woff2') format('woff2'); font-weight: 600; font-style: normal; font-display: swap; }
@@ -32,29 +36,12 @@
   --font-sans: 'Matter', system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
-/* Základ (zodpovedá Tailwind preflight + resetu webu: bez tieňov a bez letter-spacingu). */
-*, *::before, *::after { box-sizing: border-box; border: 0 solid hsl(var(--border)); box-shadow: none !important; text-shadow: none !important; letter-spacing: normal !important; }
-svg { filter: none !important; display: block; }
-html { line-height: 1.5; -webkit-text-size-adjust: 100%; font-family: var(--font-sans); }
-body { margin: 0; line-height: inherit; background: #f3eee8; color: #292420; -webkit-font-smoothing: antialiased; }
-h1, h2, h3, h4, p, ol, ul, figure { margin: 0; }
-ol, ul { padding: 0; list-style: none; }
-button, input, select, textarea { font: inherit; color: inherit; margin: 0; padding: 0; background: transparent; border-radius: 0; }
-button { cursor: pointer; }
-a { color: inherit; text-decoration: inherit; }
+/* Reset webu: bez tieňov a bez letter-spacingu (rovnaké ako na jsmentor.sk). */
+*, *::before, *::after { box-shadow: none !important; text-shadow: none !important; letter-spacing: normal !important; }
+svg { filter: none !important; }
+body { background: #f3eee8; color: #292420; -webkit-font-smoothing: antialiased; }
 em { font-style: italic; }
-
-/* Pomocné triedy z Tailwindu, ktoré komponenty používajú. */
-.w-full { width: 100%; }
-.font-sans { font-family: var(--font-sans); }
-.h-4 { height: 1rem; }
-.w-4 { width: 1rem; }
-.h-5 { height: 1.25rem; }
-.w-5 { width: 1.25rem; }
-.h-7 { height: 1.75rem; }
-.w-7 { width: 1.75rem; }
-.inline-flex { display: inline-flex; }
-.text-foreground { color: hsl(var(--foreground)); }
+.section-container { max-width: 1200px; margin-left: auto; margin-right: auto; }
 
 /* Hlavné tlačidlo z webu (btn-primary). */
 .btn-primary { position: relative; display: inline-flex; align-items: center; justify-content: center; padding: 1rem 2rem; overflow: hidden; border-radius: 9999px; background: var(--btn-primary-gradient); color: hsl(var(--primary-foreground)); font-family: var(--font-sans); font-size: 1.125rem; font-weight: 600; line-height: 1.5; text-decoration: none; transition: transform 0.3s, background 0.3s; }

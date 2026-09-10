@@ -1,0 +1,12 @@
+inteligentna-hypoteka|Inteligentná hypotéka|@/components/calculators/inteligentna-hypoteka/InteligentnaHypotekaCalculator|InteligentnaHypotekaCalculator
+investicna-kalkulacka|Investičná kalkulačka|@/components/calculators/investicna/InvesticnaCalculator|InvesticnaCalculator
+mzdova-kalkulacka|Mzdová kalkulačka|@/components/calculators/mzdova/MzdovaCalculator|MzdovaCalculator
+uverova-kalkulacka|Úverová kalkulačka|@/components/calculators/podlaprijmu/PodlaPrijmuCalculator|PodlaPrijmuCalculator
+rentova-kalkulacka|Rentová kalkulačka|@/components/calculators/rentova/RentovaCalculator|RentovaCalculator
+investicny-byt|Investičný byt|@/components/calculators/investicny-byt/InvesticnyBytCalculator|InvesticnyBytCalculator
+etf-semafor|ETF semafor|@/components/calculators/etf-semafor/EtfSemaforCalculator|EtfSemaforCalculator
+poplatkovy-rontgen|Poplatkový röntgen|@/components/calculators/poplatkovy-rontgen/PoplatkovyRontgenCalculator|PoplatkovyRontgenCalculator
+bytovy-semafor|Bytový semafor|@/components/calculators/bytovy-semafor/BytovySemaforCalculator|BytovySemaforCalculator
+financny-checkup|Finančný check-up|@/components/checkup/FinancnyCheckup|FinancnyCheckup
+skoring-bytov|Skóring investičných bytov|@/components/calculators/skoring-bytov/SkoringBytovCalculator|SkoringBytovCalculator
+vynosnost-bytu|Výnosnosť investičného bytu|@/components/calculators/vynosnost-bytu/VynosnostBytuCalculator|VynosnostBytuCalculator
