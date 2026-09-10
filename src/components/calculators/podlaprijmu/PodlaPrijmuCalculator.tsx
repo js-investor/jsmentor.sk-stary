@@ -156,42 +156,6 @@ const PodlaPrijmuCalculator = () => {
                   </div>
                 </div>
 
-                <div className="calc-fieldrow">
-                  <div className="calc-field">
-                    <label className="calc-label" htmlFor="dti-property">Cena nehnuteľnosti <span className="calc-label-hint">0 = neviem</span></label>
-                    <div className="calc-input-wrap">
-                      <input type="number" id="dti-property" defaultValue={0} step={5000} min={0} className="calc-input calc-input--unit" />
-                      <span className="calc-input-unit" aria-hidden>€</span>
-                    </div>
-                  </div>
-                  <div className="calc-field">
-                    <label className="calc-label" htmlFor="dti-own">Vlastné zdroje</label>
-                    <div className="calc-input-wrap">
-                      <input type="number" id="dti-own" defaultValue={0} step={1000} min={0} className="calc-input calc-input--unit" />
-                      <span className="calc-input-unit" aria-hidden>€</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="calc-fieldrow">
-                  <div className="calc-field">
-                    <label className="calc-label" htmlFor="dti-ltv">Max. LTV banky</label>
-                    <div className="calc-input-wrap">
-                      <select id="dti-ltv" defaultValue={80} className="calc-input calc-input--unit dti-select">
-                        <option value={80}>80 % z ceny</option>
-                        <option value={90}>90 % z ceny</option>
-                      </select>
-                      <span className="calc-input-unit" aria-hidden>LTV</span>
-                    </div>
-                  </div>
-                  <div className="calc-field">
-                    <label className="calc-label" htmlFor="dti-target">Chcem hypotéku <span className="calc-label-hint">0 = neuvedené</span></label>
-                    <div className="calc-input-wrap">
-                      <input type="number" id="dti-target" defaultValue={0} step={5000} min={0} className="calc-input calc-input--unit" />
-                      <span className="calc-input-unit" aria-hidden>€</span>
-                    </div>
-                  </div>
-                </div>
-
                 <div className="calc-field">
                   <label className="dti-check-row" htmlFor="dti-stress-toggle">
                     <span className="dti-check-text">
@@ -234,31 +198,6 @@ const PodlaPrijmuCalculator = () => {
               <p className="calc-stat-value">60 %</p>
             </div>
           </div>
-
-          {/* Nehnuteľnosť a cieľ */}
-          <section className="calc-panel calc-reveal mt-5 md:mt-6" aria-label="Nehnuteľnosť a cieľová hypotéka" style={reveal(3)}>
-            <div className="calc-chart-head">
-              <h2 className="calc-panel-title">Čo ešte prezradia tvoje čísla</h2>
-              <span className="calc-panel-sub">Zadaj cenu nehnuteľnosti alebo cieľovú hypotéku a uvidíš, kde je strop.</span>
-            </div>
-            <div className="calc-statbar dti-extra">
-              <div>
-                <p className="calc-stat-label">Max. úver podľa LTV</p>
-                <p className="calc-stat-value" id="dti-ltv-loan">—</p>
-                <p className="calc-stat-sub" id="dti-ltv-sub">zadaj cenu nehnuteľnosti</p>
-              </div>
-              <div>
-                <p className="calc-stat-label">Na akú cenu dosiahneš</p>
-                <p className="calc-stat-value" id="dti-max-price">—</p>
-                <p className="calc-stat-sub" id="dti-max-price-sub">s tvojím príjmom a vlastnými zdrojmi</p>
-              </div>
-              <div>
-                <p className="calc-stat-label">Na cieľovú hypotéku potrebuješ zarábať</p>
-                <p className="calc-stat-value" id="dti-need-income">—</p>
-                <p className="calc-stat-sub" id="dti-need-income-sub">zadaj, akú hypotéku chceš</p>
-              </div>
-            </div>
-          </section>
 
           {/* Ukazovatele DTI a DSTI */}
           <section className="calc-panel calc-reveal mt-5 md:mt-6" aria-label="Ukazovatele DTI a DSTI" style={reveal(4)}>
