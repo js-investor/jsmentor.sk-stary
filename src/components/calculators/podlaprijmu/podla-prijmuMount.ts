@@ -16,6 +16,14 @@ type VariantData = {
   age: number;
   /** nezaopatrené deti v domácnosti (životné minimum) */
   children: number;
+  /** cena nehnuteľnosti € (0 = neuvedená) */
+  property: number;
+  /** vlastné zdroje € */
+  own: number;
+  /** max. LTV banky v % */
+  ltv: number;
+  /** cieľová hypotéka € (0 = neuvedená) */
+  target: number;
 };
 
 type Variant = { id: string; name: string; data: VariantData | null };
@@ -74,6 +82,10 @@ export function mountPodlaPrijmuCalculator(): () => void {
       stressTest: !!data.stressTest,
       age: Math.max(18, Math.min(75, Math.round(n(data.age, 35)))),
       children: Math.max(0, Math.min(6, Math.round(n(data.children, 0)))),
+      property: Math.max(0, n(data.property, 0)),
+      own: Math.max(0, n(data.own, 0)),
+      ltv: n(data.ltv, 80) >= 90 ? 90 : 80,
+      target: Math.max(0, n(data.target, 0)),
     };
   };
 
@@ -104,6 +116,10 @@ export function mountPodlaPrijmuCalculator(): () => void {
       stressTest: !!(document.getElementById("dti-stress-toggle") as HTMLInputElement | null)?.checked,
       age: getVal("dti-age"),
       children: getVal("dti-children"),
+      property: getVal("dti-property"),
+      own: getVal("dti-own"),
+      ltv: getVal("dti-ltv"),
+      target: getVal("dti-target"),
     });
   };
 
@@ -122,6 +138,10 @@ export function mountPodlaPrijmuCalculator(): () => void {
     setVal("dti-years", d.years);
     setVal("dti-age", d.age);
     setVal("dti-children", d.children);
+    setVal("dti-property", d.property);
+    setVal("dti-own", d.own);
+    setVal("dti-ltv", d.ltv);
+    setVal("dti-target", d.target);
     const p = document.getElementById("dti-partner-toggle") as HTMLInputElement | null;
     const s = document.getElementById("dti-stress-toggle") as HTMLInputElement | null;
     if (p) p.checked = d.partnerEnabled;
@@ -212,16 +232,29 @@ export function mountPodlaPrijmuCalculator(): () => void {
     const r = effectiveRate / 100 / 12;
     const n = d.years * 12;
     const maxMortgageBasedOnDSTI = r > 0 ? availableForNewPayment * (1 - Math.pow(1 + r, -n)) / r : availableForNewPayment * n;
-    const finalMaxMortgage = Math.max(0, Math.min(maxMortgageBasedOnDSTI, availableTotalDebt));
+    const incomeMaxMortgage = Math.max(0, Math.min(maxMortgageBasedOnDSTI, availableTotalDebt));
+    // LTV: úver najviac ltv % z ceny a zároveň cena − vlastné zdroje
+    const ltvLoan = d.property > 0 ? Math.max(0, Math.min((d.property * d.ltv) / 100, d.property - d.own)) : Infinity;
+    const finalMaxMortgage = Math.min(incomeMaxMortgage, ltvLoan);
+    // Na akú cenu dosiahneš: úver ≤ ltv % ceny a cena ≤ úver + vlastné zdroje
+    const maxPriceByLtv = incomeMaxMortgage / (d.ltv / 100);
+    const maxPrice = d.own > 0 ? Math.min(maxPriceByLtv, incomeMaxMortgage + d.own) : maxPriceByLtv;
+    const ownNeeded = Math.max(0, maxPrice - incomeMaxMortgage);
+    // Potrebný príjem na cieľovú hypotéku: DSTI (splátka + záväzky ≤ 60 % z príjmu po ŽM) a DTI (dlh ≤ limit × ročný príjem)
+    const targetPayment = d.target > 0 ? (r > 0 ? (d.target * r) / (1 - Math.pow(1 + r, -n)) : d.target / n) : 0;
+    const needIncomeDsti = d.target > 0 ? (targetPayment + existingMonthlyObligations) / 0.6 + livingMinimum : 0;
+    const needIncomeDti = d.target > 0 ? (d.target + d.totalDebt) / (12 * dtiLimit) : 0;
+    const needIncome = Math.max(needIncomeDsti, needIncomeDti);
     let limitReason = "";
-    if (availableForNewPayment <= 0) limitReason = "Vysoké existujúce splátky (DSTI stop)";
+    if (d.property > 0 && ltvLoan < incomeMaxMortgage) limitReason = `Limitované cenou nehnuteľnosti (LTV ${d.ltv} %)`;
+    else if (availableForNewPayment <= 0) limitReason = "Vysoké existujúce splátky (DSTI stop)";
     else if (maxMortgageBasedOnDSTI > availableTotalDebt) limitReason = `Limitované stropom celkového dlhu (DTI ${formatX(dtiLimit, 2)})`;
     else limitReason = "Limitované mesačnou splátkou (DSTI 60%)";
     if (d.stressTest) limitReason += " + Stress Test";
     const pDebt = totalNetIncome > 0 ? Math.min(100, (existingMonthlyObligations / totalNetIncome) * 100) : 0;
     const pReserve = totalNetIncome > 0 ? Math.min(100 - pDebt, (reserve / totalNetIncome) * 100) : 0;
     const pFree = Math.max(0, 100 - pDebt - pReserve);
-    return { input: d, totalNetIncome, livingMinimum, reserve, dtiLimit, creditCardPayment, existingMonthlyObligations, availableForNewPayment, currentDSTI, availableTotalDebt, currentDTI, maxMortgageBasedOnDSTI, finalMaxMortgage, limitReason, pDebt, pReserve, pFree };
+    return { input: d, totalNetIncome, livingMinimum, reserve, dtiLimit, incomeMaxMortgage, ltvLoan, maxPrice, ownNeeded, targetPayment, needIncome, needIncomeDsti, needIncomeDti, creditCardPayment, existingMonthlyObligations, availableForNewPayment, currentDSTI, availableTotalDebt, currentDTI, maxMortgageBasedOnDSTI, finalMaxMortgage, limitReason, pDebt, pReserve, pFree };
   };
 
   const updateGauge = (
@@ -302,6 +335,13 @@ export function mountPodlaPrijmuCalculator(): () => void {
     setText("dti-max-mortgage", formatCurrency(s.finalMaxMortgage));
     setText("dti-max-payment", formatCurrency(s.availableForNewPayment));
     setText("dti-reserve", formatCurrency(s.reserve));
+    const d0 = s.input;
+    setText("dti-ltv-loan", d0.property > 0 ? formatCurrency(s.ltvLoan) : "—");
+    setText("dti-ltv-sub", d0.property > 0 ? `${d0.ltv} % z ${formatCurrency(d0.property)}${d0.own > 0 ? `, vlastné zdroje ${formatCurrency(d0.own)}` : ""}` : "zadaj cenu nehnuteľnosti");
+    setText("dti-max-price", formatCurrency(s.maxPrice));
+    setText("dti-max-price-sub", s.ownNeeded > 0 ? `úver ${formatCurrency(s.incomeMaxMortgage)} + potrebné vlastné zdroje ${formatCurrency(s.ownNeeded)}` : `úver ${formatCurrency(s.incomeMaxMortgage)} + vlastné zdroje ${formatCurrency(d0.own)}`);
+    setText("dti-need-income", d0.target > 0 ? formatCurrency(s.needIncome) + " / mes." : "—");
+    setText("dti-need-income-sub", d0.target > 0 ? `čistý príjem domácnosti; splátka ${formatCurrency(s.targetPayment)}, rozhoduje ${s.needIncomeDti > s.needIncomeDsti ? "DTI" : "DSTI"}` : "zadaj, akú hypotéku chceš");
     setText("dti-limit-dti", `${Number.isInteger(s.dtiLimit) ? s.dtiLimit : s.dtiLimit.toFixed(2).replace(".", ",")}×`);
     setText("dti-limit-reason", s.limitReason);
     const barDebts = $("bar-debts");
@@ -490,7 +530,7 @@ export function mountPodlaPrijmuCalculator(): () => void {
   const onDocClick = () => document.querySelectorAll("#dti-calc-root .ml-dropdown-menu").forEach((m) => m.classList.remove("open"));
   document.addEventListener("click", onDocClick);
 
-  const inputIds = ["dti-income", "dti-partner-income", "dti-monthly-debt", "dti-total-debt", "dti-credit-limits", "dti-rate", "dti-years", "dti-age", "dti-children"];
+  const inputIds = ["dti-income", "dti-partner-income", "dti-monthly-debt", "dti-total-debt", "dti-credit-limits", "dti-rate", "dti-years", "dti-age", "dti-children", "dti-property", "dti-own", "dti-ltv", "dti-target"];
   const listeners: Array<{ el: Element; fn: EventListener }> = [];
   inputIds.forEach((id) => {
     const el = document.getElementById(id);

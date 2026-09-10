@@ -163,3 +163,8 @@
 #dti-calc-root .dti-bar--debts { background: var(--wm-red); }
 #dti-calc-root .dti-bar--reserve { background: var(--wm-taupe); color: var(--wm-brown); }
 #dti-calc-root .dti-bar--free { background: var(--wm-green); }
+
+/* výber LTV + blok nehnuteľnosti a cieľa */
+#dti-calc-root .dti-select { appearance: none; -webkit-appearance: none; cursor: pointer; }
+#dti-calc-root .dti-extra .calc-stat-value { font-size: 1.375rem; color: var(--wm-green); }
+#dti-calc-root .dti-extra .calc-stat-sub { line-height: 1.4; }
