@@ -1,0 +1,121 @@
+/**
+ * Maximálna hypotéka 2.0 — otázky zhora nadol, potom výsledok. Scoped pod #mh-root.
+ * Rovnaký jazyk ako Rentová a Inteligentná hypotéka: atrament, krém, ivory, hairline a jediný akcent (zelená #2a6647).
+ */
+
+#mh-root *, #mh-root *::before, #mh-root *::after { box-sizing: border-box; }
+#mh-root { position: relative; isolation: isolate; font-family: var(--font-sans); color: var(--wm-brown-text); width: 100%; --mh-ink: #292420; --mh-muted: #6b625a; --mh-hair: rgba(41, 36, 32, 0.1); --mh-hair-2: rgba(41, 36, 32, 0.18); --mh-accent: #2a6647; --mh-ivory: #fffcf7; }
+#mh-root .mh-page { max-width: 46rem; margin: 0 auto; }
+
+/* ------------------------------ Tok otázok ------------------------------ */
+#mh-root .mh-flow { padding: 1.375rem 1.375rem 1.25rem; border: 1px solid var(--mh-hair); border-radius: 1.5rem; background: var(--mh-ivory); }
+@media (min-width: 768px) { #mh-root .mh-flow { padding: 1.75rem 2rem 1.625rem; } }
+#mh-root .mh-progress { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem; }
+#mh-root .mh-progress-label { flex-shrink: 0; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--mh-muted); }
+#mh-root .mh-progress-track { flex: 1; height: 2px; border-radius: 999px; background: var(--mh-hair-2); overflow: hidden; }
+#mh-root .mh-progress-fill { display: block; height: 100%; background: var(--mh-accent); transition: width 0.5s cubic-bezier(0.2, 0.7, 0.2, 1); }
+
+#mh-root .mh-done { list-style: none; margin: 0 0 0.75rem; padding: 0; }
+#mh-root .mh-done li { display: grid; grid-template-columns: 1fr auto auto; align-items: baseline; gap: 0.75rem; padding: 0.625rem 0; border-bottom: 1px solid var(--mh-hair); font-size: 0.875rem; animation: mh-in 0.4s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+#mh-root .mh-done li.is-editing { opacity: 0.5; }
+#mh-root .mh-done-q { color: var(--mh-muted); }
+#mh-root .mh-done-v { font-family: var(--font-serif); font-size: 1rem; font-weight: 600; color: var(--mh-ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+#mh-root .mh-done-edit { padding: 0; border: none; background: none; font-family: var(--font-sans); font-size: 0.8125rem; font-weight: 500; color: var(--mh-accent); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+#mh-root .mh-done-edit:disabled { opacity: 0.4; cursor: default; }
+@media (max-width: 560px) { #mh-root .mh-done li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.125rem 0.75rem; } #mh-root .mh-done-q { flex-basis: 100%; font-size: 0.8125rem; } #mh-root .mh-done-v { flex: 1; white-space: normal; } }
+
+@keyframes mh-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+#mh-root .mh-q { padding-top: 0.75rem; animation: mh-in 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+#mh-root .mh-q-title { margin: 0 0 0.375rem; font-family: var(--font-serif); font-size: clamp(1.5rem, 3.6vw, 2rem); line-height: 1.15; font-weight: 700; color: var(--mh-ink); text-wrap: balance; }
+#mh-root .mh-q-help { margin: 0 0 1.25rem; font-size: 0.9375rem; line-height: 1.5; color: var(--mh-muted); max-width: 34rem; }
+#mh-root .mh-answer { max-width: 34rem; min-width: 0; }
+#mh-root .mh-answer-row { display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 0.625rem; }
+#mh-root .mh-answer-input { min-width: 4ch; max-width: 100%; padding: 0; border: none; border-bottom: 2px solid var(--mh-hair-2); background: transparent; font-family: var(--font-serif); font-size: clamp(2.25rem, 6vw, 3rem); line-height: 1.1; font-weight: 700; color: var(--mh-ink); font-variant-numeric: tabular-nums; transition: border-color 0.2s; }
+#mh-root .mh-answer-input:focus { outline: none; border-bottom-color: var(--mh-accent); }
+#mh-root .mh-answer-unit { font-size: 1rem; font-weight: 500; color: var(--mh-muted); white-space: nowrap; }
+#mh-root .mh-slider { --p: 0%; }
+#mh-root .mh-scale { display: flex; justify-content: space-between; margin-top: 0.25rem; font-size: 0.6875rem; color: var(--mh-muted); }
+#mh-root .mh-chips { display: flex; flex-wrap: wrap; gap: 0.375rem; margin-top: 0.875rem; }
+#mh-root .mh-chip { padding: 0.375rem 0.75rem; border: 1px solid var(--mh-hair-2); border-radius: 999px; background: transparent; font-family: var(--font-sans); font-size: 0.8125rem; font-weight: 500; color: var(--mh-ink); cursor: pointer; transition: background 0.15s, border-color 0.15s, color 0.15s; }
+#mh-root .mh-chip:hover { background: var(--wm-beige); }
+#mh-root .mh-chip.is-on { background: var(--mh-ink); border-color: var(--mh-ink); color: #f3e9dd; }
+
+/* viac polí v jednej otázke */
+#mh-root .mh-pair { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+@media (min-width: 640px) { #mh-root .mh-pair { grid-template-columns: 1fr 1fr; gap: 2rem; } #mh-root .mh-pair.is-3 { grid-template-columns: repeat(3, 1fr); gap: 1.5rem; } }
+#mh-root .mh-answer.is-compact .mh-answer-input { font-size: clamp(1.75rem, 4vw, 2.25rem); }
+#mh-root .mh-answer-label { display: block; margin-bottom: 0.25rem; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--mh-muted); }
+
+/* výber */
+#mh-root .mh-choice { display: grid; grid-template-columns: 1fr; gap: 0.625rem; max-width: 34rem; }
+@media (min-width: 560px) { #mh-root .mh-choice { grid-template-columns: 1fr 1fr; } #mh-root .mh-choice.is-3 { grid-template-columns: repeat(3, 1fr); max-width: none; } }
+#mh-root .mh-option { display: flex; flex-direction: column; align-items: flex-start; gap: 0.125rem; padding: 1rem 1.125rem; border: 1px solid var(--mh-hair-2); border-radius: 1rem; background: transparent; font-family: var(--font-sans); text-align: left; color: var(--mh-ink); cursor: pointer; transition: background 0.15s, border-color 0.15s, color 0.15s; }
+#mh-root .mh-option b { font-family: var(--font-serif); font-size: 1.25rem; font-weight: 700; }
+#mh-root .mh-option small { font-size: 0.8125rem; color: var(--mh-muted); }
+#mh-root .mh-option:hover { background: var(--wm-beige); }
+#mh-root .mh-option.is-on { background: var(--mh-ink); border-color: var(--mh-ink); color: #f3e9dd; }
+#mh-root .mh-option.is-on small { color: rgba(243, 233, 221, 0.75); }
+#mh-root .mh-option:focus-visible, #mh-root .mh-chip:focus-visible, #mh-root .mh-done-edit:focus-visible { outline: 2px solid var(--mh-accent); outline-offset: 2px; }
+
+#mh-root .mh-q-hint { margin: 1rem 0 0; font-size: 0.875rem; line-height: 1.5; color: var(--mh-muted); max-width: 34rem; }
+#mh-root .mh-q-actions { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 1.5rem; padding-top: 1.125rem; border-top: 1px solid var(--mh-hair); }
+#mh-root .mh-back { padding: 0; border: none; background: none; font-family: var(--font-sans); font-size: 0.875rem; font-weight: 500; color: var(--mh-muted); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+#mh-root .mh-back:hover { color: var(--mh-ink); }
+#mh-root .mh-next { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.375rem; font-size: 0.9375rem; }
+#mh-root .mh-next svg { transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1); }
+#mh-root .mh-next:hover svg { transform: translateX(3px); }
+#mh-root .mh-flow-foot { display: flex; justify-content: flex-end; padding-top: 0.25rem; }
+
+/* ------------------------------ Výsledok ------------------------------ */
+#mh-root .mh-result { margin-top: 1.25rem; padding: 1.5rem 1.375rem 1.25rem; border: 1px solid var(--mh-hair); border-radius: 1.5rem; background: var(--mh-ivory); scroll-margin-top: 5rem; }
+@media (min-width: 768px) { #mh-root .mh-result { padding: 2rem 2rem 1.5rem; } }
+#mh-root .mh-kicker { display: block; margin-bottom: 0.75rem; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--mh-muted); }
+#mh-root .mh-verdict-title { margin: 0 0 0.75rem; font-family: var(--font-serif); font-size: clamp(1.75rem, 4.4vw, 2.5rem); line-height: 1.12; font-weight: 700; color: var(--mh-ink); text-wrap: balance; }
+#mh-root .mh-verdict-title em { font-style: normal; color: var(--mh-accent); white-space: nowrap; }
+#mh-root .mh-verdict-text { margin: 0; font-size: 1rem; line-height: 1.6; color: var(--mh-muted); max-width: 38rem; }
+#mh-root .mh-verdict-text strong { font-weight: 600; color: var(--mh-ink); }
+
+#mh-root .mh-stats { display: grid; grid-template-columns: 1fr; margin-top: 1.5rem; border-top: 1px solid var(--mh-hair); border-bottom: 1px solid var(--mh-hair); }
+@media (min-width: 640px) { #mh-root .mh-stats { grid-template-columns: repeat(3, 1fr); } }
+#mh-root .mh-stats > div { display: flex; flex-direction: column; gap: 0.125rem; padding: 0.875rem 1rem 0.875rem 0; min-width: 0; }
+@media (min-width: 640px) { #mh-root .mh-stats > div + div { padding-left: 1rem; border-left: 1px solid var(--mh-hair); } }
+@media (max-width: 639px) { #mh-root .mh-stats > div + div { border-top: 1px solid var(--mh-hair); } }
+#mh-root .mh-stat-label { font-size: 0.75rem; font-weight: 500; color: var(--mh-muted); }
+#mh-root .mh-stats strong { font-family: var(--font-serif); font-size: 1.5rem; line-height: 1.1; font-weight: 700; color: var(--mh-ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+#mh-root .mh-stats small { font-size: 0.75rem; line-height: 1.4; color: var(--mh-muted); }
+#mh-root .is-accent { color: var(--mh-accent) !important; }
+
+/* riadky (zamestnanec, banky) */
+#mh-root .mh-block { margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--mh-hair); }
+#mh-root .mh-block h3 { margin: 0 0 0.25rem; font-family: var(--font-serif); font-size: 1.25rem; font-weight: 700; color: var(--mh-ink); }
+#mh-root .mh-block-sub { margin: 0 0 0.375rem; font-size: 0.9375rem; line-height: 1.5; color: var(--mh-muted); }
+#mh-root .mh-rows { list-style: none; margin: 0; padding: 0; }
+#mh-root .mh-rows li { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: 0.75rem 0; border-top: 1px solid var(--mh-hair); }
+#mh-root .mh-rows li:first-child { border-top: none; }
+#mh-root .mh-rows li > div { display: flex; flex-direction: column; gap: 0.125rem; min-width: 0; }
+#mh-root .mh-row-t { font-size: 0.9375rem; font-weight: 500; color: var(--mh-ink); }
+#mh-root .mh-row-s { font-size: 0.8125rem; line-height: 1.45; color: var(--mh-muted); }
+#mh-root .mh-rows b { flex-shrink: 0; font-family: var(--font-serif); font-size: 1.25rem; font-weight: 700; color: var(--mh-ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+#mh-root .mh-rows li.is-total { border-top: 1px solid var(--mh-hair-2); }
+#mh-root .mh-rows li.is-total b { font-size: 1.5rem; }
+#mh-root .mh-row-nums { align-items: flex-end; text-align: right; flex-shrink: 0; }
+#mh-root .mh-row-nums small { font-size: 0.75rem; color: var(--mh-muted); white-space: nowrap; }
+#mh-root .mh-rows li.is-best .mh-row-t { color: var(--mh-accent); }
+#mh-root .mh-rows li.is-best b { color: var(--mh-accent); }
+#mh-root .mh-rows li.is-na b { color: var(--mh-muted); font-weight: 500; }
+#mh-root .mh-badge { display: inline-block; margin-left: 0.5rem; padding: 0.0625rem 0.5rem; border-radius: 999px; background: var(--mh-accent); color: #f3e9dd; font-size: 0.6875rem; font-style: normal; font-weight: 600; vertical-align: 2px; }
+@media (max-width: 480px) { #mh-root .mh-rows li { flex-direction: column; align-items: flex-start; gap: 0.25rem; } #mh-root .mh-row-nums { align-items: flex-start; text-align: left; } }
+
+/* presnejší výpočet + CTA */
+#mh-root .mh-precise { margin-top: 1.5rem; padding: 1.25rem 1.375rem; border-radius: 1.125rem; background: var(--wm-beige); }
+@media (min-width: 640px) { #mh-root .mh-precise { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 1.5rem; padding: 1.5rem 1.75rem; } }
+#mh-root .mh-precise h3 { margin: 0 0 0.375rem; font-family: var(--font-serif); font-size: 1.25rem; font-weight: 700; color: var(--mh-ink); }
+#mh-root .mh-precise p { margin: 0; font-size: 0.9375rem; line-height: 1.5; color: var(--mh-muted); max-width: 30rem; }
+#mh-root .mh-cta-btn { display: inline-flex; align-items: center; gap: 0.5rem; flex-shrink: 0; margin-top: 1rem; padding: 0.75rem 1.25rem; font-size: 0.9375rem; }
+@media (min-width: 640px) { #mh-root .mh-cta-btn { margin-top: 0; } }
+#mh-root .mh-foot { margin-top: 1.25rem; color: var(--mh-muted); }
+
+@media (prefers-reduced-motion: reduce) {
+  #mh-root .mh-q, #mh-root .mh-done li { animation: none !important; }
+  #mh-root .mh-progress-fill, #mh-root .mh-next svg { transition: none !important; }
+}

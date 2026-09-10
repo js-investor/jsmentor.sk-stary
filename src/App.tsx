@@ -66,7 +66,7 @@ import {
 import InteligentnaHypotekaCalculator from "./components/calculators/inteligentna-hypoteka/InteligentnaHypotekaCalculator.tsx";
 import InvesticnaCalculator from "./components/calculators/investicna/InvesticnaCalculator.tsx";
 import MzdovaCalculator from "./components/calculators/mzdova/MzdovaCalculator.tsx";
-import PodlaPrijmuCalculator from "./components/calculators/podlaprijmu/PodlaPrijmuCalculator.tsx";
+import MaxHypotekaCalculator from "./components/calculators/maxhypoteka/MaxHypotekaCalculator.tsx";
 import UverovaCalculator from "./components/calculators/uverova/UverovaCalculator.tsx";
 import RentovaCalculator from "./components/calculators/rentova/RentovaCalculator.tsx";
 import InvesticnyBytCalculator from "./components/calculators/investicny-byt/InvesticnyBytCalculator.tsx";
@@ -84,7 +84,7 @@ const calculatorBySlug: Record<string, ReactNode> = {
   "investicna-kalkulacka": <InvesticnaCalculator />,
   "mzdova-kalkulacka": <MzdovaCalculator />,
   "uverova-kalkulacka": <UverovaCalculator />,
-  "maximalna-hypoteka": <PodlaPrijmuCalculator />,
+  "maximalna-hypoteka": <MaxHypotekaCalculator />,
   "rentova-kalkulacka": <RentovaCalculator />,
   "investicny-byt": <InvesticnyBytCalculator />,
   "etf-semafor":         <EtfSemaforCalculator />,
