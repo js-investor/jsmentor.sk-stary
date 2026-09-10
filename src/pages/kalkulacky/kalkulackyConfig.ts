@@ -3,8 +3,8 @@ import { BarChart3, FileDown, House, Percent, Receipt, Wallet, MapPin, TrendingU
 
 export const BONUSY_BASE_PATH = "/bonusy";
 
-/** Orientačná hodnota všetkých bonusových nástrojov (komunita: „12 nástrojov v hodnote 390 € úplne zadarmo“). */
-export const BONUSY_TOTAL_VALUE = "390\u00a0€";
+/** Orientačná hodnota všetkých bonusových nástrojov (komunita: „13 nástrojov v hodnote 420 € úplne zadarmo“). */
+export const BONUSY_TOTAL_VALUE = "420\u00a0€";
 
 /** Externá stránka rezervácie konzultácie — používa sa na /bonusy a podstránkach nástrojov. */
 export const KONZULTACIA_URL = "https://konzultacia.jsmentor.sk/";
@@ -51,8 +51,16 @@ export const KALKULACKY_CALCULATORS: KalkulackaCalculatorMeta[] = [
     title: "Úverová kalkulačka",
     menuLabel: "Úvery",
     description:
-      "Výpočet maximálnej hypotéky podľa tvojho príjmu, záväzkov a limitov DTI/DSTI.",
+      "Splátka, preplatenie a RPMN úveru zo sumy, úroku a splatnosti. Rozpis po rokoch a efekt mimoriadnej splátky.",
     Icon: Wallet,
+  },
+  {
+    slug: "maximalna-hypoteka",
+    title: "Maximálna hypotéka",
+    menuLabel: "Max. hypotéka",
+    description:
+      "Koľko ti banka požičia podľa príjmu, záväzkov a limitov DTI a DSTI. Aj so stres testom a partnerom.",
+    Icon: Landmark,
   },
   {
     slug: "rentova-kalkulacka",
@@ -150,6 +158,7 @@ export const KALKULACKY_HEADER_GROUPS: NavGroup[] = [
       { label: "Investičná kalkulačka", href: `${BONUSY_BASE_PATH}/investicna-kalkulacka` },
       { label: "Mzdová kalkulačka", href: `${BONUSY_BASE_PATH}/mzdova-kalkulacka` },
       { label: "Úverová kalkulačka", href: `${BONUSY_BASE_PATH}/uverova-kalkulacka` },
+      { label: "Maximálna hypotéka", href: `${BONUSY_BASE_PATH}/maximalna-hypoteka` },
       { label: "Rentová kalkulačka", href: `${BONUSY_BASE_PATH}/rentova-kalkulacka` },
     ],
   },

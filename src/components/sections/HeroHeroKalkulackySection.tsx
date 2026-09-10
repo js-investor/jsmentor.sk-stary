@@ -48,8 +48,8 @@ const HeroHeroKalkulackySection = ({ locked = false }: { locked?: boolean }) => 
           </h2>
           <p className="mx-auto mt-5 max-w-2xl text-center font-sans text-[1.125rem] leading-relaxed text-muted-foreground md:text-[1.25rem] lg:text-[1.375rem]">
             {locked
-              ? "Dvanásť kalkulačiek a nástrojov, ktoré dostaneš ako bonus hneď po pripojení do komunity. Ukážem ti, ako z nich vyťažiť maximum na tvojich vlastných číslach."
-              : "Dvanásť kalkulačiek a nástrojov priamo v prehliadači. Žiadna registrácia, presné čísla hneď. V komunite ti ukážem, ako z nich vyťažiť maximum na tvojich vlastných číslach."}
+              ? "Trinásť kalkulačiek a nástrojov, ktoré dostaneš ako bonus hneď po pripojení do komunity. Ukážem ti, ako z nich vyťažiť maximum na tvojich vlastných číslach."
+              : "Trinásť kalkulačiek a nástrojov priamo v prehliadači. Žiadna registrácia, presné čísla hneď. V komunite ti ukážem, ako z nich vyťažiť maximum na tvojich vlastných číslach."}
           </p>
           {locked ? (
             <p className="kb-value" aria-label={`${KALKULACKY_CALCULATORS.length} nástrojov v hodnote ${BONUSY_TOTAL_VALUE}, pre členov úplne zadarmo`}>

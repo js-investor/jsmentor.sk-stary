@@ -1,7 +1,8 @@
 inteligentna-hypoteka|Inteligentná hypotéka|@/components/calculators/inteligentna-hypoteka/InteligentnaHypotekaCalculator|InteligentnaHypotekaCalculator
 investicna-kalkulacka|Investičná kalkulačka|@/components/calculators/investicna/InvesticnaCalculator|InvesticnaCalculator
 mzdova-kalkulacka|Mzdová kalkulačka|@/components/calculators/mzdova/MzdovaCalculator|MzdovaCalculator
-uverova-kalkulacka|Úverová kalkulačka|@/components/calculators/podlaprijmu/PodlaPrijmuCalculator|PodlaPrijmuCalculator
+uverova-kalkulacka|Úverová kalkulačka|@/components/calculators/uverova/UverovaCalculator|UverovaCalculator
+maximalna-hypoteka|Maximálna hypotéka|@/components/calculators/podlaprijmu/PodlaPrijmuCalculator|PodlaPrijmuCalculator
 rentova-kalkulacka|Rentová kalkulačka|@/components/calculators/rentova/RentovaCalculator|RentovaCalculator
 investicny-byt|Investičný byt|@/components/calculators/investicny-byt/InvesticnyBytCalculator|InvesticnyBytCalculator
 etf-semafor|ETF semafor|@/components/calculators/etf-semafor/EtfSemaforCalculator|EtfSemaforCalculator

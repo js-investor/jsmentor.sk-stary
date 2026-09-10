@@ -350,7 +350,7 @@ const B = "/bonusy";
 const T = {
   mzdova: { label: "Mzdová kalkulačka", href: `${B}/mzdova-kalkulacka` },
   investicna: { label: "Investičná kalkulačka", href: `${B}/investicna-kalkulacka` },
-  uverova: { label: "Úverová kalkulačka", href: `${B}/uverova-kalkulacka` },
+  uverova: { label: "Maximálna hypotéka", href: `${B}/maximalna-hypoteka` },
   hypo: { label: "Inteligentná hypotéka", href: `${B}/inteligentna-hypoteka` },
   rentova: { label: "Rentová kalkulačka", href: `${B}/rentova-kalkulacka` },
   rontgen: { label: "Poplatkový röntgen", href: `${B}/poplatkovy-rontgen` },

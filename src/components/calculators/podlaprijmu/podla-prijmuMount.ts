@@ -12,6 +12,10 @@ type VariantData = {
   rate: number;
   years: number;
   stressTest: boolean;
+  /** vek najstaršieho žiadateľa (limit DTI nad 40 rokov) */
+  age: number;
+  /** nezaopatrené deti v domácnosti (životné minimum) */
+  children: number;
 };
 
 type Variant = { id: string; name: string; data: VariantData | null };
@@ -68,6 +72,8 @@ export function mountPodlaPrijmuCalculator(): () => void {
       rate: Math.max(0, n(data.rate, 4.2)),
       years: Math.max(1, Math.min(40, Math.round(n(data.years, 30)))),
       stressTest: !!data.stressTest,
+      age: Math.max(18, Math.min(75, Math.round(n(data.age, 35)))),
+      children: Math.max(0, Math.min(6, Math.round(n(data.children, 0)))),
     };
   };
 
@@ -96,6 +102,8 @@ export function mountPodlaPrijmuCalculator(): () => void {
       rate: getVal("dti-rate"),
       years: getVal("dti-years"),
       stressTest: !!(document.getElementById("dti-stress-toggle") as HTMLInputElement | null)?.checked,
+      age: getVal("dti-age"),
+      children: getVal("dti-children"),
     });
   };
 
@@ -112,6 +120,8 @@ export function mountPodlaPrijmuCalculator(): () => void {
     setVal("dti-credit-limits", d.creditLimits);
     setVal("dti-rate", d.rate);
     setVal("dti-years", d.years);
+    setVal("dti-age", d.age);
+    setVal("dti-children", d.children);
     const p = document.getElementById("dti-partner-toggle") as HTMLInputElement | null;
     const s = document.getElementById("dti-stress-toggle") as HTMLInputElement | null;
     if (p) p.checked = d.partnerEnabled;
@@ -183,10 +193,19 @@ export function mountPodlaPrijmuCalculator(): () => void {
     const totalNetIncome = d.income + partnerIncome;
     const creditCardPayment = d.creditLimits * 0.03;
     const existingMonthlyObligations = d.monthlyDebt + creditCardPayment;
-    const maxMonthlyPaymentTotal = totalNetIncome * 0.6;
+    // NBS: DSTI 60 % z príjmu zníženého o životné minimum domácnosti (sumy od 1. 7. 2026)
+    const ZM_ADULT = 295.22;
+    const ZM_ADULT_2 = 205.96;
+    const ZM_CHILD = 134.8;
+    const livingMinimum = ZM_ADULT + (d.partnerEnabled ? ZM_ADULT_2 : 0) + d.children * ZM_CHILD;
+    const incomeAfterMinimum = Math.max(0, totalNetIncome - livingMinimum);
+    const maxMonthlyPaymentTotal = incomeAfterMinimum * 0.6;
+    const reserve = totalNetIncome - maxMonthlyPaymentTotal;
     const availableForNewPayment = Math.max(0, maxMonthlyPaymentTotal - existingMonthlyObligations);
-    const currentDSTI = totalNetIncome > 0 ? existingMonthlyObligations / totalNetIncome : 0;
-    const maxTotalDebtAllowed = totalNetIncome * 12 * 8;
+    const currentDSTI = incomeAfterMinimum > 0 ? existingMonthlyObligations / incomeAfterMinimum : 0;
+    // NBS: DTI 8×, nad 40 rokov −0,25 za rok, ak úver presahuje 65. rok veku; najmenej 3×
+    const dtiLimit = d.age > 40 && d.age + d.years > 65 ? Math.max(3, 8 - 0.25 * (d.age - 40)) : 8;
+    const maxTotalDebtAllowed = totalNetIncome * 12 * dtiLimit;
     const availableTotalDebt = Math.max(0, maxTotalDebtAllowed - d.totalDebt);
     const currentDTI = totalNetIncome > 0 ? d.totalDebt / (totalNetIncome * 12) : 0;
     const effectiveRate = d.stressTest ? d.rate + 2 : d.rate;
@@ -196,13 +215,13 @@ export function mountPodlaPrijmuCalculator(): () => void {
     const finalMaxMortgage = Math.max(0, Math.min(maxMortgageBasedOnDSTI, availableTotalDebt));
     let limitReason = "";
     if (availableForNewPayment <= 0) limitReason = "Vysoké existujúce splátky (DSTI stop)";
-    else if (maxMortgageBasedOnDSTI > availableTotalDebt) limitReason = "Limitované stropom celkového dlhu (DTI 8x)";
+    else if (maxMortgageBasedOnDSTI > availableTotalDebt) limitReason = `Limitované stropom celkového dlhu (DTI ${formatX(dtiLimit, 2)})`;
     else limitReason = "Limitované mesačnou splátkou (DSTI 60%)";
     if (d.stressTest) limitReason += " + Stress Test";
-    const pDebt = totalNetIncome > 0 ? Math.min(60, (existingMonthlyObligations / totalNetIncome) * 100) : 0;
-    const pReserve = totalNetIncome > 0 ? 40 : 0;
+    const pDebt = totalNetIncome > 0 ? Math.min(100, (existingMonthlyObligations / totalNetIncome) * 100) : 0;
+    const pReserve = totalNetIncome > 0 ? Math.min(100 - pDebt, (reserve / totalNetIncome) * 100) : 0;
     const pFree = Math.max(0, 100 - pDebt - pReserve);
-    return { input: d, totalNetIncome, creditCardPayment, existingMonthlyObligations, availableForNewPayment, currentDSTI, availableTotalDebt, currentDTI, maxMortgageBasedOnDSTI, finalMaxMortgage, limitReason, pDebt, pReserve, pFree };
+    return { input: d, totalNetIncome, livingMinimum, reserve, dtiLimit, creditCardPayment, existingMonthlyObligations, availableForNewPayment, currentDSTI, availableTotalDebt, currentDTI, maxMortgageBasedOnDSTI, finalMaxMortgage, limitReason, pDebt, pReserve, pFree };
   };
 
   const updateGauge = (
@@ -282,7 +301,8 @@ export function mountPodlaPrijmuCalculator(): () => void {
     };
     setText("dti-max-mortgage", formatCurrency(s.finalMaxMortgage));
     setText("dti-max-payment", formatCurrency(s.availableForNewPayment));
-    setText("dti-reserve", formatCurrency(s.totalNetIncome * 0.4));
+    setText("dti-reserve", formatCurrency(s.reserve));
+    setText("dti-limit-dti", `${Number.isInteger(s.dtiLimit) ? s.dtiLimit : s.dtiLimit.toFixed(2).replace(".", ",")}×`);
     setText("dti-limit-reason", s.limitReason);
     const barDebts = $("bar-debts");
     const barReserve = $("bar-reserve");
@@ -470,7 +490,7 @@ export function mountPodlaPrijmuCalculator(): () => void {
   const onDocClick = () => document.querySelectorAll("#dti-calc-root .ml-dropdown-menu").forEach((m) => m.classList.remove("open"));
   document.addEventListener("click", onDocClick);
 
-  const inputIds = ["dti-income", "dti-partner-income", "dti-monthly-debt", "dti-total-debt", "dti-credit-limits", "dti-rate", "dti-years"];
+  const inputIds = ["dti-income", "dti-partner-income", "dti-monthly-debt", "dti-total-debt", "dti-credit-limits", "dti-rate", "dti-years", "dti-age", "dti-children"];
   const listeners: Array<{ el: Element; fn: EventListener }> = [];
   inputIds.forEach((id) => {
     const el = document.getElementById(id);

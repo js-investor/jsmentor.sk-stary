@@ -45,7 +45,7 @@ const PodlaPrijmuCalculator = () => {
       <div className="calc-body-shell">
         <div className="calc-page">
           <header className="calc-header calc-reveal" style={reveal(0)}>
-            <span className="calc-eyebrow">Úverová kalkulačka</span>
+            <span className="calc-eyebrow">Maximálna hypotéka</span>
             <h1 className="calc-title">
               Koľko ti banka <em>požičia</em>?
             </h1>
@@ -139,6 +139,23 @@ const PodlaPrijmuCalculator = () => {
                   </div>
                 </div>
 
+                <div className="calc-fieldrow">
+                  <div className="calc-field">
+                    <label className="calc-label" htmlFor="dti-age">Vek najstaršieho žiadateľa</label>
+                    <div className="calc-input-wrap">
+                      <input type="number" id="dti-age" defaultValue={35} min={18} max={75} className="calc-input calc-input--unit" />
+                      <span className="calc-input-unit" aria-hidden>rokov</span>
+                    </div>
+                  </div>
+                  <div className="calc-field">
+                    <label className="calc-label" htmlFor="dti-children">Deti v domácnosti</label>
+                    <div className="calc-input-wrap">
+                      <input type="number" id="dti-children" defaultValue={0} min={0} max={6} className="calc-input calc-input--unit" />
+                      <span className="calc-input-unit" aria-hidden>detí</span>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="calc-field">
                   <label className="dti-check-row" htmlFor="dti-stress-toggle">
                     <span className="dti-check-text">
@@ -174,7 +191,7 @@ const PodlaPrijmuCalculator = () => {
             </div>
             <div>
               <p className="calc-stat-label">Limit DTI</p>
-              <p className="calc-stat-value">8×</p>
+              <p className="calc-stat-value" id="dti-limit-dti">8×</p>
             </div>
             <div>
               <p className="calc-stat-label">Limit DSTI</p>
@@ -236,8 +253,10 @@ const PodlaPrijmuCalculator = () => {
           </section>
 
           <p className="calc-note calc-note--center mt-5 md:mt-6">
-            Kalkulačka je orientačná — vychádza z limitov NBS (DTI 8-násobok ročného príjmu,
-            DSTI 60 % s povinnou rezervou 40 %). Konečné posúdenie závisí od konkrétnej banky.
+            Kalkulačka je orientačná — vychádza z pravidiel NBS: DTI 8-násobok čistého ročného príjmu (nad 40 rokov klesá
+            o 0,25 za každý rok, ak úver presahuje 65. rok veku, najmenej na 3), DSTI 60 % z príjmu po odpočítaní životného
+            minima (295,22 € žiadateľ, 205,96 € partner, 134,80 € dieťa, platí od 1. 7. 2026) a stres test +2 p. b.
+            Konečné posúdenie závisí od konkrétnej banky.
           </p>
         </div>
       </div>
