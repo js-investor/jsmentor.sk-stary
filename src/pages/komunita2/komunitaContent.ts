@@ -158,9 +158,9 @@ export const HEADER = {
 
 export const HERO = {
   /** Pill above the headline (dark-red #7A1F1F pill, white sans text, normal case). */
-  eyebrow: "Miesto, kde konečne pochopíš, ako fungujú peniaze",
-  /** <h1>; no bold/italic spans inside — one <br /> after "cesta". */
-  headline: "Toto je cesta\nk bohatšiemu životu.",
+  eyebrow: "Hypotéka · Byt · Investovanie · Renta · Rezerva",
+  /** <h1>; no bold/italic spans inside — one <br /> after "päť". */
+  headline: "Za život urobíš päť\nveľkých rozhodnutí o peniazoch.",
   subheadline:
     "Vyšší príjem ti môže kúpiť pohodlie. Rozumné finančné rozhodnutia ti kupujú slobodu.",
   description:

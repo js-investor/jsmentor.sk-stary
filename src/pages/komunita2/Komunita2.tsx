@@ -293,7 +293,9 @@ const Komunita2 = () => {
             <div className="km-hero-center">
               <p className="km-pill km-reveal" style={st(0)}>{HERO.eyebrow}</p>
               <h1 className="km-h1">
-                <Words text={"Toto je cesta k\u00a0bohatšiemu životu."} from={1} />
+                <Words text="Za život urobíš päť" from={1} />
+                <br />
+                <Words text={"veľkých rozhodnutí o\u00a0peniazoch."} from={5} />
               </h1>
               <p className="km-lede km-reveal" style={st(7)}>{HERO.subheadline}</p>
               <p className="km-hero-desc km-reveal" style={st(8)}>{HERO.description}</p>
