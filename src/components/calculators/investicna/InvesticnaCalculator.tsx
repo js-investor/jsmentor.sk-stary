@@ -108,7 +108,7 @@ const InvesticnaCalculator = () => {
                 id="inv-events-toggle"
                 className="calc-collapse-toggle"
                 role="button"
-                aria-expanded={true}
+                aria-expanded={false}
                 aria-controls="inv-events-content"
                 tabIndex={0}
                 onKeyDown={(e) => {
@@ -122,9 +122,9 @@ const InvesticnaCalculator = () => {
                   Udalosti v čase
                   <span className="inv-toggle-hint">vyšší vklad od roku X, jednorazový vklad</span>
                 </span>
-                <span id="inv-events-arrow" className="calc-collapse-chevron" aria-hidden style={{ transform: "rotate(180deg)" }}>▼</span>
+                <span id="inv-events-arrow" className="calc-collapse-chevron" aria-hidden>▼</span>
               </div>
-              <div id="inv-events-content" className="pb-4 pt-1">
+              <div id="inv-events-content" className="pb-4 pt-1" style={{ display: "none" }}>
                 <p className="calc-stat-sub inv-events-help">
                   Napríklad od 5. roka investuješ 400 € mesačne alebo v 3. roku vložíš jednorazovo 10 000 €. Udalosť platí od začiatku zvoleného roka
                   a počíta sa aj s poplatkami.

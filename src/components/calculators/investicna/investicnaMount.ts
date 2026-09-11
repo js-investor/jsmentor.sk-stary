@@ -203,7 +203,7 @@ export function mountInvesticnaCalculator(): () => void {
     const taxEl = document.getElementById("inv-tax") as HTMLInputElement | null;
     if (taxEl) taxEl.checked = d.tax;
     if (rateSlider) rateSlider.value = String(Math.min(15, Math.max(1, d.rate)));
-    events = d.events.length ? d.events.map((e) => ({ ...e })) : [newEvent()];
+    events = d.events.map((e) => ({ ...e }));
     renderEvents();
   }
 
@@ -925,10 +925,10 @@ export function mountInvesticnaCalculator(): () => void {
   const monthlyNow = () => Math.max(0, parseFloat((document.getElementById("inv-monthly") as HTMLInputElement | null)?.value || "0") || 0);
   function newEvent(): InvEvent {
     eventCounter += 1;
-    return { id: "e" + eventCounter, kind: "monthly", year: Math.min(durationNow(), 5 + (events?.length ?? 0) * 5), amount: 0 };
+    return { id: "e" + eventCounter, kind: "monthly", year: Math.min(durationNow(), 5 + events.length * 5), amount: 0 };
   }
+  // Udalosti sú voliteľné: na začiatku žiadna, pridá si ju len ten, kto chce.
   let events: InvEvent[] = [];
-  events = [newEvent()];
   const esc = (v: string) => v.replace(/&/g, "&amp;").replace(/</g, "&lt;");
   const eventHint = (e: InvEvent) =>
     e.amount > 0
@@ -947,7 +947,7 @@ export function mountInvesticnaCalculator(): () => void {
           <div class="calc-field"><label class="calc-label" for="inv-ev-kind-${i}">Udalosť</label><select id="inv-ev-kind-${i}" class="calc-input inv-select" data-field="kind"><option value="monthly"${e.kind === "monthly" ? " selected" : ""}>Zmením mesačný vklad</option><option value="lump"${e.kind === "lump" ? " selected" : ""}>Jednorazový vklad</option></select></div>
           <div class="calc-field"><label class="calc-label" for="inv-ev-year-${i}">${e.kind === "lump" ? "V roku" : "Od roka"}</label><select id="inv-ev-year-${i}" class="calc-input inv-select" data-field="year">${years}</select></div>
           <div class="calc-field"><label class="calc-label" for="inv-ev-amount-${i}">${e.kind === "lump" ? "Suma" : "Nový mesačný vklad"}</label><div class="calc-input-wrap"><input type="number" id="inv-ev-amount-${i}" class="calc-input calc-input--unit" data-field="amount" min="0" step="${e.kind === "lump" ? 500 : 10}" value="${e.amount}" /><span class="calc-input-unit" aria-hidden="true">€</span></div></div>
-          <button type="button" class="inv-event-remove" data-action="remove"${events.length > 1 ? "" : " disabled"}>Odstrániť</button>
+          <button type="button" class="inv-event-remove" data-action="remove">Odstrániť</button>
           <p class="inv-event-hint" data-hint>${esc(eventHint(e))}</p>
         </div>`;
       })
@@ -968,7 +968,7 @@ export function mountInvesticnaCalculator(): () => void {
     const e = events.find((x) => x.id === row.dataset.id);
     if (!e) return;
     if (ev.type === "click") {
-      if (!target?.closest("[data-action=remove]") || events.length <= 1) return;
+      if (!target?.closest("[data-action=remove]")) return;
       events = events.filter((x) => x.id !== e.id);
       renderEvents();
       inv_calculate();
