@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
 import "./standalone.css";
-import PodlaPrijmuCalculator from "@/components/calculators/podlaprijmu/PodlaPrijmuCalculator";
+import UverovaCalculator from "@/components/calculators/uverova/UverovaCalculator";
 
-createRoot(document.getElementById("root")!).render(<PodlaPrijmuCalculator />);
+createRoot(document.getElementById("root")!).render(<UverovaCalculator />);
