@@ -1,162 +1,157 @@
 /**
- * Investičná kalkulačka 3.0 — formulár vľavo (sticky), jeden pokojný výsledok vpravo. Scoped pod #iv-root.
- * Jazyk /bonusy 2.0: ivory plocha s hairline na krémovom plátne, atrament, piesok, jedna zelená, bez tieňov.
+ * Investičná kalkulačka — scoped pod #inv-calc-root, jazyk /bonusy 2.0.
+ * Zdieľané plochy (dock, hero XL, štatistiky, panel, graf, poznámka) rieši calc-ui.css;
+ * tu sú len nástrojové doplnky: rozšírené nastavenia, daň, panel poplatkov (ružovkastý tón).
  */
 
-#iv-root *, #iv-root *::before, #iv-root *::after { box-sizing: border-box; }
-#iv-root { position: relative; isolation: isolate; font-family: var(--font-sans); color: var(--wm-brown-text); width: 100%; --iv-ink: #292420; --iv-muted: #6b625a; --iv-hair: rgba(41, 36, 32, 0.1); --iv-hair-2: rgba(41, 36, 32, 0.18); --iv-accent: #2a6647; --iv-ivory: #fffcf7; --iv-sand: #c9b48f; --iv-stone: #e9e4dc; --iv-red: #ab4132; }
+#inv-calc-root *,
+#inv-calc-root *::before,
+#inv-calc-root *::after { box-sizing: border-box; }
 
-/* ------------------------------ Layout ------------------------------ */
-#iv-root .iv-layout { display: grid; grid-template-columns: 1fr; gap: 1.25rem; align-items: start; }
-@media (min-width: 1024px) {
-  #iv-root .iv-layout { grid-template-columns: minmax(19rem, 21rem) minmax(0, 1fr); gap: 1.5rem; }
-  #iv-root .iv-form { position: sticky; top: 5.5rem; max-height: calc(100vh - 6.5rem); overflow: auto; }
-}
-#iv-root .iv-form, #iv-root .iv-result { min-width: 0; border: 1px solid var(--iv-hair); border-radius: 1.5rem; background: var(--iv-ivory); }
-#iv-root .iv-form { padding: 1.375rem 1.25rem 0.875rem; }
-#iv-root .iv-result { padding: 1.75rem 1.375rem 1.375rem; }
-@media (min-width: 768px) { #iv-root .iv-result { padding: 2.25rem 2.5rem 1.75rem; } }
+#inv-calc-root { font-family: var(--font-sans); color: var(--wm-brown); width: 100%; max-width: 100%; }
 
-/* ------------------------------ Formulár ------------------------------ */
-#iv-root .iv-field { margin-bottom: 1rem; min-width: 0; }
-#iv-root .iv-field .calc-label { margin-bottom: 0.375rem; font-size: 0.875rem; }
-#iv-root .iv-field .calc-input { font-size: 1rem; padding: 0.5rem 0.75rem; border-radius: 0.75rem; }
-#iv-root .iv-field .calc-input--unit { padding-right: 3.25rem; }
-#iv-root .iv-field.is-compact .calc-input { font-size: 0.9375rem; padding: 0.4375rem 0.625rem; }
-#iv-root .iv-field.is-compact .calc-input--unit { padding-right: 2.5rem; }
-#iv-root .iv-slider { --p: 0%; height: 1.5rem; margin-top: 0.25rem; }
-#iv-root .iv-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.625rem; }
-#iv-root .iv-row .iv-field { margin-bottom: 0.75rem; }
+#inv-calc-root #inv-advanced-toggle { cursor: pointer; user-select: none; }
 
-#iv-root .iv-select-wrap { position: relative; }
-#iv-root .iv-select { width: 100%; padding: 0.4375rem 2rem 0.4375rem 0.625rem; font-size: 0.9375rem; appearance: none; -webkit-appearance: none; border-radius: 0.75rem; cursor: pointer; }
-#iv-root .iv-select-chev { position: absolute; right: 0.625rem; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--iv-muted); }
+/* Stepper a jednotka nesmú prekryť text vstupu (dock zužuje padding). */
+#inv-calc-root .calc-dock-item .calc-input-wrap--stepper .calc-input { padding-right: 6.25rem; }
+#inv-calc-root .calc-dock-item .calc-input--unit { padding-right: 2.75rem; }
 
-#iv-root .iv-collapse { display: flex; align-items: center; gap: 0.5rem; width: 100%; padding: 0.875rem 0 0.5rem; border: none; border-top: 1px solid var(--iv-hair); background: none; font-family: var(--font-sans); font-size: 0.875rem; font-weight: 600; color: var(--iv-ink); text-align: left; cursor: pointer; }
-#iv-root .iv-collapse-meta { margin-left: auto; font-size: 0.75rem; font-weight: 500; color: var(--iv-muted); text-align: right; }
-#iv-root .iv-chev { flex-shrink: 0; transition: transform 0.25s var(--ease-out); }
-#iv-root .iv-chev.is-open { transform: rotate(180deg); }
-#iv-root .iv-advanced { padding: 0.375rem 0 0.25rem; }
-#iv-root .iv-form-foot { display: flex; justify-content: flex-end; padding: 0.75rem 0 0.25rem; border-top: 1px solid var(--iv-hair); }
-#iv-root .iv-reset { padding: 0; border: none; background: none; font-family: var(--font-sans); font-size: 0.8125rem; font-weight: 500; color: var(--iv-muted); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
-#iv-root .iv-reset:hover { color: var(--iv-ink); }
-#iv-root .iv-check { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin: 0.25rem 0 0.5rem; padding: 0.625rem 0 0.25rem; border-top: 1px solid var(--iv-hair); cursor: pointer; }
-#iv-root .iv-check-t { display: flex; flex-direction: column; gap: 0.125rem; min-width: 0; font-size: 0.875rem; font-weight: 500; color: var(--iv-ink); }
-#iv-root .iv-check-t small { font-size: 0.75rem; line-height: 1.4; font-weight: 400; color: var(--iv-muted); }
-#iv-root .iv-check input { flex-shrink: 0; width: 1.125rem; height: 1.125rem; accent-color: var(--iv-accent); cursor: pointer; }
+/* ---------------- Rozšírené nastavenia: inflácia, poplatky, daň ---------------- */
 
-/* udalosti v čase */
-#iv-root .iv-events { margin: 0.25rem 0 0.75rem; padding-top: 0.875rem; border-top: 1px solid var(--iv-hair); }
-#iv-root .iv-events-title { display: flex; align-items: baseline; gap: 0.5rem; margin: 0 0 0.25rem; font-size: 0.875rem; font-weight: 600; color: var(--iv-ink); }
-#iv-root .iv-events-title span { margin-left: auto; font-size: 0.75rem; font-weight: 500; color: var(--iv-muted); }
-#iv-root .iv-events-help { margin: 0 0 0.625rem; font-size: 0.75rem; line-height: 1.45; color: var(--iv-muted); }
-#iv-root .iv-event { display: grid; grid-template-columns: 1fr 1fr; gap: 0.375rem; align-items: end; margin-bottom: 0.625rem; padding-bottom: 0.625rem; border-bottom: 1px dashed var(--iv-hair-2); }
-#iv-root .iv-event:last-of-type { border-bottom: none; }
-#iv-root .iv-event .iv-field { margin-bottom: 0; }
-#iv-root .iv-event .calc-label { font-size: 0.75rem; margin-bottom: 0.25rem; }
-#iv-root .iv-event-kind { grid-column: 1 / -1; }
-#iv-root .iv-event-x { grid-column: 1 / -1; justify-self: end; margin-top: -0.125rem; padding: 0; border: none; background: none; font-family: var(--font-sans); font-size: 0.75rem; font-weight: 500; color: var(--iv-muted); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
-#iv-root .iv-event-x:hover { color: var(--iv-red); }
-#iv-root .iv-event-cal { grid-column: 1 / -1; font-size: 0.75rem; line-height: 1.45; color: var(--iv-muted); }
-#iv-root .iv-add { display: inline-flex; align-items: center; gap: 0.375rem; margin-top: 0.125rem; padding: 0; border: none; background: transparent; font-family: var(--font-sans); font-size: 0.8125rem; font-weight: 600; color: var(--iv-accent); cursor: pointer; }
-#iv-root .iv-add:hover { text-decoration: underline; text-underline-offset: 3px; }
-#iv-root .iv-add:focus-visible, #iv-root .iv-event-x:focus-visible, #iv-root .iv-collapse:focus-visible { outline: 2px solid var(--iv-accent); outline-offset: 2px; }
+#inv-calc-root .inv-adv-grid { display: grid; grid-template-columns: 1fr; gap: 1rem 1.5rem; }
 
-/* ------------------------------ Výsledok ------------------------------ */
-#iv-root .iv-kicker { margin: 0 0 0.5rem; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--iv-accent); }
-#iv-root .iv-hero { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.75rem; margin: 0; }
-#iv-root .iv-hero-value { font-family: var(--font-serif); font-size: clamp(3rem, 7vw, 4.75rem); line-height: 1; font-weight: 700; color: var(--iv-ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
-#iv-root .iv-hero-unit { font-family: var(--font-serif); font-style: italic; font-size: 1.375rem; font-weight: 600; color: var(--iv-accent); }
-#iv-root .iv-hero-sub { display: flex; flex-wrap: wrap; gap: 0.25rem 0; margin: 0.75rem 0 0; font-size: 0.9375rem; line-height: 1.5; color: var(--iv-muted); }
-#iv-root .iv-hero-sub i { margin: 0 0.5rem; font-style: normal; color: var(--iv-hair-2); }
-@media (max-width: 639px) { #iv-root .iv-hero-sub-last { flex-basis: 100%; } #iv-root .iv-hero-sub-last i { display: none; } }
-
-#iv-root .iv-verdict { display: flex; flex-direction: column; gap: 0.375rem; margin-top: 1.5rem; padding: 1.125rem 1.375rem; border-radius: 1.125rem; background: var(--iv-accent); color: #f3e9dd; font-size: 0.9375rem; line-height: 1.5; }
-#iv-root .iv-verdict.is-neg { background: var(--iv-stone); color: var(--iv-ink); }
-#iv-root .iv-verdict b { font-family: var(--font-serif); font-size: 1.25rem; font-weight: 700; line-height: 1.3; text-wrap: balance; }
-#iv-root .iv-verdict span { color: rgba(243, 233, 221, 0.9); }
-#iv-root .iv-verdict.is-neg span { color: var(--iv-muted); }
-#iv-root .iv-verdict strong { font-weight: 700; color: inherit; }
-@media (min-width: 768px) { #iv-root .iv-verdict { padding: 1.375rem 1.625rem; } #iv-root .iv-verdict b { font-size: 1.4375rem; } }
-
-#iv-root .iv-facts { display: grid; grid-template-columns: 1fr; margin: 1.75rem 0 0; padding: 0; border-top: 1px solid var(--iv-hair); }
-#iv-root .iv-facts > div { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "label value" "sub value"; column-gap: 1rem; align-items: baseline; padding: 0.875rem 0; border-bottom: 1px solid var(--iv-hair); min-width: 0; }
-#iv-root .iv-facts dt { grid-area: label; margin: 0; font-size: 0.8125rem; font-weight: 500; color: var(--iv-muted); }
-#iv-root .iv-facts dd { grid-area: value; margin: 0; font-family: var(--font-serif); font-size: 1.375rem; line-height: 1.1; font-weight: 700; color: var(--iv-ink); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; text-align: right; }
-#iv-root .iv-facts small { grid-area: sub; font-size: 0.75rem; line-height: 1.4; color: var(--iv-muted); }
 @media (min-width: 640px) {
-  #iv-root .iv-facts { grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--iv-hair); }
-  #iv-root .iv-facts > div { display: flex; flex-direction: column; gap: 0.25rem; padding: 1.125rem 1rem 1.125rem 0; border-bottom: none; }
-  #iv-root .iv-facts > div + div { padding-left: 1.125rem; border-left: 1px solid var(--iv-hair); }
-  #iv-root .iv-facts dd { font-size: clamp(1.25rem, 2.1vw, 1.75rem); text-align: left; }
+  #inv-calc-root .inv-adv-grid { grid-template-columns: 1fr 1fr; }
 }
-#iv-root .is-accent { color: var(--iv-accent) !important; }
-#iv-root .is-cost { color: var(--iv-red) !important; }
 
-/* pomer vklady / zhodnotenie */
-#iv-root .iv-share { margin-top: 1.125rem; }
-#iv-root .iv-share-bar { display: flex; height: 0.5rem; border-radius: 999px; overflow: hidden; background: var(--iv-stone); }
-#iv-root .iv-share-bar i { display: block; height: 100%; transition: width 0.45s var(--ease-out); }
-#iv-root .iv-share-ink { background: var(--iv-ink); }
-#iv-root .iv-share-accent { background: var(--iv-accent); }
-#iv-root .iv-share-legend { display: flex; justify-content: space-between; gap: 1rem; margin-top: 0.5rem; font-size: 0.8125rem; color: var(--iv-muted); }
-#iv-root .iv-share-legend span { display: inline-flex; align-items: center; gap: 0.375rem; }
-#iv-root .iv-sw { display: inline-block; width: 0.625rem; height: 0.625rem; border-radius: 999px; flex-shrink: 0; }
-#iv-root .iv-sw-ink { background: var(--iv-ink); }
-#iv-root .iv-sw-accent { background: var(--iv-accent); }
-
-/* poplatky a daň */
-#iv-root .iv-block { margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px solid var(--iv-hair); }
-#iv-root .iv-block-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.25rem 1rem; margin-bottom: 0.5rem; }
-#iv-root .iv-block-head h3 { margin: 0; font-family: var(--font-serif); font-size: 1.125rem; font-weight: 700; color: var(--iv-ink); }
-#iv-root .iv-block-sub { margin: 0 0 0.25rem; font-size: 0.875rem; line-height: 1.5; color: var(--iv-muted); }
-#iv-root .iv-cost-head { display: flex; align-items: baseline; gap: 0.5rem; }
-#iv-root .iv-cost-head b { font-family: var(--font-serif); font-size: 1.5rem; font-weight: 700; color: var(--iv-red); font-variant-numeric: tabular-nums; white-space: nowrap; }
-#iv-root .iv-cost-head small { font-size: 0.8125rem; color: var(--iv-muted); }
-#iv-root .iv-rows { list-style: none; margin: 0.5rem 0 0; padding: 0; }
-#iv-root .iv-rows li { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: 0.625rem 0; border-top: 1px solid var(--iv-hair); }
-#iv-root .iv-rows li > div { display: flex; flex-direction: column; gap: 0.125rem; min-width: 0; }
-#iv-root .iv-row-t { font-size: 0.9375rem; font-weight: 500; color: var(--iv-ink); }
-#iv-root .iv-row-s { font-size: 0.8125rem; line-height: 1.45; color: var(--iv-muted); }
-#iv-root .iv-rows b { flex-shrink: 0; font-family: var(--font-serif); font-size: 1.125rem; font-weight: 700; color: var(--iv-ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
-#iv-root .iv-rows li.is-total { border-top: 1px solid var(--iv-hair-2); }
-@media (max-width: 480px) { #iv-root .iv-rows li { flex-direction: column; align-items: flex-start; gap: 0.25rem; } }
-
-/* graf */
-#iv-root .iv-legend { display: flex; flex-wrap: wrap; gap: 0.875rem; font-size: 0.8125rem; color: var(--iv-muted); }
-#iv-root .iv-legend span { display: inline-flex; align-items: center; gap: 0.375rem; }
-#iv-root .iv-legend-line { display: inline-block; width: 0.875rem; height: 3px; border-radius: 2px; }
-#iv-root .iv-legend-ink { background: var(--iv-ink); opacity: 0.7; }
-#iv-root .iv-legend-sand { background: var(--iv-sand); }
-#iv-root .iv-legend-accent { background: var(--iv-accent); }
-#iv-root .iv-legend-dot { display: inline-block; width: 0.625rem; height: 0.625rem; border-radius: 999px; background: var(--iv-accent); border: 2px solid var(--iv-ivory); box-sizing: content-box; }
-#iv-root .iv-chart-host { position: relative; }
-#iv-root .iv-chart { display: block; width: 100%; height: auto; overflow: visible; touch-action: none; cursor: crosshair; }
-#iv-root .iv-grid { stroke: rgba(41, 36, 32, 0.08); stroke-width: 1; }
-#iv-root .iv-ax { font-family: Matter, sans-serif; font-size: 12px; fill: rgba(41, 36, 32, 0.55); }
-@media (max-width: 640px) { #iv-root .iv-ax { font-size: 20px; } }
-#iv-root .iv-tooltip { position: absolute; z-index: 5; padding: 0.5rem 0.75rem; border-radius: 0.625rem; background: rgba(41, 36, 32, 0.96); color: #f3e9dd; font-size: 0.8125rem; line-height: 1.5; white-space: nowrap; pointer-events: none; }
-#iv-root .iv-tooltip b { font-weight: 600; margin-left: 0.25rem; }
-#iv-root .iv-tt-d { margin-bottom: 0.125rem; font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; color: rgba(243, 233, 221, 0.72); }
-
-/* vývoj po rokoch */
-#iv-root .iv-collapse--table { margin-top: 1.5rem; padding-top: 1.125rem; }
-#iv-root .iv-table-wrap { margin-top: 0.75rem; max-height: 30rem; overflow: auto; border: 1px solid var(--iv-hair); border-radius: 0.75rem; }
-#iv-root .iv-table { width: 100%; border-collapse: collapse; font-size: 0.8125rem; font-variant-numeric: tabular-nums; }
-#iv-root .iv-table th { position: sticky; top: 0; z-index: 1; padding: 0.5rem 0.75rem; text-align: right; font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; color: var(--iv-muted); background: var(--wm-taupe-soft); border-bottom: 1px solid var(--iv-hair-2); white-space: nowrap; }
-#iv-root .iv-table th:first-child, #iv-root .iv-table td:first-child { text-align: left; }
-#iv-root .iv-table td { padding: 0.5rem 0.75rem; text-align: right; border-bottom: 1px solid var(--iv-hair); white-space: nowrap; color: var(--iv-ink); }
-#iv-root .iv-table td small { margin-left: 0.25rem; color: var(--iv-muted); }
-#iv-root .iv-table tr.is-event td { background: var(--wm-cream); }
-#iv-root .iv-table tbody tr:last-child td { border-bottom: none; }
-
-/* CTA + poznámka */
-#iv-root .iv-cta { display: flex; flex-direction: column; align-items: flex-start; gap: 0.875rem; margin-top: 1.75rem; padding-top: 1.375rem; border-top: 1px solid var(--iv-hair); }
-@media (min-width: 640px) { #iv-root .iv-cta { flex-direction: row; align-items: center; justify-content: space-between; } }
-#iv-root .iv-cta p { margin: 0; font-size: 0.9375rem; line-height: 1.5; color: var(--iv-muted); max-width: 28rem; }
-#iv-root .iv-cta-btn { display: inline-flex; align-items: center; gap: 0.5rem; flex-shrink: 0; padding: 0.75rem 1.25rem; font-size: 0.9375rem; }
-#iv-root .iv-foot { margin-top: 1.25rem; color: var(--iv-muted); }
-
-@media (prefers-reduced-motion: reduce) {
-  #iv-root .iv-chev, #iv-root .iv-share-bar i { transition: none !important; }
+@media (min-width: 1024px) {
+  #inv-calc-root .inv-adv-grid { grid-template-columns: repeat(4, 1fr); }
 }
+
+#inv-calc-root .inv-adv-grid .calc-field { margin-bottom: 0; }
+#inv-calc-root .inv-adv-grid .calc-stat-sub { font-size: 0.75rem; line-height: 1.45; }
+
+/* Daň: riadok oddelený hairline, nie box v boxe */
+#inv-calc-root .inv-check-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.875rem;
+  width: 100%;
+  margin-top: 1.125rem;
+  padding: 0.875rem 0 0.125rem;
+  border: none;
+  border-top: 1px solid var(--hair);
+  border-radius: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+#inv-calc-root .inv-check-text { display: flex; flex-direction: column; gap: 0.125rem; min-width: 0; }
+#inv-calc-root .inv-check-title { font-size: 0.9375rem; font-weight: 500; color: var(--wm-brown); }
+#inv-calc-root .inv-check-sub { font-size: 0.8125rem; line-height: 1.45; color: var(--fg3); }
+#inv-calc-root .inv-check-input { flex-shrink: 0; width: 1.25rem; height: 1.25rem; accent-color: var(--wm-green); cursor: pointer; }
+
+/* ---------------- Poplatky a daň: ružovkastá tónovaná karta (náklady) ---------------- */
+
+#inv-calc-root .inv-fees-panel { background: var(--tone-blush); border-color: transparent; }
+
+/* Sumy poplatkov sú náklad, nie zisk — červená */
+#inv-calc-root .inv-cost { color: var(--wm-red); }
+#inv-calc-root .inv-chip-cost { background: var(--tone-blush); border: none; }
+#inv-calc-root .inv-chip-cost strong { color: var(--wm-red); }
+
+#inv-calc-root .inv-row-hint {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--fg3);
+  margin-top: 0.125rem;
+}
+
+#inv-calc-root .inv-row-hint:empty { display: none; }
+
+/* Kompaktný súhrn, rozpis na rozkliknutie */
+#inv-calc-root .inv-fees-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  cursor: pointer;
+  user-select: none;
+}
+
+#inv-calc-root .inv-fees-toggle:focus-visible { outline: 2px solid var(--wm-green); outline-offset: 4px; border-radius: 0.5rem; }
+
+#inv-calc-root .inv-fees-toggle-main { display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; }
+#inv-calc-root .inv-fees-toggle-main .calc-panel-title { margin: 0; }
+
+#inv-calc-root .inv-fees-toggle-sum {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.375rem 0.5rem;
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  color: var(--fg2);
+}
+
+#inv-calc-root .inv-fees-toggle-sum strong {
+  font-family: var(--font-serif);
+  font-size: 1.625rem;
+  line-height: 1.1;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+#inv-calc-root .inv-fees-toggle-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  padding: 0.5rem 0.9375rem;
+  border: 1px solid var(--hair-2);
+  border-radius: 9999px;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--wm-brown);
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+#inv-calc-root .inv-fees-toggle:hover .inv-fees-toggle-action { background: rgba(255, 252, 247, 0.6); border-color: rgba(41, 36, 32, 0.35); }
+
+#inv-calc-root .inv-fees-gross { margin: 1rem 0 0.25rem; padding-top: 1rem; border-top: 1px solid rgba(41, 36, 32, 0.12); color: var(--fg2); }
+#inv-calc-root .inv-fees-gross strong { color: var(--wm-green); font-weight: 600; }
+
+/* Hairline na tónovanej ploche potrebuje o niečo viac kontrastu */
+#inv-calc-root .inv-fees-panel .calc-row { border-bottom-color: rgba(41, 36, 32, 0.12); }
+#inv-calc-root .inv-fees-panel .calc-row--total { border-top-color: rgba(41, 36, 32, 0.22); }
+
+@media (max-width: 560px) {
+  #inv-calc-root .inv-fees-toggle { flex-direction: column; align-items: flex-start; }
+}
+
+/* ---------------- Udalosti v čase: zmena vkladu od roku X, jednorazový vklad ---------------- */
+
+#inv-calc-root #inv-events-toggle { cursor: pointer; user-select: none; }
+#inv-calc-root .inv-toggle-hint { margin-left: 0.5rem; font-size: 0.8125rem; font-weight: 400; color: var(--fg3); }
+#inv-calc-root .inv-events-help { margin: 0 0 0.25rem; font-size: 0.8125rem; line-height: 1.45; }
+#inv-calc-root .inv-event { display: grid; grid-template-columns: 1fr; gap: 0.625rem 0.75rem; align-items: end; padding: 0.875rem 0 0.75rem; border-top: 1px solid var(--hair); }
+#inv-calc-root .inv-event:first-child { border-top: none; padding-top: 0.5rem; }
+@media (min-width: 640px) { #inv-calc-root .inv-event { grid-template-columns: 1.5fr 1fr 1fr auto; } }
+#inv-calc-root .inv-event .calc-field { margin-bottom: 0; min-width: 0; }
+#inv-calc-root .inv-event .calc-input--unit { padding-right: 2.75rem; }
+#inv-calc-root .inv-select { appearance: auto; -webkit-appearance: menulist; cursor: pointer; }
+#inv-calc-root .inv-event-remove { justify-self: end; margin-bottom: 0.625rem; padding: 0; border: none; background: none; font-family: var(--font-sans); font-size: 0.8125rem; font-weight: 500; color: var(--fg3); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+#inv-calc-root .inv-event-remove:disabled { opacity: 0.35; cursor: default; text-decoration: none; }
+#inv-calc-root .inv-event-remove:hover:not(:disabled) { color: var(--wm-red); }
+#inv-calc-root .inv-event-hint { grid-column: 1 / -1; margin: 0; font-size: 0.8125rem; line-height: 1.4; color: var(--fg3); }
+#inv-calc-root .inv-add-event { margin-top: 0.75rem; padding: 0; border: none; background: none; font-family: var(--font-sans); font-size: 0.875rem; font-weight: 600; color: var(--wm-green); cursor: pointer; }
+#inv-calc-root .inv-add-event:hover { text-decoration: underline; text-underline-offset: 3px; }
+#inv-calc-root .inv-add-event:focus-visible, #inv-calc-root .inv-event-remove:focus-visible { outline: 2px solid var(--wm-green); outline-offset: 2px; border-radius: 0.25rem; }
+#inv-calc-root .inv-chip-events strong { color: var(--wm-green); }
+#inv-calc-root .inv-legend-event { background: var(--wm-green); box-shadow: none; outline: 2px solid var(--wm-ivory); outline-offset: -1px; }
