@@ -3,7 +3,7 @@ import { CENNIK_SECTION_HREF } from "@/lib/cennikCta";
 import { ArrowRight, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { BONUSY_BASE_PATH, BONUSY_TOTAL_VALUE, KALKULACKY_CALCULATORS } from "@/pages/kalkulacky/kalkulackyConfig";
-import { GlyphArt, ToolCard, toneStyle } from "@/pages/kalkulacky/bonusyCards";
+import { ToolCard } from "@/pages/kalkulacky/bonusyCards";
 import "@/pages/kalkulacky/bonusy-dashboard.css";
 import "./komunita-bonusy.css";
 
@@ -23,6 +23,15 @@ const FEATURED = [
   "bytovy-semafor",
   "investicna-kalkulacka",
 ];
+
+/** Ukážka výstupu Maximálnej hypotéky (živnostník, tržby 60 000 €, 30 rokov, 3,8 %): štyri banky z rebríčka. */
+const SPECIAL_DEMO = [
+  { bank: "mBank", value: "327\u00a0713\u00a0€", pct: 100 },
+  { bank: "365.bank", value: "276\u00a0585\u00a0€", pct: 84 },
+  { bank: "VÚB", value: "251\u00a0020\u00a0€", pct: 77 },
+  { bank: "Tatra banka", value: "72\u00a0069\u00a0€", pct: 22 },
+];
+const SPECIAL_CHIPS = ["8 bánk", "pravidlá NBS 2026", "zamestnanec, živnostník aj s.r.o.", "za minútu"];
 
 const HeroHeroKalkulackySection = ({ locked = false }: { locked?: boolean }) => {
   const featured = FEATURED.map((slug) => KALKULACKY_CALCULATORS.find((c) => c.slug === slug)).filter(
@@ -90,22 +99,34 @@ const HeroHeroKalkulackySection = ({ locked = false }: { locked?: boolean }) => 
 
         {locked ? (
           <AnimatedSection delay={0.12}>
-            {/* Špeciálny bonus: jedna karta na celú šírku, štýl tmavej karty (tón brown = tmavé pozadie, zlatý akcent) */}
-            <div className="bonusy kb kb-locked" style={{ marginTop: "1.25rem" }}>
-              <div className="bz-card bz-reveal bz-card--locked" style={toneStyle("brown", 0)} aria-label="Ktorá banka ti požičia najviac? – špeciálny bonus po pripojení do komunity">
-                <span className="bz-glyph" aria-hidden><GlyphArt glyph="gauge" tone="brown" /></span>
-                <span className="bz-card-head">
-                  <span className="bz-cat">Špeciálny bonus · len pre členov</span>
-                  <span className="bz-new bz-lock"><Lock className="h-3 w-3" strokeWidth={2.25} aria-hidden />Bonus</span>
-                </span>
-                <span className="bz-card-body">
-                  <span className="bz-card-title">Ktorá banka ti požičia najviac?</span>
-                  <span className="bz-card-text max-w-2xl">
+            {/* Špeciálny bonus: prémiová karta na celú šírku (tmavá hnedá + zlatá), vpravo ukážka výstupu nástroja */}
+            <div className="kb-special" aria-label="Špeciálny bonus: Ktorá banka ti požičia najviac?">
+              <div className="kb-special-grid">
+                <div>
+                  <span className="kb-special-eyebrow">Špeciálny bonus · len pre členov</span>
+                  <h3 className="kb-special-title">Ktorá banka ti požičia najviac?</h3>
+                  <p className="kb-special-text">
                     Vytvoril som nástroj, ktorý za minútu porovná všetkých 8 slovenských bánk podľa pravidiel NBS a povie ti, kde dostaneš najvyššiu hypotéku.
                     Rozdiel medzi bankami býva desiatky tisíc eur. Nemusíš chodiť po bankách – všetko máš v jednom nástroji.
-                  </span>
-                  <span className="bz-card-cta"><Lock className="h-4 w-4" strokeWidth={2} aria-hidden /> Odomkne sa po pripojení</span>
-                </span>
+                  </p>
+                  <div className="kb-special-chips">
+                    {SPECIAL_CHIPS.map((c) => (
+                      <span key={c} className="kb-special-chip">{c}</span>
+                    ))}
+                  </div>
+                  <span className="kb-special-lock"><Lock className="h-4 w-4" strokeWidth={2} aria-hidden /> Odomkne sa po pripojení</span>
+                </div>
+                <div className="kb-special-demo" aria-hidden>
+                  <p className="kb-special-demo-cap"><span>Ukážka: živnostník, tržby 60 000 €</span><span>max. hypotéka</span></p>
+                  {SPECIAL_DEMO.map((r, i) => (
+                    <div key={r.bank} className={i === 0 ? "kb-special-row is-top" : "kb-special-row"}>
+                      <span>{r.bank}</span>
+                      <span className="kb-special-track"><i className="kb-special-fill" style={{ width: `${r.pct}%` }} /></span>
+                      <b>{r.value}</b>
+                    </div>
+                  ))}
+                  <p className="kb-special-diff"><span>Rozdiel medzi najlepšou a najhoršou bankou</span><b>255 644 €</b></p>
+                </div>
               </div>
             </div>
           </AnimatedSection>
