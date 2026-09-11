@@ -76,13 +76,13 @@
 #uv-root .uv-facts { display: grid; grid-template-columns: 1fr; margin: 1.75rem 0 0; padding: 0; border-top: 1px solid var(--uv-hair); }
 #uv-root .uv-facts > div { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "label value" "sub value"; column-gap: 1rem; align-items: baseline; padding: 0.875rem 0; border-bottom: 1px solid var(--uv-hair); min-width: 0; }
 #uv-root .uv-facts dt { grid-area: label; margin: 0; font-size: 0.8125rem; font-weight: 500; color: var(--uv-muted); }
-#uv-root .uv-facts dd { grid-area: value; margin: 0; font-family: var(--font-serif); font-size: 1.375rem; line-height: 1.1; font-weight: 700; color: var(--uv-ink); font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right; }
+#uv-root .uv-facts dd { grid-area: value; margin: 0; font-family: var(--font-serif); font-size: 1.375rem; line-height: 1.1; font-weight: 700; color: var(--uv-ink); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; text-align: right; }
 #uv-root .uv-facts small { grid-area: sub; font-size: 0.75rem; line-height: 1.4; color: var(--uv-muted); }
 @media (min-width: 640px) {
   #uv-root .uv-facts { grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--uv-hair); }
   #uv-root .uv-facts > div { display: flex; flex-direction: column; gap: 0.25rem; padding: 1.125rem 1rem 1.125rem 0; border-bottom: none; }
   #uv-root .uv-facts > div + div { padding-left: 1.125rem; border-left: 1px solid var(--uv-hair); }
-  #uv-root .uv-facts dd { font-size: clamp(1.375rem, 2.4vw, 1.875rem); text-align: left; }
+  #uv-root .uv-facts dd { font-size: clamp(1.25rem, 2.1vw, 1.75rem); text-align: left; }
 }
 #uv-root .is-accent { color: var(--uv-accent) !important; }
 
