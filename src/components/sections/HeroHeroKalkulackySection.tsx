@@ -3,7 +3,7 @@ import { CENNIK_SECTION_HREF } from "@/lib/cennikCta";
 import { ArrowRight, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { BONUSY_BASE_PATH, BONUSY_TOTAL_VALUE, KALKULACKY_CALCULATORS } from "@/pages/kalkulacky/kalkulackyConfig";
-import { ToolCard } from "@/pages/kalkulacky/bonusyCards";
+import { GlyphArt, ToolCard, toneStyle } from "@/pages/kalkulacky/bonusyCards";
 import "@/pages/kalkulacky/bonusy-dashboard.css";
 import "./komunita-bonusy.css";
 
@@ -87,6 +87,29 @@ const HeroHeroKalkulackySection = ({ locked = false }: { locked?: boolean }) => 
             )}
           </div>
         </AnimatedSection>
+
+        {locked ? (
+          <AnimatedSection delay={0.12}>
+            {/* Špeciálny bonus: jedna karta na celú šírku, štýl tmavej karty (tón brown = tmavé pozadie, zlatý akcent) */}
+            <div className="bonusy kb kb-locked" style={{ marginTop: "1.25rem" }}>
+              <div className="bz-card bz-reveal bz-card--locked" style={toneStyle("brown", 0)} aria-label="Ktorá banka ti požičia najviac? – špeciálny bonus po pripojení do komunity">
+                <span className="bz-glyph" aria-hidden><GlyphArt glyph="gauge" tone="brown" /></span>
+                <span className="bz-card-head">
+                  <span className="bz-cat">Špeciálny bonus · len pre členov</span>
+                  <span className="bz-new bz-lock"><Lock className="h-3 w-3" strokeWidth={2.25} aria-hidden />Bonus</span>
+                </span>
+                <span className="bz-card-body">
+                  <span className="bz-card-title">Ktorá banka ti požičia najviac?</span>
+                  <span className="bz-card-text max-w-2xl">
+                    Vytvoril som nástroj, ktorý za minútu porovná všetkých 8 slovenských bánk podľa pravidiel NBS a povie ti, kde dostaneš najvyššiu hypotéku.
+                    Rozdiel medzi bankami býva desiatky tisíc eur. Nemusíš chodiť po bankách – všetko máš v jednom nástroji.
+                  </span>
+                  <span className="bz-card-cta"><Lock className="h-4 w-4" strokeWidth={2} aria-hidden /> Odomkne sa po pripojení</span>
+                </span>
+              </div>
+            </div>
+          </AnimatedSection>
+        ) : null}
 
         <AnimatedSection delay={0.14} className="w-full text-center">
           <div className="kb-actions">

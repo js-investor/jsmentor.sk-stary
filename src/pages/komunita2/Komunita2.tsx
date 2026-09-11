@@ -302,7 +302,10 @@ const Komunita2 = () => {
               <div className="km-hero-actions km-reveal" style={st(8)}>
                 <CtaLink cta={HERO.primaryCta} className="km-btn km-btn--lg" />
               </div>
-              <p className="km-trust km-reveal" style={st(9)}>
+              <p className="km-trust km-reveal" style={{ ...st(9), display: "flex", justifyContent: "center" }}>
+                <span>+ 12 nástrojov v hodnote 390 € a špeciálny bonus: ktorá banka ti požičia najviac</span>
+              </p>
+              <p className="km-trust km-reveal" style={{ ...st(9), marginTop: "0.625rem" }}>
                 <span className="km-trust-avatars" aria-hidden>
                   {REVIEWS.testimonials.map((t) => (
                     <img key={t.name} src={asset(t.avatar.src)} alt="" decoding="async" />
@@ -612,6 +615,10 @@ const Komunita2 = () => {
                     <li>
                       <span className="km-benefit-icon"><Calculator className="h-4 w-4" strokeWidth={1.75} aria-hidden /></span>
                       <span><b>Bonusy: {toolsCount} nástrojov v hodnote {BONUSY_TOTAL_VALUE}</b><small>kalkulačky, semafory, röntgen, mapa bytov</small></span>
+                    </li>
+                    <li>
+                      <span className="km-benefit-icon"><Calculator className="h-4 w-4" strokeWidth={1.75} aria-hidden /></span>
+                      <span><b>Špeciálny bonus: Ktorá banka ti požičia najviac?</b><small>porovnanie 8 bánk</small></span>
                     </li>
                   </ul>
                   <p className="km-guarantee"><Shield className="h-4 w-4" strokeWidth={1.75} aria-hidden />Vojdeš dnu, pozrieš si videá, vyskúšaš nástroje, stiahneš si bonusy a rozhodneš sa podľa seba.</p>
