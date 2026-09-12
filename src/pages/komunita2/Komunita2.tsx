@@ -486,7 +486,7 @@ const Komunita2 = () => {
                     <div><b>Ivan Jašík</b><small>Pod dohľadom NBS · viac ako 8 rokov skúseností</small></div>
                   </div>
                   <ul className="km-summary-meta">
-                    <li><PlayCircle className="h-5 w-5" strokeWidth={1.75} aria-hidden />Nové video každý týždeň</li>
+                    <li><PlayCircle className="h-5 w-5" strokeWidth={1.75} aria-hidden />Pravidelný obsah</li>
                     <li><Calculator className="h-5 w-5" strokeWidth={1.75} aria-hidden />{toolsCount} nástrojov v hodnote {BONUSY_TOTAL_VALUE}</li>
                     <li><FileCheck className="h-5 w-5" strokeWidth={1.75} aria-hidden />{NASTROJE.benefitTabs[4].line1}: {NASTROJE.benefitTabs[4].line2}</li>
                     <li><MessageCircle className="h-5 w-5" strokeWidth={1.75} aria-hidden />{HODNOTA.benefitCards[5].title}</li>
