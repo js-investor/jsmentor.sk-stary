@@ -275,7 +275,7 @@ export const NASTROJE = {
   benefitTabs: [
     { icon: "PlayCircle", line1: "Týždenné rozbory", line2: "videá hneď po vstupe" },
     { icon: "BarChart3", line1: "Analýzy slovenských produktov", line2: "hypotéky, byty, renta" },
-    { icon: "Users", line1: "Reálne prípady ľudí", line2: "konkrétne finančné rozhodnutia" },
+    { icon: "Users", line1: "Verejný rozbor jedného člena každý mesiac", line2: "vyberiem jedného, rozoberiem jeho čísla a dám mu smer" },
     { icon: "Calculator", line1: "Kalkulačky a mapa bytov", line2: "röntgen, semafor, nástroje" },
     { icon: "FileCheck", line1: "Checklisty a PDF", line2: "materiály na stiahnutie" },
     { icon: "TrendingUp", line1: "Investičné myslenie", line2: "bez rozprávok" },
@@ -460,6 +460,8 @@ export const HODNOTA = {
     /** nbsp between "5" and "€". */
     line1: "Menej, ako necháš pri pokladni v drobných. 5 € mesačne.",
     line2: "Jedno lepšie finančné rozhodnutie ti môže ušetriť stovky až tisíce eur.",
+    /** Ročné členstvo (len /komunita). */
+    line3: "Alebo 50\u00a0€ ročne – 2\u00a0mesiace zadarmo.",
   },
   /** Green check bullets next to the price. */
   checks: [
@@ -579,7 +581,7 @@ export const FAQ = {
       answer: [
         "Nie. Nemusíš sa viazať.",
         "**Prvé 2 týždne máš zadarmo.** Vojdeš dnu, pozrieš si videá, vyskúšaš nástroje, stiahneš si bonusy a rozhodneš sa podľa seba.",
-        "**Ak zistíš, že ti to nedáva hodnotu, členstvo jednoducho zrušíš.** Bez viazanosti, bez telefonátov, bez presviedčania.",
+        "**Ak zistíš, že ti to nedáva hodnotu, členstvo jednoducho zrušíš.** Bez viazanosti, bez telefonátov, bez presviedčania. A platí moja garancia: ak v prvom mesiaci nenájdeš nič, čo ti ušetrí viac ako rok členstva, napíš mi a vrátim ti peniaze.",
       ],
     },
     {

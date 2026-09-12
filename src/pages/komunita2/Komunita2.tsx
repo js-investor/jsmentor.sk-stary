@@ -590,6 +590,7 @@ const Komunita2 = () => {
                   <span>{HODNOTA.price.unit}</span>
                 </div>
                 <p className="km-offer-line">{HODNOTA.price.line1}</p>
+                {HODNOTA.price.line3 ? <p className="km-offer-line">{HODNOTA.price.line3}</p> : null}
                 <p className="km-offer-line">{HODNOTA.price.line2}</p>
                 <ul className="km-checks">
                   {HODNOTA.checks.map((c) => (
@@ -597,6 +598,13 @@ const Komunita2 = () => {
                   ))}
                 </ul>
                 <div className="km-actions"><CtaLink cta={HODNOTA.cta} className="km-btn km-btn--light km-btn--lg" /></div>
+                <div className="km-guarantee">
+                  <Shield className="h-4 w-4" strokeWidth={1.75} aria-hidden />
+                  <span>
+                    <b style={{ display: "block", marginBottom: "0.25rem", fontFamily: "var(--font-serif)", fontSize: "1.125rem", fontWeight: 700, color: "var(--km-ink)" }}>Moja garancia</b>
+                    Ak v prvom mesiaci nenájdeš jednu vec, ktorá ti ušetrí viac ako rok členstva, napíš mi a vrátim ti peniaze. Bez otázok.
+                  </span>
+                </div>
                 <p className="km-offer-note">{HODNOTA.note} {CENNIK.note}.</p>
               </AnimatedSection>
               <AnimatedSection delay={0.08}>
@@ -730,7 +738,7 @@ const Komunita2 = () => {
                   <h2>Prvé 2 týždne zadarmo, <em>potom len 5 € mesačne.</em></h2>
                   <p>{CENNIK.subheading}. Vojdeš dnu, pozrieš si videá, vyskúšaš nástroje a ak ti to nedáva hodnotu, jedným klikom zrušíš.</p>
                   <CtaLink cta={CENNIK.cta} className="km-btn km-btn--light km-btn--lg" />
-                  <small>{CENNIK.note} · {HODNOTA.note}</small>
+                  <small>{CENNIK.note} · Garancia vrátenia peňazí v prvom mesiaci.</small>
                 </div>
               </div>
             </AnimatedSection>
