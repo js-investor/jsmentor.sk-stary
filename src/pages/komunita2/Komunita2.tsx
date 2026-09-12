@@ -302,7 +302,7 @@ const Komunita2 = () => {
               <div className="km-hero-actions km-reveal" style={st(8)}>
                 <CtaLink cta={HERO.primaryCta} className="km-btn km-btn--lg" />
               </div>
-              <p className="km-trust km-reveal" style={{ ...st(9), display: "flex", justifyContent: "center" }}>
+              <p className="km-trust km-trust--bonus km-reveal" style={{ ...st(9), display: "flex", justifyContent: "center" }}>
                 <span>+ 12 nástrojov v hodnote 390 € a špeciálny bonus: ktorá banka ti požičia najviac</span>
               </p>
               <p className="km-trust km-reveal" style={{ ...st(9), marginTop: "0.625rem" }}>
