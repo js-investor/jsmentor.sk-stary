@@ -34,7 +34,7 @@ const Journey = () => {
   const steps: { n: string; title: string; text: string; cta: string; href: string; tone: ToneId; external?: boolean }[] = [
     { n: "01", title: "Zisti svoje skóre", text: "Finančný check-up za 3 minúty, výsledok hneď, bez e-mailu.", cta: "Spustiť check-up", href: `${BONUSY_BASE_PATH}/financny-checkup`, tone: "sage" },
     { n: "02", title: "Prepočítaj rozhodnutie", text: "Hypotéka, investície, byt alebo renta, každé v presných číslach.", cta: "Vybrať nástroj", href: "#bonusy-library-heading", tone: "sand" },
-    { n: "03", title: "Preber to s Ivanom", text: "Bezplatná konzultácia k tvojmu výsledku, 45 minút online.", cta: "Rezervovať termín", href: KONZULTACIA_URL, tone: "brown", external: true },
+    { n: "03", title: "Preber to s Ivanom", text: "Napíš mi na WhatsApp, preberieme tvoj výsledok a ďalší krok. Zadarmo, bez viazanosti.", cta: "Napísať na WhatsApp", href: KONZULTACIA_URL, tone: "brown", external: true },
   ];
   return (
     <ol className="bz-steps" aria-label="Ako to funguje">

@@ -481,6 +481,7 @@ export default function PoplatkovyRontgenCalculator() {
                 rel="noopener noreferrer"
                 data-umami-event="click_konzultacia"
                 data-umami-event-section="poplatkovy-rontgen"
+                data-umami-event-slug="poplatkovy-rontgen"
               >
                 {BONUSY_CTA_LABEL} <ArrowRight className="h-4 w-4" strokeWidth={1.75} aria-hidden />
               </a>

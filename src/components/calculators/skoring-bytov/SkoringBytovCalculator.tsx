@@ -564,7 +564,7 @@ const SkoringBytovCalculator = () => {
                 <h2 className="sb-cta-title">Vybral si byt?</h2>
                 <p className="sb-cta-text">Skóre hodnotí byt a lokalitu, nepovie ti, ako kúpu financovať a poskladať. Hypotéka, štruktúra a cashflow sú stratégia. Preber to s Ivanom predtým, než podpíšeš rezervačku.</p>
               </div>
-              <a href={KONZULTACIA_URL} target="_blank" rel="noopener noreferrer" className="btn-primary sb-btn" data-umami-event="click_konzultacia" data-umami-event-section="skoring-bytov">{BONUSY_CTA_LABEL}</a>
+              <a href={KONZULTACIA_URL} target="_blank" rel="noopener noreferrer" className="btn-primary sb-btn" data-umami-event="click_konzultacia" data-umami-event-section="skoring-bytov" data-umami-event-slug="skoring-bytov">{BONUSY_CTA_LABEL}</a>
             </section>
           ) : null}
 

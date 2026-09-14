@@ -601,6 +601,7 @@ export default function BytovySemaforCalculator() {
                     rel="noopener noreferrer"
                     data-umami-event="click_konzultacia"
                     data-umami-event-section="bytovy-semafor"
+                    data-umami-event-slug="bytovy-semafor"
                   >
                     {BONUSY_CTA_LABEL} <ArrowRight className="h-4 w-4" strokeWidth={1.75} aria-hidden />
                   </a>

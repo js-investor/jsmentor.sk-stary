@@ -16,7 +16,8 @@ const KalkulackyShell = ({ children, fullBleed = false }: KalkulackyShellProps) 
       logoHref="/bonusy"
       leadingLinks={[{ label: "Všetky bonusy", href: "/bonusy" }]}
       groups={KALKULACKY_HEADER_GROUPS}
-      ctaLabel="Konzultácia s Ivanom"
+      ctaLabel="Napísať Ivanovi"
+      ctaShortLabel="WhatsApp"
       ctaHref={KONZULTACIA_URL}
       ctaUmamiEvent="click_konzultacia"
       ctaUmamiEventSection="bonusy-header"

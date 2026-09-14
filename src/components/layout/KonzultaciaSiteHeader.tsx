@@ -87,6 +87,7 @@ const KonzultaciaSiteHeader = ({
       onClick={() => setMobileMenuOpen(false)}
       {...(ctaUmamiEvent ? { "data-umami-event": ctaUmamiEvent } : {})}
       {...(ctaUmamiEventSection ? { "data-umami-event-section": ctaUmamiEventSection } : {})}
+      {...(ctaUmamiEvent === "click_konzultacia" && ctaUmamiEventSection ? { "data-umami-event-slug": ctaUmamiEventSection } : {})}
     >
       {ctaIcon}
       {ctaLabel}
@@ -112,6 +113,7 @@ const KonzultaciaSiteHeader = ({
       onClick={() => setMobileMenuOpen(false)}
       {...(ctaUmamiEvent ? { "data-umami-event": ctaUmamiEvent } : {})}
       {...(ctaUmamiEventSection ? { "data-umami-event-section": ctaUmamiEventSection } : {})}
+      {...(ctaUmamiEvent === "click_konzultacia" && ctaUmamiEventSection ? { "data-umami-event-slug": ctaUmamiEventSection } : {})}
     >
       {ctaIcon}
       {mobileLabel}

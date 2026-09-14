@@ -411,7 +411,7 @@ const InvesticnyBytCalculator = () => {
               <h2 className="iby-cta-title">Chceš tento byt prepočítať naostro?</h2>
               <p className="iby-cta-text">Na konzultácii prejdeme reálny inzerát, hypotéku a cashflow. 45 minút, zadarmo, online.</p>
             </div>
-            <a href={KONZULTACIA_URL} target="_blank" rel="noopener noreferrer" className="btn-primary iby-btn" data-umami-event="click_konzultacia" data-umami-event-section="investicny-byt">{BONUSY_CTA_LABEL}</a>
+            <a href={KONZULTACIA_URL} target="_blank" rel="noopener noreferrer" className="btn-primary iby-btn" data-umami-event="click_konzultacia" data-umami-event-section="investicny-byt" data-umami-event-slug="investicny-byt">{BONUSY_CTA_LABEL}</a>
           </section>
 
           <p className="calc-note calc-note--center mt-5 md:mt-6">

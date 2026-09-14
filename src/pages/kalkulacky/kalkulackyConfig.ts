@@ -6,9 +6,10 @@ export const BONUSY_BASE_PATH = "/bonusy";
 /** Orientačná hodnota všetkých bonusových nástrojov (komunita: „13 nástrojov v hodnote 420 € úplne zadarmo“). */
 export const BONUSY_TOTAL_VALUE = "420\u00a0€";
 
-/** Externá stránka rezervácie konzultácie — používa sa na /bonusy a podstránkach nástrojov. */
-export const KONZULTACIA_URL = "https://konzultacia.jsmentor.sk/";
-export const BONUSY_CTA_LABEL = "Rezervovať konzultáciu s Ivanom";
+/** WhatsApp na Ivana s predvyplnenou správou — používa sa na /bonusy a podstránkach nástrojov (nahradilo rezervačnú stránku). */
+export const KONZULTACIA_URL =
+  "https://wa.me/421902519328?text=Ahoj%20Ivan%2C%20vysk%C3%BA%C5%A1al%20som%20tvoje%20n%C3%A1stroje%20na%20jsmentor.sk%20a%20chcem%20s%20tebou%20prebra%C5%A5%20svoju%20situ%C3%A1ciu.%20Rie%C5%A1im%20___.";
+export const BONUSY_CTA_LABEL = "Napísať Ivanovi na WhatsApp";
 
 export type KalkulackaCalculatorMeta = {
   slug: string;
@@ -183,6 +184,6 @@ export const KALKULACKY_HEADER_GROUPS: NavGroup[] = [
 export const KALKULACKY_KONZULTACIA_CARD = {
   title: "Mám otázku k výsledku",
   description:
-    "Rezervuj si konzultáciu a preberieme tvoje čísla z kalkulačky a ďalší krok.",
+    "Napíš mi na WhatsApp a preberieme tvoje čísla z kalkulačky a ďalší krok.",
   href: KONZULTACIA_URL,
 } as const;

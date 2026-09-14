@@ -103,6 +103,7 @@ const BonusyHeader = ({
     ...(ctaExternal ? { target: "_blank", rel: "noopener noreferrer" } : {}),
     ...(ctaUmamiEvent ? { "data-umami-event": ctaUmamiEvent } : {}),
     ...(ctaUmamiEventSection ? { "data-umami-event-section": ctaUmamiEventSection } : {}),
+    ...(ctaUmamiEvent === "click_konzultacia" && ctaUmamiEventSection ? { "data-umami-event-slug": ctaUmamiEventSection } : {}),
   };
 
   const renderItems = (group: BonusyHeaderGroup, itemClass: string, onPick?: () => void) =>

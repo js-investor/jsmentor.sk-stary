@@ -543,7 +543,7 @@ const InteligentnaHypotekaCalculator = () => {
 
               <div className="ih-cta calc-reveal" style={st(4)}>
                 <p>Chceš to prebrať na svojich číslach? Prejdeme fixáciu, rezervu aj to, kedy sa doplatenie naozaj oplatí.</p>
-                <a className="btn-primary ih-cta-btn" href={KONZULTACIA_URL} target="_blank" rel="noopener noreferrer" data-umami-event="click_konzultacia" data-umami-event-section="inteligentna-hypoteka">
+                <a className="btn-primary ih-cta-btn" href={KONZULTACIA_URL} target="_blank" rel="noopener noreferrer" data-umami-event="click_konzultacia" data-umami-event-section="inteligentna-hypoteka" data-umami-event-slug="inteligentna-hypoteka">
                   {BONUSY_CTA_LABEL} <ArrowRight className="h-4 w-4" strokeWidth={1.75} aria-hidden />
                 </a>
               </div>

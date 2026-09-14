@@ -46,6 +46,7 @@ const BonusyKonzultaciaSection = () => (
             className="btn-primary btn-primary-site-header mt-1 inline-flex items-center gap-2 text-body"
             data-umami-event="click_konzultacia"
             data-umami-event-section="bonusy-konzultacia"
+            data-umami-event-slug="bonusy-konzultacia"
           >
             {BONUSY_CTA_LABEL}
           </a>

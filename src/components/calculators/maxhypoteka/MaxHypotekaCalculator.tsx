@@ -777,7 +777,7 @@ const MaxHypotekaCalculator = () => {
                     <li>aké dokumenty budeš potrebovať a čo banky neuznajú</li>
                     <li>{emp ? "ako zvýšiť strop ešte pred žiadosťou" : "ako zvýšiť uznaný príjem ešte pred žiadosťou"}</li>
                   </ul>
-                  <a className="btn-primary mh-cta-btn" href={KONZULTACIA_URL} target="_blank" rel="noopener noreferrer" data-umami-event="click_konzultacia" data-umami-event-section="maximalna-hypoteka">
+                  <a className="btn-primary mh-cta-btn" href={KONZULTACIA_URL} target="_blank" rel="noopener noreferrer" data-umami-event="click_konzultacia" data-umami-event-section="maximalna-hypoteka" data-umami-event-slug="maximalna-hypoteka">
                     {BONUSY_CTA_LABEL} <ArrowRight className="h-4 w-4" strokeWidth={1.75} aria-hidden />
                   </a>
                 </div>

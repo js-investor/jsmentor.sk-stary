@@ -758,7 +758,7 @@ const RentovaCalculator = () => {
 
               <div className="rn-cta calc-reveal" style={st(7)}>
                 <p>Chceš to prebrať na svojich číslach? Prejdeme portfólio, byt aj to, kedy sa renta reálne dá dosiahnuť.</p>
-                <a className="btn-primary rn-cta-btn" href={KONZULTACIA_URL} target="_blank" rel="noopener noreferrer" data-umami-event="click_konzultacia" data-umami-event-section="rentova">
+                <a className="btn-primary rn-cta-btn" href={KONZULTACIA_URL} target="_blank" rel="noopener noreferrer" data-umami-event="click_konzultacia" data-umami-event-section="rentova" data-umami-event-slug="rentova">
                   {BONUSY_CTA_LABEL} <ArrowRight className="h-4 w-4" strokeWidth={1.75} aria-hidden />
                 </a>
               </div>

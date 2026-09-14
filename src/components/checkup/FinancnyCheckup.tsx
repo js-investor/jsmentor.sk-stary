@@ -498,7 +498,7 @@ const FinancnyCheckup = () => {
                   <p className="fc-cta-text">Na konzultácii prejdeme tvoje skóre pilier po pilieri, urobíme poradie krokov a povieme si, čo riešiť tento mesiac.</p>
                 </div>
                 <div className="fc-cta-actions">
-                  <a href={KONZULTACIA_URL} target="_blank" rel="noopener noreferrer" className="btn-primary fc-btn" data-umami-event="click_konzultacia" data-umami-event-section="financny-checkup">
+                  <a href={KONZULTACIA_URL} target="_blank" rel="noopener noreferrer" className="btn-primary fc-btn" data-umami-event="click_konzultacia" data-umami-event-section="financny-checkup" data-umami-event-slug="financny-checkup">
                     {BONUSY_CTA_LABEL}
                   </a>
                   <button type="button" className="fc-btn-ghost" onClick={start}>

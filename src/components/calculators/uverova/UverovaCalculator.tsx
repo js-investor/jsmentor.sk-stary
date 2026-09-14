@@ -494,7 +494,7 @@ const UverovaCalculator = () => {
 
               <div className="uv-cta">
                 <p>Chceš vedieť, či sa oplatí refinancovať, skrátiť splatnosť alebo radšej investovať rozdiel? Prejdeme to na tvojich číslach.</p>
-                <a className="btn-primary uv-cta-btn" href={KONZULTACIA_URL} target="_blank" rel="noopener noreferrer" data-umami-event="click_konzultacia" data-umami-event-section="uverova">
+                <a className="btn-primary uv-cta-btn" href={KONZULTACIA_URL} target="_blank" rel="noopener noreferrer" data-umami-event="click_konzultacia" data-umami-event-section="uverova" data-umami-event-slug="uverova">
                   {BONUSY_CTA_LABEL} <ArrowRight className="h-4 w-4" strokeWidth={1.75} aria-hidden />
                 </a>
               </div>
