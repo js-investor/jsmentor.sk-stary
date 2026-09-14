@@ -79,7 +79,7 @@ export const LINKS = {
   homeUrl: "/",
   /** Hero Vimeo embed. */
   heroVideoUrl:
-    "https://player.vimeo.com/video/1212923039?h=bfcdeb03df&autoplay=0&title=0&portrait=0&byline=0",
+    "https://player.vimeo.com/video/1226685451?h=aec7c135bf&autoplay=0&title=0&portrait=0&byline=0",
 } as const;
 
 /** data-umami-event / data-umami-event-section per CTA location. */
