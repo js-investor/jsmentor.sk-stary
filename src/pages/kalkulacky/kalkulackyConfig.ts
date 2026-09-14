@@ -8,7 +8,7 @@ export const BONUSY_TOTAL_VALUE = "420\u00a0€";
 
 /** WhatsApp na Ivana s predvyplnenou správou — používa sa na /bonusy a podstránkach nástrojov (nahradilo rezervačnú stránku). */
 export const KONZULTACIA_URL =
-  "https://wa.me/421902519328?text=Ahoj%20Ivan%2C%20vysk%C3%BA%C5%A1al%20som%20tvoje%20n%C3%A1stroje%20na%20jsmentor.sk%20a%20chcem%20s%20tebou%20prebra%C5%A5%20svoju%20situ%C3%A1ciu.%20Rie%C5%A1im%20___.";
+  "https://wa.me/421902519328?text=Ahoj%20Ivan.%20Vysk%C3%BA%C5%A1al%20som%20si%20n%C3%A1stroje%20a%20chcem%20s%20tebou%20prebra%C5%A5%20svoju%20situ%C3%A1ciu.%20Rie%C5%A1im%20___.";
 export const BONUSY_CTA_LABEL = "Napísať Ivanovi na WhatsApp";
 
 export type KalkulackaCalculatorMeta = {
