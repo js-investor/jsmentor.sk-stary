@@ -1,11 +1,12 @@
-import type { CSSProperties } from "react";
-import { ArrowRight } from "lucide-react";
+import { useState, type CSSProperties } from "react";
+import { ArrowRight, Play, PlayCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import BonusyKonzultaciaSection from "@/components/sections/BonusyKonzultaciaSection";
 import KalkulackyShell from "@/pages/kalkulacky/KalkulackyShell";
 import { BONUSY_BASE_PATH, BONUSY_PDF_CARD, KALKULACKY_CALCULATORS, KONZULTACIA_URL } from "@/pages/kalkulacky/kalkulackyConfig";
 import { cn } from "@/lib/utils";
 import type { KalkulackaCalculatorMeta } from "@/pages/kalkulacky/kalkulackyConfig";
+import guidePoster from "@/assets/images/bonusy-video-poster.webp";
 import "./bonusy-dashboard.css";
 
 /* ---------------------------------------------------------------------------
@@ -27,6 +28,49 @@ const BonusyPageHeader = () => (
     <p className="bz-lede">Zisti presné čísla skôr, než podpíšeš, investuješ alebo zaplatíš. Každý nástroj tu existuje preto, aby si videl, čo ťa rozhodnutie skutočne stojí a čo ti môže zarobiť.</p>
   </header>
 );
+
+/* ------------------------------ Video: ako sa zorientovať ------------------------------ */
+
+const GUIDE_VIDEO = { id: "1227729734", title: "Čo tu nájdeš a kde začať", duration: "5 min" };
+
+const GuideVideo = () => {
+  const [playing, setPlaying] = useState(false);
+  const src = `https://player.vimeo.com/video/${GUIDE_VIDEO.id}?autoplay=1&title=0&portrait=0&byline=0`;
+  const play = () => setPlaying(true);
+  return (
+    <section className="bz-guide bz-reveal" style={{ "--i": 1 } as CSSProperties} aria-labelledby="bonusy-guide-heading">
+      <div className="bz-guide-copy">
+        <span className="bz-flag-kicker"><PlayCircle className="h-4 w-4" aria-hidden /> Video · {GUIDE_VIDEO.duration}</span>
+        <h2 id="bonusy-guide-heading" className="bz-guide-title">Nevieš, kde začať? <em>Pozri si 5 minút.</em></h2>
+        <p className="bz-guide-text">Ukážem ti, čo tu nájdeš, ktorý nástroj použiť ako prvý a ako z výsledku spraviť ďalší krok. Bez teórie, rovno k veci.</p>
+        <ul className="bz-guide-chips" aria-label="Čo sa dozvieš">
+          <li>Kde začať</li>
+          <li>Ktorý nástroj kedy</li>
+          <li>Čo s výsledkom</li>
+        </ul>
+        {!playing ? (
+          <button type="button" className="bz-guide-cta" onClick={play} data-umami-event="click_video" data-umami-event-section="bonusy-guide-cta">
+            Prehrať video <Play className="h-4 w-4" aria-hidden />
+          </button>
+        ) : null}
+      </div>
+      <div className="bz-guide-stage">
+        {playing ? (
+          <div className="bz-guide-frame">
+            <iframe src={src} title={GUIDE_VIDEO.title} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen />
+          </div>
+        ) : (
+          <button type="button" className="bz-guide-play" onClick={play} aria-label={`Prehrať video: ${GUIDE_VIDEO.title}`} data-umami-event="click_video" data-umami-event-section="bonusy-guide">
+            <img src={guidePoster} alt="" width={1280} height={720} decoding="async" />
+            <span className="bz-guide-scrim" aria-hidden />
+            <span className="bz-guide-btn" aria-hidden><Play className="h-7 w-7" strokeWidth={2.5} /></span>
+            <span className="bz-guide-dur" aria-hidden>{GUIDE_VIDEO.duration}</span>
+          </button>
+        )}
+      </div>
+    </section>
+  );
+};
 
 /* ------------------------------ Cesta v 3 krokoch ------------------------------ */
 
@@ -127,6 +171,7 @@ const KalkulackyCategoryPage = () => {
     <KalkulackyShell>
       <div className="bonusy section-container px-4 sm:px-6 lg:px-8">
         <BonusyPageHeader />
+        <GuideVideo />
         <Journey />
 
         <section className="mx-auto mt-16 max-w-6xl md:mt-24" aria-labelledby="bonusy-featured-heading">
