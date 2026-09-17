@@ -36,33 +36,20 @@ const GUIDE_VIDEO = { id: "1227729734", title: "Čo tu nájdeš a kde začať", 
 const GuideVideo = () => {
   const [playing, setPlaying] = useState(false);
   const src = `https://player.vimeo.com/video/${GUIDE_VIDEO.id}?autoplay=1&title=0&portrait=0&byline=0`;
-  const play = () => setPlaying(true);
   return (
     <section className="bz-guide bz-reveal" style={{ "--i": 1 } as CSSProperties} aria-labelledby="bonusy-guide-heading">
-      <div className="bz-guide-copy">
-        <span className="bz-flag-kicker"><PlayCircle className="h-4 w-4" aria-hidden /> Video · {GUIDE_VIDEO.duration}</span>
-        <h2 id="bonusy-guide-heading" className="bz-guide-title">Nevieš, kde začať? <em>Pozri si 5 minút.</em></h2>
-        <p className="bz-guide-text">Ukážem ti, čo tu nájdeš, ktorý nástroj použiť ako prvý a ako z výsledku spraviť ďalší krok. Bez teórie, rovno k veci.</p>
-        <ul className="bz-guide-chips" aria-label="Čo sa dozvieš">
-          <li>Kde začať</li>
-          <li>Ktorý nástroj kedy</li>
-          <li>Čo s výsledkom</li>
-        </ul>
-        {!playing ? (
-          <button type="button" className="bz-guide-cta" onClick={play} data-umami-event="click_video" data-umami-event-section="bonusy-guide-cta">
-            Prehrať video <Play className="h-4 w-4" aria-hidden />
-          </button>
-        ) : null}
-      </div>
+      <p className="bz-guide-cap">
+        <span className="bz-guide-kicker"><PlayCircle className="h-4 w-4" aria-hidden /> Video · {GUIDE_VIDEO.duration}</span>
+        <span id="bonusy-guide-heading" className="bz-guide-line"><b>Nevieš, kde začať?</b> V 5 minútach ti ukážem, čo tu nájdeš, ktorý nástroj použiť ako prvý a čo s výsledkom.</span>
+      </p>
       <div className="bz-guide-stage">
         {playing ? (
           <div className="bz-guide-frame">
             <iframe src={src} title={GUIDE_VIDEO.title} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen />
           </div>
         ) : (
-          <button type="button" className="bz-guide-play" onClick={play} aria-label={`Prehrať video: ${GUIDE_VIDEO.title}`} data-umami-event="click_video" data-umami-event-section="bonusy-guide">
-            <img src={guidePoster} alt="" width={1280} height={720} decoding="async" />
-            <span className="bz-guide-scrim" aria-hidden />
+          <button type="button" className={cn("bz-guide-play", focusClass)} onClick={() => setPlaying(true)} aria-label={`Prehrať video: ${GUIDE_VIDEO.title}`} data-umami-event="click_video" data-umami-event-section="bonusy-guide">
+            <img src={guidePoster} alt="" width={1600} height={900} decoding="async" />
             <span className="bz-guide-btn" aria-hidden><Play className="h-7 w-7" strokeWidth={2.5} /></span>
             <span className="bz-guide-dur" aria-hidden>{GUIDE_VIDEO.duration}</span>
           </button>
