@@ -1,5 +1,5 @@
-import { useState, type CSSProperties } from "react";
-import { ArrowRight, Play, PlayCircle } from "lucide-react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { ArrowRight, Play, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import BonusyKonzultaciaSection from "@/components/sections/BonusyKonzultaciaSection";
 import KalkulackyShell from "@/pages/kalkulacky/KalkulackyShell";
@@ -34,28 +34,42 @@ const BonusyPageHeader = () => (
 const GUIDE_VIDEO = { id: "1227729734", title: "Čo tu nájdeš a kde začať", duration: "5 min" };
 
 const GuideVideo = () => {
-  const [playing, setPlaying] = useState(false);
+  const [open, setOpen] = useState(false);
+  const closeRef = useRef<HTMLButtonElement>(null);
   const src = `https://player.vimeo.com/video/${GUIDE_VIDEO.id}?autoplay=1&title=0&portrait=0&byline=0`;
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    closeRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    window.addEventListener("keydown", onKey);
+    return () => { document.body.style.overflow = prev; window.removeEventListener("keydown", onKey); };
+  }, [open]);
   return (
-    <section className="bz-guide bz-reveal" style={{ "--i": 1 } as CSSProperties} aria-labelledby="bonusy-guide-heading">
-      <p className="bz-guide-cap">
-        <span className="bz-guide-kicker"><PlayCircle className="h-4 w-4" aria-hidden /> Video · {GUIDE_VIDEO.duration}</span>
-        <span id="bonusy-guide-heading" className="bz-guide-line"><b>Nevieš, kde začať?</b> V 5 minútach ti ukážem, čo tu nájdeš, ktorý nástroj použiť ako prvý a čo s výsledkom.</span>
-      </p>
-      <div className="bz-guide-stage">
-        {playing ? (
-          <div className="bz-guide-frame">
-            <iframe src={src} title={GUIDE_VIDEO.title} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen />
+    <>
+      <button type="button" className={cn("bz-guide bz-reveal", focusClass)} style={{ "--i": 1 } as CSSProperties} onClick={() => setOpen(true)} aria-haspopup="dialog" aria-label={`Prehrať video: ${GUIDE_VIDEO.title} (${GUIDE_VIDEO.duration})`} data-umami-event="click_video" data-umami-event-section="bonusy-guide">
+        <span className="bz-guide-thumb" aria-hidden>
+          <img src={guidePoster} alt="" width={1600} height={900} decoding="async" />
+          <span className="bz-guide-badge"><Play className="h-3.5 w-3.5" strokeWidth={2.5} /></span>
+        </span>
+        <span className="bz-guide-copy">
+          <span className="bz-guide-kicker">Video · {GUIDE_VIDEO.duration}</span>
+          <span className="bz-guide-line"><b>Nevieš, kde začať?</b> Pozri si, čo tu nájdeš a ktorý nástroj použiť ako prvý.</span>
+        </span>
+        <span className="bz-guide-go" aria-hidden>Prehrať <ArrowRight className="h-4 w-4" /></span>
+      </button>
+      {open ? (
+        <div className="bz-modal" role="dialog" aria-modal="true" aria-label={GUIDE_VIDEO.title} onClick={() => setOpen(false)}>
+          <div className="bz-modal-body" onClick={(e) => e.stopPropagation()}>
+            <button ref={closeRef} type="button" className="bz-modal-close" onClick={() => setOpen(false)} aria-label="Zavrieť video"><X className="h-5 w-5" strokeWidth={2} /></button>
+            <div className="bz-modal-frame">
+              <iframe src={src} title={GUIDE_VIDEO.title} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen />
+            </div>
           </div>
-        ) : (
-          <button type="button" className={cn("bz-guide-play", focusClass)} onClick={() => setPlaying(true)} aria-label={`Prehrať video: ${GUIDE_VIDEO.title}`} data-umami-event="click_video" data-umami-event-section="bonusy-guide">
-            <img src={guidePoster} alt="" width={1600} height={900} decoding="async" />
-            <span className="bz-guide-btn" aria-hidden><Play className="h-7 w-7" strokeWidth={2.5} /></span>
-            <span className="bz-guide-dur" aria-hidden>{GUIDE_VIDEO.duration}</span>
-          </button>
-        )}
-      </div>
-    </section>
+        </div>
+      ) : null}
+    </>
   );
 };
 
