@@ -7,6 +7,7 @@ import { BONUSY_BASE_PATH, BONUSY_PDF_CARD, KALKULACKY_CALCULATORS, KONZULTACIA_
 import { cn } from "@/lib/utils";
 import type { KalkulackaCalculatorMeta } from "@/pages/kalkulacky/kalkulackyConfig";
 import guidePoster from "@/assets/images/bonusy-video-poster.webp";
+import guideBanner from "@/assets/images/bonusy-video-banner.webp";
 import "./bonusy-dashboard.css";
 
 /* ---------------------------------------------------------------------------
@@ -70,6 +71,28 @@ const GuideVideo = () => {
         </div>
       ) : null}
     </>
+  );
+};
+
+/* ------------------------------ Video dole: veľký banner, prehráva sa na mieste ------------------------------ */
+
+const GuideBanner = () => {
+  const [playing, setPlaying] = useState(false);
+  const src = `https://player.vimeo.com/video/${GUIDE_VIDEO.id}?autoplay=1&title=0&portrait=0&byline=0`;
+  return (
+    <div className="bz-banner mt-6 md:mt-8">
+      {playing ? (
+        <div className="bz-banner-frame">
+          <iframe src={src} title={GUIDE_VIDEO.title} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen />
+        </div>
+      ) : (
+        <button type="button" className={cn("bz-banner-play", focusClass)} onClick={() => setPlaying(true)} aria-label={`Prehrať video: ${GUIDE_VIDEO.title} (${GUIDE_VIDEO.duration})`} data-umami-event="click_video" data-umami-event-section="bonusy-video-banner">
+          <img src={guideBanner} alt="" width={1920} height={1080} loading="lazy" decoding="async" />
+          <span className="bz-banner-btn" aria-hidden><Play className="h-7 w-7" strokeWidth={2.5} /></span>
+          <span className="bz-banner-dur" aria-hidden>{GUIDE_VIDEO.duration}</span>
+        </button>
+      )}
+    </div>
   );
 };
 
@@ -192,6 +215,11 @@ const KalkulackyCategoryPage = () => {
               <li key={meta.slug} className="h-full"><ToolCard meta={meta} index={i} /></li>
             ))}
           </ul>
+        </section>
+
+        <section className="mx-auto mt-16 max-w-6xl md:mt-24" aria-labelledby="bonusy-video-heading">
+          <SectionHeader id="bonusy-video-heading" title="Nevieš, kde začať?" subtitle="Pozri si 5-minútové video: čo tu nájdeš, ktorý nástroj použiť ako prvý a čo s výsledkom." />
+          <GuideBanner />
         </section>
 
         <section className="mx-auto mt-10 max-w-6xl md:mt-14" aria-labelledby="bonusy-pdf-heading"><PdfBanner /></section>
