@@ -24,6 +24,7 @@ import {
   sameWeights,
   sanitize,
   yearsAvailable,
+  ymdOf,
   type Brake,
   type Dataset,
   type Inputs,
@@ -364,7 +365,15 @@ const InvesticnaStrategiaCalculator = () => {
   };
 
   const dayAt = (j: number) => (ds && r ? ds.day[r.i0 + j] : 0);
+  /* počet znakov čísla v páse: podľa neho sa písmo zmenší, aby sa číslo zmestilo do svojho stĺpca */
+  const nStyle = (...texts: string[]) => ({ "--n": Math.max(...texts.map((x) => x.length)) }) as CSSProperties;
   const low = r?.strategy.drawdown ?? null;
+  /* bola hodnota niekedy pod vkladmi? potom má legenda grafu aj stratu */
+  const hadLoss = useMemo(() => {
+    if (!r) return false;
+    for (let j = 0; j < r.n; j++) if (r.strategy.value[j] < r.strategy.paid[j] - 1e-9) return true;
+    return false;
+  }, [r]);
   const yearsShown = A.start ? rowsNow : A.years;
   const brakeLabel = BRAKES.find((b) => b.id === A.brake)?.label ?? "";
   const returnsLabel = A.real ? "reálne" : "nominálne";
@@ -378,8 +387,25 @@ const InvesticnaStrategiaCalculator = () => {
     document.getElementById(`${prefix}-${next}`)?.focus();
   };
 
+  /* riadok so scenárom: na prvý pohľad vidno, čo je nastavené; klik otvorí príslušnú časť nastavení */
+  const goTo = (tabId: FormTab) => {
+    setFormTab(tabId);
+    if (window.innerWidth < 1024) document.querySelector("#ist-root .ist-form")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+  const chips: { label: string; tab: FormTab }[] = r
+    ? [
+        { label: SETS[A.set].label, tab: "parametre" },
+        { label: `${span(r.startDay, r.endDay)} · ${ymdOf(r.startDay).y}–${ymdOf(r.endDay).y}`, tab: "parametre" },
+        { label: `${money(A.initial, cur)} + ${money(A.monthly, cur)} mesačne`, tab: "parametre" },
+        { label: `${allocPreset?.label ?? "Vlastné zloženie"} ${mix(A.alloc)}`, tab: "alokacia" },
+        { label: `Brzda: ${brakeLabel.toLowerCase()}`, tab: "brzda" },
+        { label: A.real ? "Reálne výnosy" : "Nominálne výnosy", tab: "parametre" },
+      ]
+    : [];
+
   return (
     <div id="ist-root" className="calc-ui ist w-full font-sans">
+      <div className="ist-wrap">
       <div className="calc-body-shell">
         <div className="calc-page">
           <header className="calc-header calc-reveal" style={st(0)}>
@@ -388,8 +414,8 @@ const InvesticnaStrategiaCalculator = () => {
               Čo by tvoja stratégia urobila <em>naozaj</em>?
             </h1>
             <p className="calc-subtitle">
-              Nastav vklady, dĺžku investovania a pomer akcií, dlhopisov a peňažného fondu. Pridaj brzdu, ktorá portfólio v posledných
-              rokoch upokojí, a pozri, čo by sa s tvojimi peniazmi stalo podľa skutočných denných dát.
+              Nastav vklady, čas a pomer akcií, dlhopisov a peňažného fondu. Pridaj brzdu a pozri, čo by sa s tvojimi peniazmi stalo
+              podľa skutočných denných dát.
             </p>
           </header>
 
@@ -550,31 +576,38 @@ const InvesticnaStrategiaCalculator = () => {
                 </div>
               ) : (
                 <>
-                  <dl className="ist-kpis">
-                    <div>
-                      <dt>Suma vkladov</dt>
-                      <dd>{money(r.strategy.deposits, cur)}</dd>
-                      <small>{r.depositCount} {vkladov(r.depositCount)}{A.real ? ", v cenách z konca obdobia" : ""}</small>
-                    </div>
-                    <div>
-                      <dt>Celkový {r.strategy.gain >= 0 ? "zisk" : "výsledok"}</dt>
-                      <dd className={r.strategy.gain >= 0 ? "is-accent" : undefined}>{money(r.strategy.gain, cur)}</dd>
-                      <small>{r.strategy.deposits > 0 ? `${signedPct(r.strategy.final / r.strategy.deposits - 1, 0)} z vkladov` : "bez vkladov"}</small>
-                    </div>
-                    <div className="is-main">
+                  <div className="ist-chips" aria-label="Nastavený scenár">
+                    {chips.map((c) => (
+                      <button key={c.label} type="button" className="ist-chip" onClick={() => goTo(c.tab)}>{c.label}</button>
+                    ))}
+                  </div>
+                  <dl className="ist-band">
+                    <div className="ist-band-main">
                       <dt>Výsledná čiastka</dt>
-                      <dd style={{ "--n": money(r.strategy.final, cur).length } as CSSProperties}>{r.strategy.deposits > 0 ? money(shownFinal, cur) : "–"}</dd>
-                      <small>k {dateShort(r.endDay)} · {span(r.startDay, r.endDay)}{A.real ? " · reálne" : ""}</small>
+                      <dd style={nStyle(money(r.strategy.final, cur))}>{r.strategy.deposits > 0 ? money(shownFinal, cur) : "–"}</dd>
+                      <small>k {dateShort(r.endDay)}{A.real ? " · reálne, v dnešných cenách" : ""}</small>
                     </div>
-                    <div>
-                      <dt>Výnos p. a.</dt>
-                      <dd>{pct(r.strategy.twr, 2)}</dd>
-                      <small>{returnsLabel}, zložený priemer</small>
-                    </div>
-                    <div>
-                      <dt>Najhlbší prepad</dt>
-                      <dd>{low && low.depth < 0 ? pct(low.depth) : "žiadny"}</dd>
-                      <small>{low && low.depth < 0 ? `${dateShort(dayAt(low.peak))} – ${dateShort(dayAt(low.trough))}` : "stratégia len rástla"}</small>
+                    <div className="ist-band-stats" style={nStyle(...[money(r.strategy.deposits, cur), money(r.strategy.gain, cur), pct(r.strategy.twr, 2), low && low.depth < 0 ? pct(low.depth) : "žiadny"])}>
+                      <div>
+                        <dt>Suma vkladov</dt>
+                        <dd>{money(r.strategy.deposits, cur)}</dd>
+                        <small>{r.depositCount} {vkladov(r.depositCount)}</small>
+                      </div>
+                      <div>
+                        <dt>Celkový {r.strategy.gain >= 0 ? "zisk" : "výsledok"}</dt>
+                        <dd className={r.strategy.gain >= 0 ? "is-gain" : "is-loss"}>{money(r.strategy.gain, cur)}</dd>
+                        <small>{r.strategy.deposits > 0 ? `${signedPct(r.strategy.final / r.strategy.deposits - 1, 0)} z vkladov` : "bez vkladov"}</small>
+                      </div>
+                      <div>
+                        <dt>Výnos p. a.</dt>
+                        <dd className={r.strategy.twr < 0 ? "is-loss" : undefined}>{pct(r.strategy.twr, 2)}</dd>
+                        <small>{returnsLabel}, zložený priemer</small>
+                      </div>
+                      <div>
+                        <dt>Najhlbší prepad</dt>
+                        <dd className={low && low.depth < 0 ? "is-loss" : undefined}>{low && low.depth < 0 ? pct(low.depth) : "žiadny"}</dd>
+                        <small>{low && low.depth < 0 ? `${dateShort(dayAt(low.peak))} – ${dateShort(dayAt(low.trough))}` : "stratégia len rástla"}</small>
+                      </div>
                     </div>
                   </dl>
                   {r.strategy.deposits <= 0 ? <p className="ist-empty">Zadaj jednorazový alebo mesačný vklad a uvidíš, na koľko by narástol.</p> : null}
@@ -594,24 +627,29 @@ const InvesticnaStrategiaCalculator = () => {
                         <div className="ist-legend">
                           <span className="ist-legend-item"><i className="ist-legend-line ist-legend-paid" />Vložené celkom</span>
                           <span className="ist-legend-item"><i className="ist-legend-line ist-legend-soft" />Zisk</span>
+                          {hadLoss ? <span className="ist-legend-item"><i className="ist-legend-line ist-legend-softred" />Strata</span> : null}
                           <span className="ist-legend-item"><i className="ist-legend-line ist-legend-accent" />Hodnota</span>
                         </div>
                       </div>
-                      <p className="ist-lede">Prejdi kurzorom po grafe a uvidíš, koľko by si mal v ktorýkoľvek deň, napríklad uprostred krízy v roku 2008. Dole je zloženie portfólia v čase.</p>
                       <ValueChart ds={ds} r={r} pinned={pinned} onPin={setPinned} />
-                      <div className="ist-keys ist-keys--chart">
-                        <b>Zloženie portfólia</b>
-                        {ASSETS.map((a, k) => (
-                          <span key={a}><i className={`ist-dot ist-dot--${ASSET_KEYS[k]}`} aria-hidden />{a}</span>
-                        ))}
+                      <div className="ist-under">
+                        <div className="ist-keys ist-keys--chart">
+                          <b>Zloženie portfólia</b>
+                          {ASSETS.map((a, k) => (
+                            <span key={a}><i className={`ist-dot ist-dot--${ASSET_KEYS[k]}`} aria-hidden />{a}</span>
+                          ))}
+                        </div>
+                        <span className="ist-hintline">Prejdi po grafe kurzorom alebo prstom: uvidíš stav v ktorýkoľvek deň.</span>
                       </div>
                     </div>
                   ) : null}
 
                   {tab === "zhodnotenie" ? (
                     <div role="tabpanel" id="ist-panel-zhodnotenie" aria-labelledby="ist-tab-zhodnotenie" className="ist-panel">
-                      <div className="ist-chart-head"><h3>Priemerné ročné zhodnotenie</h3></div>
-                      <p className="ist-lede">Za obdobie {dateShort(r.startDay)} – {dateShort(r.endDay)}, {returnsLabel}, zložený priemer za rok.</p>
+                      <div className="ist-chart-head">
+                        <h3>Priemerné ročné zhodnotenie</h3>
+                        <span className="ist-head-note">{dateShort(r.startDay)} – {dateShort(r.endDay)}, {returnsLabel}</span>
+                      </div>
                       <HBars
                         rows={[
                           { label: "Tvoja stratégia", value: r.strategy.twr, cls: "ist-bar--accent" },
@@ -631,7 +669,7 @@ const InvesticnaStrategiaCalculator = () => {
                   ) : null}
 
                   {tab === "trhy" ? (
-                    <div role="tabpanel" id="ist-panel-trhy" aria-labelledby="ist-tab-trhy" className="ist-panel">
+                    <div role="tabpanel" id="ist-panel-trhy" aria-labelledby="ist-tab-trhy" className="ist-panel ist-panel--trhy">
                       <div className="ist-chart-head">
                         <h3>Vývoj finančných trhov</h3>
                         <div className="ist-legend">
@@ -641,8 +679,8 @@ const InvesticnaStrategiaCalculator = () => {
                           <span className="ist-legend-item"><i className="ist-legend-line ist-legend-red" />Inflácia</span>
                         </div>
                       </div>
-                      <p className="ist-lede">Na čo by narástol 1 {cur} vložený na začiatku obdobia do každej zložky, bez poplatkov. Mierka je logaritmická, každé zdvojnásobenie má rovnakú výšku.</p>
                       <MarketChart ds={ds} r={r} />
+                      <span className="ist-hintline">Na čo by narástol 1 {cur} vložený na začiatku do každej zložky, bez poplatkov. Mierka je logaritmická, každé zdvojnásobenie má rovnakú výšku.</span>
                     </div>
                   ) : null}
 
@@ -658,6 +696,7 @@ const InvesticnaStrategiaCalculator = () => {
                       <div className="ist-legend ist-legend--static">
                         <span className="ist-legend-item"><i className="ist-legend-box ist-legend-accent" />Nominálne</span>
                         <span className="ist-legend-item"><i className="ist-legend-box ist-legend-forest" />Reálne (po inflácii)</span>
+                        <span className="ist-legend-item"><i className="ist-legend-box ist-legend-redbox" />Strata</span>
                       </div>
                       <ProfitBars r={r} mode={profitMode} />
                       {r.bestYear && r.worstYear && r.yearly.length > 1 ? (
@@ -674,12 +713,12 @@ const InvesticnaStrategiaCalculator = () => {
                       <div className="ist-chart-head">
                         <h3>Prepady pod predchádzajúce maximum</h3>
                         <div className="ist-legend">
-                          <span className="ist-legend-item"><i className="ist-legend-line ist-legend-accent" />Tvoja stratégia</span>
+                          <span className="ist-legend-item"><i className="ist-legend-line ist-legend-red" />Tvoja stratégia</span>
                           {A.alloc[0] < 100 || A.brake !== "none" ? <span className="ist-legend-item"><i className="ist-legend-line ist-legend-dash" />Len akcie</span> : null}
                         </div>
                       </div>
-                      <p className="ist-lede">O koľko bola stratégia v daný deň pod svojím dovtedajším maximom. Nové vklady do toho nerátam, ide o samotnú stratégiu.</p>
                       <DrawdownChart ds={ds} r={r} withStocks={A.alloc[0] < 100 || A.brake !== "none"} />
+                      <span className="ist-hintline">O koľko bola stratégia v daný deň pod svojím dovtedajším maximom. Nové vklady do toho nerátam, ide o samotnú stratégiu.</span>
                       {low && low.depth < 0 ? (
                         <p className="ist-summary">
                           Najhlbšie bola stratégia <strong>{pct(low.depth)}</strong> pod maximom, dňa {dateLong(dayAt(low.trough))}. Pokles z vrcholu trval {span(dayAt(low.peak), dayAt(low.trough))}
@@ -704,7 +743,7 @@ const InvesticnaStrategiaCalculator = () => {
                                     <i className="ist-bar ist-bar--ink" style={{ "--w": `${Math.max(0, (c.stocks / worst) * 100)}%` } as CSSProperties} />
                                     <b>{signedPct(c.stocks)}</b>
                                     <span>Tvoja stratégia</span>
-                                    <i className="ist-bar ist-bar--accent" style={{ "--w": `${Math.max(0, (c.strategy / worst) * 100)}%` } as CSSProperties} />
+                                    <i className="ist-bar ist-bar--red" style={{ "--w": `${Math.max(0, (c.strategy / worst) * 100)}%` } as CSSProperties} />
                                     <b>{signedPct(c.strategy)}</b>
                                   </div>
                                 </li>
@@ -770,6 +809,7 @@ const InvesticnaStrategiaCalculator = () => {
           </p>
         </div>
       </div>
+      </div>
     </div>
   );
 };
@@ -783,9 +823,9 @@ const HBars = ({ rows }: { rows: { label: string; value: number; cls: string }[]
         <div key={r.label} className="ist-hbar">
           <span className="ist-hbar-label">{r.label}</span>
           <span className="ist-hbar-track">
-            <i className={`ist-bar ${r.cls}${r.value < 0 ? " is-negative" : ""}`} style={{ "--w": `${(Math.abs(r.value) / max) * 100}%` } as CSSProperties} />
+            <i className={`ist-bar ${r.value < 0 ? "ist-bar--red" : r.cls}${r.value < 0 ? " is-negative" : ""}`} style={{ "--w": `${(Math.abs(r.value) / max) * 100}%` } as CSSProperties} />
           </span>
-          <b className="ist-hbar-value">{pct(r.value, 2)}</b>
+          <b className={`ist-hbar-value${r.value < 0 ? " is-loss" : ""}`}>{pct(r.value, 2)}</b>
         </div>
       ))}
     </div>

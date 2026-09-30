@@ -8,9 +8,14 @@
 #ist-root { position: relative; isolation: isolate; font-family: var(--font-sans); color: var(--wm-brown-text); width: 100%; --ist-ink: #292420; --ist-muted: #6b625a; --ist-hair: rgba(41, 36, 32, 0.1); --ist-hair-2: rgba(41, 36, 32, 0.18); --ist-accent: #2a6647; --ist-forest: #0b3d2e; --ist-ivory: #fffcf7; --ist-taupe: #a99d7e; --ist-beige: #e3d5bd; --ist-stone: #e9e4dc; --ist-red: #ab4132; }
 
 /* ------------------------------ Layout ------------------------------ */
+/* nástroj beží na celú šírku stránky (fullBleed), aby mal graf miesto; plátno je širšie než bežný obsah */
+#ist-root .ist-wrap { max-width: 92rem; margin: 0 auto; padding: 0 1rem 3rem; }
+@media (min-width: 640px) { #ist-root .ist-wrap { padding: 0 1.5rem 4rem; } }
+#ist-root .calc-page { max-width: none; }
+#ist-root .calc-header { margin-bottom: 1.75rem; }
 #ist-root .ist-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem; align-items: start; }
 @media (min-width: 1024px) {
-  #ist-root .ist-layout { grid-template-columns: minmax(19rem, 22rem) minmax(0, 1fr); gap: 1.5rem; }
+  #ist-root .ist-layout { grid-template-columns: minmax(19rem, 21.5rem) minmax(0, 1fr); gap: 1.5rem; }
   #ist-root .ist-form { position: sticky; top: 5.5rem; max-height: calc(100vh - 6.5rem); overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; }
 }
 #ist-root .ist-form, #ist-root .ist-result { min-width: 0; border: 1px solid var(--ist-hair); border-radius: 1.5rem; background: var(--ist-ivory); }
@@ -124,35 +129,69 @@
 #ist-root .ist-spinner { width: 1.75rem; height: 1.75rem; border: 2px solid var(--ist-stone); border-top-color: var(--ist-accent); border-radius: 999px; animation: ist-spin 0.8s linear infinite; }
 @keyframes ist-spin { to { transform: rotate(360deg); } }
 
-/* dlaždice: výsledná čiastka ako tmavá dlaždica cez celú šírku, pod ňou štyri menšie */
-#ist-root .ist-kpis { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.625rem; margin: 0; padding: 0; }
-#ist-root .ist-kpis > div { display: flex; flex-direction: column; gap: 0.125rem; min-width: 0; padding: 0.875rem 1rem; border-radius: 1rem; background: var(--wm-cream); }
-#ist-root .ist-kpis dt { margin: 0; font-size: 0.75rem; font-weight: 500; color: var(--ist-muted); }
-#ist-root .ist-kpis dd { margin: 0; font-family: var(--font-serif); font-size: 1.375rem; line-height: 1.1; font-weight: 700; color: var(--ist-ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
-#ist-root .ist-kpis small { font-size: 0.6875rem; line-height: 1.35; color: var(--ist-muted); }
-#ist-root .ist-kpis > div.is-main { grid-column: 1 / -1; order: -1; flex-direction: row; flex-wrap: wrap; align-items: baseline; column-gap: 0.875rem; padding: 1.125rem 1.25rem; background: var(--ist-ink); }
-#ist-root .ist-kpis > div.is-main dt { flex-basis: 100%; color: rgba(243, 233, 221, 0.78); }
-#ist-root .ist-kpis > div.is-main small { color: rgba(243, 233, 221, 0.78); font-size: 0.8125rem; }
-#ist-root .ist-kpis > div.is-main dd { color: #f3e9dd; font-size: clamp(2rem, 5vw, 2.75rem); line-height: 1; }
-/* dlhé sumy sa zmenšia tak, aby sa zmestili (--n = počet znakov) */
-#ist-root .ist-kpis { container-type: inline-size; }
-@supports (width: 1cqi) { #ist-root .ist-kpis > div.is-main dd { font-size: min(clamp(2rem, 5vw, 2.75rem), calc((100cqi - 3rem) / (var(--n, 9) * 0.58))); } }
-@media (max-width: 479px) {
-  #ist-root .ist-kpis > div { padding: 0.75rem 0.75rem; }
-  #ist-root .ist-kpis dd { font-size: clamp(1rem, 5.4vw, 1.375rem); }
+/* scenár: na prvý pohľad vidno nastavenie, klik otvorí príslušnú časť */
+#ist-root .ist-chips { display: flex; flex-wrap: wrap; gap: 0.375rem; margin-bottom: 0.875rem; }
+#ist-root .ist-chip { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.3125rem 0.75rem; border: 1px solid var(--ist-hair-2); border-radius: 9999px; background: transparent; font-family: var(--font-sans); font-size: 0.8125rem; font-weight: 500; color: var(--fg2); cursor: pointer; transition: background 0.2s, border-color 0.2s, color 0.2s; }
+#ist-root .ist-chip::before { content: ""; width: 0.4375rem; height: 0.4375rem; border-radius: 9999px; background: var(--ist-accent); }
+#ist-root .ist-chip:hover { background: var(--wm-cream); border-color: rgba(41, 36, 32, 0.34); color: var(--ist-ink); }
+#ist-root .ist-chip:focus-visible { outline: 2px solid var(--ist-accent); outline-offset: 2px; }
+/* na mobile jeden posuvný riadok od kraja po kraj, nie šesť riadkov pod sebou */
+@media (max-width: 639px) {
+  #ist-root .ist-chips { flex-wrap: nowrap; overflow-x: auto; margin: 0 -1rem 0.875rem; padding: 0.125rem 1rem; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  #ist-root .ist-chips::-webkit-scrollbar { display: none; }
+  #ist-root .ist-chip { flex: 0 0 auto; white-space: nowrap; }
 }
-@media (min-width: 640px) {
-  #ist-root .ist-kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  #ist-root .ist-kpis dd { font-size: clamp(1.125rem, 1.45vw, 1.375rem); }
+
+/* pás s výsledkom: hnedý gradient ako pásy na /komunita, výsledná čiastka a štyri čísla;
+   veľkosť písma sa riadi šírkou vlastného stĺpca (cqi), aby sa čísla nikdy nezalomili ani nepretŕčali */
+#ist-root .ist-band { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem 2rem; margin: 0; padding: 1.375rem 1.5rem 1.5rem; border-radius: 1.25rem; background-color: #2f2823; background-image: radial-gradient(120% 90% at 50% 0%, #4a3c31 0%, #322b26 48%, #241f1b 100%); color: #f3e9dd; }
+#ist-root .ist-band dt { margin: 0; font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(243, 233, 221, 0.66); }
+#ist-root .ist-band dd { margin: 0.25rem 0 0; font-family: var(--font-serif); font-weight: 700; line-height: 1; color: #f3e9dd; font-variant-numeric: tabular-nums; white-space: nowrap; }
+#ist-root .ist-band small { display: block; margin-top: 0.375rem; font-size: 0.75rem; line-height: 1.4; color: rgba(243, 233, 221, 0.66); }
+#ist-root .ist-band-main { min-width: 0; container-type: inline-size; }
+#ist-root .ist-band-main dd { font-size: clamp(2.5rem, 6vw, 3.5rem); }
+#ist-root .ist-band-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem 1.25rem; }
+#ist-root .ist-band-stats > div { min-width: 0; padding-left: 0.875rem; border-left: 1px solid rgba(243, 233, 221, 0.18); container-type: inline-size; }
+#ist-root .ist-band-stats dd { font-size: clamp(1.125rem, 1.6vw, 1.5rem); }
+@supports (width: 1cqi) {
+  #ist-root .ist-band-main dd { font-size: min(clamp(2.5rem, 6vw, 3.5rem), calc(100cqi / (var(--n, 9) * 0.6))); }
+  #ist-root .ist-band-stats dd { font-size: min(clamp(1rem, 22cqi, 1.375rem), calc(100cqi / (var(--n, 8) * 0.65))); }
 }
-#ist-root .is-accent { color: var(--ist-accent) !important; }
+#ist-root .ist-band .is-gain { color: #d9b15c; }
+#ist-root .ist-band .is-loss { color: #e9a27e; }
+@media (min-width: 768px) {
+  #ist-root .ist-band { padding: 1.5rem 1.75rem; }
+  #ist-root .ist-band-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (min-width: 1024px) and (max-width: 1439px) {
+  #ist-root .ist-band-stats { gap: 0.75rem; }
+  #ist-root .ist-band-stats > div { padding-left: 0.625rem; }
+}
+@media (min-width: 1440px) {
+  #ist-root .ist-band { grid-template-columns: minmax(0, 1.1fr) minmax(0, 2.1fr); gap: 1.25rem; align-items: center; }
+}
+/* mobil: menej vnorených okrajov, aby čísla v páse mali miesto (popisy sa nelámu) */
+@media (max-width: 639px) {
+  #ist-root .calc-body-shell { padding-left: 0.75rem; padding-right: 0.75rem; }
+  #ist-root .ist-form { padding: 1rem 1rem 0.75rem; }
+  #ist-root .ist-result { padding: 1.125rem 1rem 1rem; }
+  #ist-root .ist-band { padding: 1.125rem 1.125rem 1.25rem; border-radius: 1rem; }
+  #ist-root .ist-band dt { letter-spacing: 0.06em; }
+  #ist-root .ist-band-stats { gap: 0.875rem; }
+  #ist-root .ist-band-stats > div { padding-left: 0.75rem; }
+}
+#ist-root .is-loss { color: var(--ist-red); }
 #ist-root .ist-empty { margin: 0.75rem 0 0; font-size: 0.9375rem; color: var(--ist-muted); }
 
 /* záložky výsledku */
-#ist-root .ist-tabs { margin: 1.25rem 0 1rem; padding-top: 1.125rem; border-top: 1px solid var(--ist-hair); }
-#ist-root .ist-tabs .calc-pill { padding: 0.4375rem 0.875rem; }
-#ist-root .ist-chart-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.5rem 1rem; margin-bottom: 0.5rem; }
-#ist-root .ist-chart-head h3 { margin: 0; font-family: var(--font-serif); font-size: 1.125rem; font-weight: 700; color: var(--ist-ink); }
+#ist-root .ist-tabs { margin: 1.25rem 0 1rem; }
+#ist-root .ist-tabs .calc-pill { padding: 0.5rem 1rem; font-size: 0.875rem; }
+#ist-root .ist-chart-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.5rem 1rem; margin-bottom: 0.75rem; }
+#ist-root .ist-chart-head h3 { margin: 0; font-family: var(--font-serif); font-size: 1.25rem; font-weight: 700; color: var(--ist-ink); }
+#ist-root .ist-head-note { font-size: 0.8125rem; color: var(--ist-muted); }
+#ist-root .ist-under { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.375rem 1rem; margin-top: 0.5rem; }
+#ist-root .ist-hintline { display: block; margin-top: 0.5rem; font-size: 0.75rem; line-height: 1.45; color: var(--ist-muted); text-wrap: pretty; }
+#ist-root .ist-under .ist-hintline { margin-top: 0; }
 #ist-root .ist-h4 { margin: 1.5rem 0 0.5rem; font-family: var(--font-serif); font-size: 1.0625rem; font-weight: 700; color: var(--ist-ink); }
 #ist-root .ist-lede { margin: 0 0 0.875rem; max-width: 40rem; font-size: 0.9375rem; line-height: 1.5; color: var(--ist-muted); text-wrap: pretty; }
 #ist-root .ist-summary { margin: 0.875rem 0 0; max-width: 44rem; font-size: 0.9375rem; line-height: 1.55; color: var(--fg2); text-wrap: pretty; }
@@ -165,10 +204,13 @@
 #ist-root .ist-legend-accent { background: var(--ist-accent); }
 #ist-root .ist-legend-forest { background: var(--ist-forest); }
 #ist-root .ist-legend-soft { background: rgba(42, 102, 71, 0.5); }
+#ist-root .ist-legend-softred { background: rgba(171, 65, 50, 0.8); }
 #ist-root .ist-legend-ink { background: var(--ist-ink); }
 #ist-root .ist-legend-taupe { background: var(--ist-taupe); }
 #ist-root .ist-legend-beige { background: #c8b48c; }
-#ist-root .ist-legend-red { height: 0; border-top: 2px dashed var(--ist-red); border-radius: 0; }
+#ist-root .ist-legend-red { background: var(--ist-red); }
+#ist-root .ist-legend-redbox { background: var(--ist-red); }
+#ist-root .ist-panel--trhy .ist-legend-red { height: 0; border-top: 2px dashed var(--ist-red); border-radius: 0; background: none; }
 #ist-root .ist-legend-dash { height: 0; border-top: 2px dashed rgba(41, 36, 32, 0.75); border-radius: 0; }
 #ist-root .ist-legend-paid { height: 0.5rem; border-radius: 2px; background: rgba(41, 36, 32, 0.08); border-top: 1px solid rgba(41, 36, 32, 0.42); }
 
@@ -187,15 +229,16 @@
 #ist-root .ist-tip-row { display: flex; align-items: center; gap: 0.375rem; white-space: nowrap; }
 #ist-root .ist-tip-row i { display: inline-block; width: 0.5rem; height: 0.5rem; border-radius: 999px; flex-shrink: 0; outline: 1px solid rgba(243, 233, 221, 0.5); }
 #ist-root .ist-tip-row b { margin-left: auto; padding-left: 0.75rem; font-weight: 600; }
+#ist-root .ist-tip-row.is-loss b { color: #e9a27e; }
 #ist-root .ist-tip-mix { margin-top: 0.25rem; padding-top: 0.25rem; border-top: 1px solid rgba(243, 233, 221, 0.18); font-size: 0.75rem; color: rgba(243, 233, 221, 0.78); }
 
 /* vodorovné pruhy zhodnotenia */
-#ist-root .ist-hbars { display: grid; gap: 0.625rem; margin-top: 0.25rem; }
-#ist-root .ist-hbar { display: grid; grid-template-columns: minmax(6.5rem, 9rem) minmax(0, 1fr) 4.75rem; align-items: center; gap: 0.75rem; font-size: 0.875rem; color: var(--ist-muted); }
+#ist-root .ist-hbars { display: grid; gap: 0.875rem; margin-top: 0.5rem; }
+#ist-root .ist-hbar { display: grid; grid-template-columns: minmax(7rem, 10rem) minmax(0, 1fr) 5.25rem; align-items: center; gap: 0.875rem; font-size: 0.9375rem; color: var(--ist-muted); }
 #ist-root .ist-hbar-label { color: var(--ist-ink); font-weight: 500; }
 #ist-root .ist-hbar-track { display: block; }
-#ist-root .ist-hbar-value { font-family: var(--font-serif); font-size: 1.0625rem; font-weight: 700; color: var(--ist-ink); text-align: right; white-space: nowrap; }
-#ist-root .ist-bar { position: relative; display: block; height: 0.875rem; border-radius: 999px; background: var(--ist-stone); overflow: hidden; }
+#ist-root .ist-hbar-value { font-family: var(--font-serif); font-size: 1.25rem; font-weight: 700; color: var(--ist-ink); text-align: right; white-space: nowrap; }
+#ist-root .ist-bar { position: relative; display: block; height: 1rem; border-radius: 999px; background: var(--ist-stone); overflow: hidden; }
 #ist-root .ist-bar::after { content: ""; position: absolute; inset: 0 auto 0 0; width: var(--w, 0%); border-radius: 999px; transition: width 0.45s var(--ease-out); }
 #ist-root .ist-bar.is-negative::after { left: auto; right: 0; }
 #ist-root .ist-bar--ink::after { background: var(--ist-ink); }
@@ -216,6 +259,7 @@
 #ist-root .ist-crisis-head span { font-size: 0.8125rem; color: var(--ist-muted); }
 #ist-root .ist-crisis-bars { display: grid; grid-template-columns: minmax(6.5rem, auto) minmax(0, 1fr) 4.25rem; align-items: center; gap: 0.375rem 0.75rem; font-size: 0.8125rem; color: var(--ist-muted); }
 #ist-root .ist-crisis-bars .ist-bar { height: 0.625rem; }
+#ist-root .ist-crisis-bars b.is-loss { color: var(--ist-red); }
 #ist-root .ist-crisis-bars b { font-weight: 600; color: var(--ist-ink); text-align: right; white-space: nowrap; }
 @media (max-width: 479px) {
   #ist-root .ist-crisis-bars { grid-template-columns: minmax(0, 1fr) 4.25rem; }

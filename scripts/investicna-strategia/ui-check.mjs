@@ -39,7 +39,7 @@ const open = async (width, height = 1000, url = URL_TOOL, keep = false) => {
   page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
   if (!keep) await page.evaluateOnNewDocument(() => { try { if (!sessionStorage.getItem("ist-test-keep")) localStorage.removeItem("jsm_investicna_strategia_v2"); } catch { /* nič */ } });
   await page.goto(url, { waitUntil: "networkidle2", timeout: 90000 });
-  await page.waitForSelector("#ist-root .ist-kpis", { timeout: 30000 });
+  await page.waitForSelector("#ist-root .ist-band", { timeout: 30000 });
   await sleep(400);
   return page;
 };
@@ -70,7 +70,7 @@ const step = async (page, id, dir, times = 1) => {
   await settle();
 };
 const kpi = async (page, label) => page.evaluate((label) => {
-  const box = [...document.querySelectorAll("#ist-root .ist-kpis > div")].find((d) => d.querySelector("dt")?.textContent.trim().startsWith(label));
+  const box = [...document.querySelectorAll("#ist-root .ist-band dt")].find((d) => d.textContent.trim().startsWith(label))?.parentElement;
   return box ? { value: box.querySelector("dd").textContent.replace(/ /g, " ").trim(), sub: box.querySelector("small").textContent.replace(/ /g, " ").replace(/\s+/g, " ").trim() } : null;
 }, label);
 const pressed = (page, scope) => page.$$eval(`${scope} [aria-pressed="true"], ${scope} [aria-selected="true"]`, (els) => els.map((e) => e.textContent.trim()));
@@ -93,7 +93,9 @@ console.log("1. Predvolený stav");
 let page = await open(1440);
 await expectScenario(page, "s1_default", "predvolené (5 000 + 150 mesačne, 20 rokov, 60/20/20)");
 ok((await kpi(page, "Celkový zisk"))?.value === norm(money(E.s1_default.final - E.s1_default.deposits)), "celkový zisk = čiastka mínus vklady");
-ok((await kpi(page, "Výsledná"))?.sub === "k 31. 8. 2026 · 20 rokov", "pod čiastkou je dátum a dĺžka", JSON.stringify(await kpi(page, "Výsledná")));
+ok((await kpi(page, "Výsledná"))?.sub === "k 31. 8. 2026", "pod čiastkou je dátum", JSON.stringify(await kpi(page, "Výsledná")));
+ok(JSON.stringify(await all(page, "#ist-root .ist-chips .ist-chip")) === JSON.stringify(["Svet v eurách", "20 rokov · 2006–2026", "5 000 € + 150 € mesačne", "Vyvážená 60 / 20 / 20", "Brzda: bez brzdy", "Nominálne výnosy"]), "riadok so scenárom zhŕňa nastavenie", JSON.stringify(await all(page, "#ist-root .ist-chips .ist-chip")));
+ok(JSON.stringify(await all(page, "#ist-root #ist-panel-vyvoj .ist-legend-item")) === JSON.stringify(["Vložené celkom", "Zisk", "Strata", "Hodnota"]), "legenda grafu má aj stratu (2008 bola pod vkladmi)", JSON.stringify(await all(page, "#ist-root #ist-panel-vyvoj .ist-legend-item")));
 ok(JSON.stringify(await pressed(page, "#ist-root .ist-form-tabs")) === JSON.stringify(["Parametre"]), "otvorená záložka Parametre");
 ok((await stepperValue(page, "ist-initial")) === "5000" && (await stepperValue(page, "ist-monthly")) === "150" && (await stepperValue(page, "ist-years")) === "20", "steppery ukazujú 5 000, 150 a 20");
 ok((await page.$eval("#ist-start", (e) => e.value)) === "2006-08-31" && (await page.$eval("#ist-end", (e) => e.value)) === "2026-08-31", "dátumy od a do sú posledných 20 rokov");
@@ -153,7 +155,7 @@ await expectScenario(page, "s1_default", "stepper rokov vráti posledných 20 ro
 /* typ výnosov */
 await clickText(page, "#ist-root .ist-fpanel", "Reálne");
 await expectScenario(page, "s6_real", "reálne výnosy");
-ok((await kpi(page, "Výsledná"))?.sub.endsWith("· reálne") && (await kpi(page, "Výnos p. a."))?.sub.startsWith("reálne"), "dlaždice hlásia reálne výnosy");
+ok((await kpi(page, "Výsledná"))?.sub.endsWith("· reálne, v dnešných cenách") && (await kpi(page, "Výnos p. a."))?.sub.startsWith("reálne") && (await all(page, "#ist-root .ist-chips .ist-chip")).includes("Reálne výnosy"), "pás aj čipy hlásia reálne výnosy", JSON.stringify(await kpi(page, "Výsledná")));
 await clickText(page, "#ist-root .ist-fpanel", "Nominálne");
 /* ďalšie nastavenia */
 await clickText(page, "#ist-root .ist-fpanel", "Ďalšie nastavenia");
@@ -266,7 +268,7 @@ await page.keyboard.press("Escape");
 await sleep(150);
 ok((await page.$(`${chart} .ist-tip`)) === null, "Esc zruší pripnutý deň");
 const paths0 = await page.$$eval(`${chart} svg path`, (p) => p.length);
-ok(paths0 === 8, "vývoj: vklady (plocha + čiara), hodnota (plocha + čiara), zisk, 3 vrstvy zloženia", String(paths0));
+ok(paths0 === 9, "vývoj: vklady (plocha + čiara), hodnota (plocha + čiara), zisk nad nulou + strata pod nulou, 3 vrstvy zloženia", String(paths0));
 /* zhodnotenie */
 await page.click("#ist-tab-zhodnotenie");
 await settle();
@@ -343,14 +345,14 @@ page = await open(1440, 1000, copied);
 ok((await kpi(page, "Výsledná"))?.value === finalShared && (await stepperValue(page, "ist-monthly")) === "450", "odkaz otvorí ten istý scenár", (await kpi(page, "Výsledná"))?.value);
 await page.evaluate(() => sessionStorage.setItem("ist-test-keep", "1"));
 await page.goto(URL_TOOL, { waitUntil: "networkidle2" });
-await page.waitForSelector("#ist-root .ist-kpis");
+await page.waitForSelector("#ist-root .ist-band");
 await sleep(400);
 ok((await kpi(page, "Výsledná"))?.value === finalShared, "po návrate bez odkazu ostáva uložené nastavenie");
 await clickText(page, "#ist-root .ist-form-foot", "Začať odznova");
 await expectScenario(page, "s1_default", "„Začať odznova“ vráti predvolený stav");
 await page.evaluate(() => localStorage.setItem("jsm_investicna_strategia_v2", "{nezmysel"));
 await page.reload({ waitUntil: "networkidle2" });
-await page.waitForSelector("#ist-root .ist-kpis");
+await page.waitForSelector("#ist-root .ist-band");
 await sleep(400);
 ok((await kpi(page, "Výsledná"))?.value === norm(money(E.s1_default.final)), "poškodené uložené nastavenie nástroj nezhodí");
 await page.close();
@@ -368,7 +370,7 @@ await page.close();
   ok(state.includes("Historické dáta sa nepodarilo načítať") && state.includes("Skúsiť znova") && (await p.$("#ist-root .ist-form")) !== null, "výpadok dát: hláška, formulár ostáva", state);
   block = false;
   await Promise.all([p.waitForNavigation({ waitUntil: "networkidle2" }), clickText(p, "#ist-root .ist-state", "Skúsiť znova")]);
-  await p.waitForSelector("#ist-root .ist-kpis", { timeout: 20000 });
+  await p.waitForSelector("#ist-root .ist-band", { timeout: 20000 });
   ok(true, "výpadok dát: „Skúsiť znova“ nástroj načíta");
   await p.close();
 }
@@ -384,20 +386,21 @@ for (const w of [320, 360, 393, 430, 600, 768, 1024, 1280, 1440, 1920]) {
     const root = document.getElementById("ist-root");
     const over = document.documentElement.scrollWidth - window.innerWidth;
     const rr = root.getBoundingClientRect();
-    const wide = [...root.querySelectorAll("*")].filter((e) => { if (e.closest("svg")) return false; const r = e.getBoundingClientRect(); return r.width > 0 && (r.right > rr.right + 0.5 || r.left < rr.left - 0.5); }).map((e) => e.className || e.tagName).slice(0, 5);
+    const wide = [...root.querySelectorAll("*")].filter((e) => { if (e.closest("svg") || e.closest(".ist-chips")) return false; /* čipy sú na mobile posuvný riadok */ const r = e.getBoundingClientRect(); return r.width > 0 && (r.right > rr.right + 0.5 || r.left < rr.left - 0.5); }).map((e) => e.className || e.tagName).slice(0, 5);
     const svgs = [...root.querySelectorAll(".ist-chart-host")].map((h) => ({ host: Math.round(h.getBoundingClientRect().width), svg: Math.round(h.querySelector("svg")?.getBoundingClientRect().width ?? 0) }));
-    const kpis = [...root.querySelectorAll(".ist-kpis dd")].every((d) => d.scrollWidth <= d.clientWidth + 1);
+    const kpis = [...root.querySelectorAll(".ist-band dd")].every((d) => d.scrollWidth <= d.clientWidth + 1);
+    const chips = root.querySelector(".ist-chips"); const chipsOk = chips && (innerWidth >= 640 ? chips.scrollWidth <= chips.clientWidth + 1 : getComputedStyle(chips).overflowX === "auto");
     const steps = [...root.querySelectorAll(".ist-brake-row .ist-step input")].slice(0, 3).map((i) => i.getBoundingClientRect().width);
-    return { over, wide, svgs, kpis, steps };
+    return { over, wide, svgs, kpis, chipsOk, steps };
   });
   ok(m.over <= 0 && m.wide.length === 0, `${w} px: nič nepretŕča`, JSON.stringify([m.over, m.wide]));
-  ok(m.svgs.every((s) => s.svg === s.host && s.svg > 200) && m.kpis, `${w} px: graf vyplní šírku, dlaždice sa zmestia`, JSON.stringify(m));
+  ok(m.svgs.every((s) => s.svg === s.host && s.svg > 200) && m.kpis && m.chipsOk, `${w} px: graf vyplní šírku, čísla v páse sa zmestia, čipy nepretŕčajú`, JSON.stringify(m));
   ok(m.steps.every((x) => x >= 24), `${w} px: steppery brzdy majú miesto na číslo`, JSON.stringify(m.steps));
   await p.close();
 }
 {
   const p = await open(320, 900, `${URL_TOOL}?s=usd&y=64&v=5000000&m=50000&a=100-0-0`);
-  const m = await p.evaluate(() => { const d = document.querySelector("#ist-root .ist-kpis .is-main dd"); const r = document.querySelector("#ist-root .ist-result").getBoundingClientRect(); const b = d.getBoundingClientRect(); return { over: document.documentElement.scrollWidth - innerWidth, fits: b.right <= r.right, text: d.textContent }; });
+  const m = await p.evaluate(() => { const d = document.querySelector("#ist-root .ist-band-main dd"); const r = document.querySelector("#ist-root .ist-result").getBoundingClientRect(); const b = d.getBoundingClientRect(); return { over: document.documentElement.scrollWidth - innerWidth, fits: b.right <= r.right, text: d.textContent }; });
   ok(m.over <= 0 && m.fits, `320 px s najväčšími sumami (${norm(m.text)}): nič nepretŕča`, JSON.stringify(m));
   await p.close();
 }

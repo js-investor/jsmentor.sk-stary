@@ -48,6 +48,7 @@ const ALL_CALCULATORS: KalkulackaCalculatorMeta[] = [
     description:
       "Pomer akcií, dlhopisov a peňažného fondu na skutočných denných dátach od roku 1962. Vyber deň začiatku aj konca a meň stratégiu v čase.",
     Icon: History,
+    fullBleed: true,
   },
   {
     slug: "mzdova-kalkulacka",

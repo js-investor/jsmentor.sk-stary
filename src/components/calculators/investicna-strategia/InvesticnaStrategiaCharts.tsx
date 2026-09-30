@@ -15,6 +15,7 @@ export const INK = "#292420";
 export const TAUPE = "#a99d7e";
 export const BEIGE = "#e3d5bd";
 export const RED = "#ab4132";
+export const RED_DARK = "#7a2e22";
 const IVORY = "#fffcf7";
 const STONE_LINE = "rgba(41,36,32,0.42)";
 
@@ -86,6 +87,9 @@ const Tip = ({ x, width, top, children }: { x: number; width: number; top: numbe
 
 const pointerX = (e: PointerEvent<HTMLDivElement>, host: HTMLDivElement | null): number => (host ? e.clientX - host.getBoundingClientRect().left : 0);
 
+/** výška kresliacej plochy podľa šírky kontajnera: veľký graf na počítači, kompaktný na mobile */
+const plotHeight = (W: number, kind: "main" | "side"): number => (W >= 900 ? (kind === "main" ? 400 : 320) : W >= 560 ? (kind === "main" ? 320 : 260) : kind === "main" ? 240 : 200);
+
 /** geometria časovej osi grafu pre obdobie výsledku (čistá funkcia, používa sa vnútri useMemo) */
 const timeAxis = (ds: Dataset, r: Result, W: number, small: boolean) => {
   const PL = small ? 46 : 64;
@@ -120,30 +124,39 @@ export const ValueChart = ({ ds, r, pinned, onPin }: ValueChartProps) => {
   const G = useMemo(() => {
     if (!W) return null;
     const T = timeAxis(ds, r, W, small);
-    const PT = 14;
-    const plotH = small ? 230 : 320;
+    const PT = 18;
+    const plotH = plotHeight(W, "main");
     const PB = PT + plotH;
     const ST = PB + 16;
-    const SH = small ? 30 : 36;
+    const SH = small ? 30 : 40;
     const SB = ST + SH;
     const H = SB + 30;
     const n = r.n;
     let top = 0;
     for (let j = 0; j < n; j++) if (S.value[j] > top) top = S.value[j];
     if (!(top > 0)) top = 1;
-    const step = niceStep(top / (small ? 3.4 : 4.6));
+    /* na mobile o niečo redšie popisy osi, ale bez zbytočného prázdneho miesta nad čiarou */
+    const step = niceStep(top / (small ? 4.5 : 5));
     const max = Math.ceil((top * 1.02) / step) * step;
-    const y = (v: number) => PB - (v / max) * plotH;
-    const grid: number[] = [];
-    for (let v = 0; v <= max + step / 2; v += step) grid.push(v);
-    const buckets = Math.max(120, Math.min(420, Math.round((T.PR - T.PL) / 2)));
+    const buckets = Math.max(120, Math.min(480, Math.round((T.PR - T.PL) / 2)));
     const profit = new Float64Array(n);
-    for (let j = 0; j < n; j++) profit[j] = S.value[j] - S.paid[j];
+    let lowProfit = 0;
+    for (let j = 0; j < n; j++) {
+      profit[j] = S.value[j] - S.paid[j];
+      if (profit[j] < lowProfit) lowProfit = profit[j];
+    }
+    /* strata pod nulou: os siaha kúsok do mínusu (jemnejší krok), aby bola červená časť čiary zisku vidieť */
+    const sub = step / 5;
+    const bottomV = lowProfit < 0 ? -Math.ceil(-lowProfit / sub) * sub : 0;
+    const y = (v: number) => PB - ((v - bottomV) / (max - bottomV)) * plotH;
     const path = (s: Float64Array) =>
       sampleIndexes(s, buckets)
         .map((j, k) => `${k ? "L" : "M"}${T.x(j).toFixed(1)} ${y(s[j]).toFixed(1)}`)
         .join("");
-    const area = (s: Float64Array) => `${path(s)}L${T.x(n - 1).toFixed(1)} ${PB}L${T.x(0).toFixed(1)} ${PB}Z`;
+    const area = (s: Float64Array) => `${path(s)}L${T.x(n - 1).toFixed(1)} ${y(0).toFixed(1)}L${T.x(0).toFixed(1)} ${y(0).toFixed(1)}Z`;
+    const grid: number[] = [];
+    for (let v = 0; v <= max + step / 2; v += step) grid.push(v);
+    if (bottomV < 0) grid.unshift(bottomV);
     /* zloženie portfólia: tri vrstvy nad sebou */
     const pick = uniform(n, Math.max(60, Math.min(360, Math.round((T.PR - T.PL) / 2))));
     const sy = (share: number) => SB - share * SH;
@@ -154,7 +167,7 @@ export const ValueChart = ({ ds, r, pinned, onPin }: ValueChartProps) => {
     const eBond = edge((j) => Math.min(1, r.shareStock[j] + r.shareBond[j]));
     const one = edge(() => 1);
     return {
-      ...T, PT, PB, ST, SH, SB, H, y, grid, profit,
+      ...T, PT, PB, ST, SH, SB, H, y, grid, profit, zeroY: y(0), lowProfit,
       value: path(S.value),
       valueArea: area(S.value),
       paid: path(S.paid),
@@ -204,28 +217,33 @@ export const ValueChart = ({ ds, r, pinned, onPin }: ValueChartProps) => {
         if (e.pointerType === "mouse") onPin(pinned !== null && Math.abs(G.x(pinned) - G.x(at)) < 4 ? null : at);
         else onPin(at);
       }}
-      style={{ minHeight: small || !W ? 336 : 432 }}
+      style={{ minHeight: !W ? 340 : plotHeight(W, "main") + (W < 560 ? 94 : 104) }}
     >
       {G ? (
         <svg width={W} height={G.H} viewBox={`0 0 ${W} ${G.H}`} className="ist-chart" aria-hidden>
           <defs>
             <linearGradient id="ist-gVal" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stopColor={GREEN} stopOpacity="0.16" />
+              <stop offset="0" stopColor={GREEN} stopOpacity="0.18" />
               <stop offset="1" stopColor={GREEN} stopOpacity="0" />
             </linearGradient>
+            <clipPath id="ist-clip-up"><rect x={G.PL} y={G.PT - 6} width={G.PR - G.PL} height={Math.max(0, G.zeroY - G.PT + 6)} /></clipPath>
+            <clipPath id="ist-clip-down"><rect x={G.PL} y={G.zeroY} width={G.PR - G.PL} height={Math.max(0, G.PB - G.zeroY + 6)} /></clipPath>
           </defs>
           {G.grid.map((v) => (
             <g key={v}>
-              <line className="ist-grid" x1={G.PL} x2={G.PR} y1={G.y(v)} y2={G.y(v)} />
-              <text className="ist-ax" x={G.PL - 8} y={G.y(v) + 4} textAnchor="end">{compact(v)}</text>
+              <line className={v === 0 && G.lowProfit < 0 ? "ist-grid ist-grid--zero" : "ist-grid"} x1={G.PL} x2={G.PR} y1={G.y(v)} y2={G.y(v)} />
+              {/* popis záporného kroku len vtedy, keď sa nezrazí s nulou */}
+              {v >= 0 || G.y(v) - G.zeroY >= 16 ? <text className="ist-ax" x={G.PL - 8} y={G.y(v) + 4} textAnchor="end">{compact(v)}</text> : null}
             </g>
           ))}
           <path d={G.paidArea} fill="rgba(41,36,32,0.06)" />
           <path d={G.paid} fill="none" stroke={STONE_LINE} strokeWidth={1} />
           <path d={G.valueArea} fill="url(#ist-gVal)" />
-          <path d={G.profitLine} fill="none" stroke={GREEN} strokeWidth={1.5} strokeLinejoin="round" opacity={0.5} />
-          <path d={G.value} fill="none" stroke={GREEN} strokeWidth={2.5} strokeLinejoin="round" strokeLinecap="round" />
-          <circle cx={G.x(r.n - 1)} cy={G.y(S.value[r.n - 1])} r={4.5} fill={GREEN} stroke={IVORY} strokeWidth={2} />
+          {/* zisk: nad nulou zelený, pod nulou červený */}
+          <path d={G.profitLine} fill="none" stroke={GREEN} strokeWidth={1.5} strokeLinejoin="round" opacity={0.55} clipPath="url(#ist-clip-up)" />
+          {G.lowProfit < 0 ? <path d={G.profitLine} fill="none" stroke={RED} strokeWidth={1.5} strokeLinejoin="round" opacity={0.8} clipPath="url(#ist-clip-down)" /> : null}
+          <path d={G.value} fill="none" stroke={GREEN} strokeWidth={3} strokeLinejoin="round" strokeLinecap="round" />
+          <circle cx={G.x(r.n - 1)} cy={G.y(S.value[r.n - 1])} r={5} fill={GREEN} stroke={IVORY} strokeWidth={2} />
 
           {/* zloženie portfólia */}
           <path d={G.bandCash} fill={BEIGE} />
@@ -238,7 +256,7 @@ export const ValueChart = ({ ds, r, pinned, onPin }: ValueChartProps) => {
             <g>
               <line x1={G.x(j)} x2={G.x(j)} y1={G.PT} y2={G.SB} stroke={pinned !== null && hov === null ? INK : "rgba(41,36,32,0.38)"} strokeWidth={1} />
               <circle cx={G.x(j)} cy={G.y(S.paid[j])} r={3.5} fill="#8a8178" stroke={IVORY} strokeWidth={1.5} />
-              <circle cx={G.x(j)} cy={G.y(G.profit[j])} r={3.5} fill={GREEN} fillOpacity={0.6} stroke={IVORY} strokeWidth={1.5} />
+              <circle cx={G.x(j)} cy={G.y(G.profit[j])} r={3.5} fill={G.profit[j] < 0 ? RED : GREEN} fillOpacity={0.75} stroke={IVORY} strokeWidth={1.5} />
               <circle cx={G.x(j)} cy={G.y(S.value[j])} r={5} fill={GREEN} stroke={IVORY} strokeWidth={2} />
             </g>
           ) : null}
@@ -248,7 +266,7 @@ export const ValueChart = ({ ds, r, pinned, onPin }: ValueChartProps) => {
         <Tip x={G.x(j)} width={W} top={G.PT}>
           <div className="ist-tip-d">{dateLong(ds.day[r.i0 + j])}</div>
           <div className="ist-tip-row"><i style={{ background: "#8a8178" }} />Vložené celkom <b>{money(S.paid[j], cur)}</b></div>
-          <div className="ist-tip-row"><i style={{ background: GREEN, opacity: 0.55 }} />{G.profit[j] >= 0 ? "Zisk" : "Strata"} <b>{money(Math.abs(G.profit[j]), cur)}</b></div>
+          <div className={`ist-tip-row${G.profit[j] < 0 ? " is-loss" : ""}`}><i style={{ background: G.profit[j] < 0 ? RED : GREEN, opacity: 0.8 }} />{G.profit[j] >= 0 ? "Zisk" : "Strata"} <b>{money(Math.abs(G.profit[j]), cur)}</b></div>
           <div className="ist-tip-row"><i style={{ background: GREEN }} />Hodnota <b>{money(S.value[j], cur)}</b></div>
           <div className="ist-tip-mix">
             Zloženie {Math.round(r.shareStock[j] * 100)} / {Math.round(r.shareBond[j] * 100)} / {Math.max(0, 100 - Math.round(r.shareStock[j] * 100) - Math.round(r.shareBond[j] * 100))}
@@ -278,7 +296,7 @@ export const MarketChart = ({ ds, r }: { ds: Dataset; r: Result }) => {
     if (!W) return null;
     const T = timeAxis(ds, r, W, small);
     const PT = 14;
-    const plotH = small ? 210 : 280;
+    const plotH = plotHeight(W, "side");
     const PB = PT + plotH;
     const H = PB + 30;
     let lo = 1;
@@ -311,7 +329,7 @@ export const MarketChart = ({ ds, r }: { ds: Dataset; r: Result }) => {
       aria-label={`Vývoj trhov v období: z 1 investovaného narástli akcie na ${num(r.markets.stock[r.n - 1], 2)}, dlhopisy na ${num(r.markets.bond[r.n - 1], 2)}, peňažný fond na ${num(r.markets.cash[r.n - 1], 2)}, ceny na ${num(r.markets.inflation[r.n - 1], 2)}.`}
       onPointerMove={(e) => G && setHov(G.indexAt(pointerX(e, hostRef.current)))}
       onPointerLeave={() => setHov(null)}
-      style={{ minHeight: small || !W ? 258 : 328 }}
+      style={{ minHeight: !W ? 300 : plotHeight(W, "side") + 44 }}
     >
       {G ? (
         <svg width={W} height={G.H} viewBox={`0 0 ${W} ${G.H}`} className="ist-chart" aria-hidden>
@@ -366,7 +384,7 @@ export const ProfitBars = ({ r, mode }: { r: Result; mode: "money" | "pct" }) =>
     const PL = small ? 46 : 64;
     const PR = W - (small ? 8 : 16);
     const PT = 18;
-    const plotH = small ? 190 : 240;
+    const plotH = plotHeight(W, "side");
     const PB = PT + plotH;
     const H = PB + 30;
     let lo = 0;
@@ -406,7 +424,7 @@ export const ProfitBars = ({ r, mode }: { r: Result; mode: "money" | "pct" }) =>
         setHov(k >= 0 && k < rows.length ? k : null);
       }}
       onPointerLeave={() => setHov(null)}
-      style={{ minHeight: small || !W ? 238 : 288 }}
+      style={{ minHeight: !W ? 300 : plotHeight(W, "side") + 48 }}
     >
       {G ? (
         <svg width={W} height={G.H} viewBox={`0 0 ${W} ${G.H}`} className="ist-chart" aria-hidden>
@@ -423,8 +441,8 @@ export const ProfitBars = ({ r, mode }: { r: Result; mode: "money" | "pct" }) =>
             const b = G.y(rea(it));
             return (
               <g key={it.year} opacity={it.partial ? 0.5 : 1}>
-                <rect x={G.cx(k) - G.bar - 1} y={Math.min(y0, a)} width={G.bar} height={Math.max(1, Math.abs(a - y0))} rx={Math.min(2, G.bar / 2)} fill={GREEN} />
-                <rect x={G.cx(k) + 1} y={Math.min(y0, b)} width={G.bar} height={Math.max(1, Math.abs(b - y0))} rx={Math.min(2, G.bar / 2)} fill={GREEN_DARK} />
+                <rect x={G.cx(k) - G.bar - 1} y={Math.min(y0, a)} width={G.bar} height={Math.max(1, Math.abs(a - y0))} rx={Math.min(2, G.bar / 2)} fill={nom(it) < 0 ? RED : GREEN} />
+                <rect x={G.cx(k) + 1} y={Math.min(y0, b)} width={G.bar} height={Math.max(1, Math.abs(b - y0))} rx={Math.min(2, G.bar / 2)} fill={rea(it) < 0 ? RED_DARK : GREEN_DARK} />
               </g>
             );
           })}
@@ -438,8 +456,8 @@ export const ProfitBars = ({ r, mode }: { r: Result; mode: "money" | "pct" }) =>
       {G && row && hov !== null ? (
         <Tip x={G.cx(hov)} width={W} top={G.PT + 4}>
           <div className="ist-tip-d">{row.year}{row.partial ? " · neúplný rok" : ""}</div>
-          <div className="ist-tip-row"><i style={{ background: GREEN }} />Nominálne <b>{fmt(nom(row))}</b></div>
-          <div className="ist-tip-row"><i style={{ background: GREEN_DARK }} />Reálne <b>{fmt(rea(row))}</b></div>
+          <div className="ist-tip-row"><i style={{ background: nom(row) < 0 ? RED : GREEN }} />Nominálne <b>{fmt(nom(row))}</b></div>
+          <div className="ist-tip-row"><i style={{ background: rea(row) < 0 ? RED_DARK : GREEN_DARK }} />Reálne <b>{fmt(rea(row))}</b></div>
           <div className="ist-tip-mix">{mode === "money" ? `Výnos stratégie ${signedPct(row.returnNominal)}` : `Zisk ${money(row.profitNominal, cur)}`} · na konci roka {money(row.value, cur)}</div>
         </Tip>
       ) : null}
@@ -470,7 +488,7 @@ export const DrawdownChart = ({ ds, r, withStocks }: { ds: Dataset; r: Result; w
     if (!W) return null;
     const T = timeAxis(ds, r, W, small);
     const PT = 18;
-    const plotH = small ? 170 : 210;
+    const plotH = plotHeight(W, "side");
     const PB = PT + plotH;
     const H = PB + 30;
     const deepest = Math.min(r.strategy.drawdown.depth, withStocks ? r.stocks.drawdown.depth : 0, -0.02);
@@ -497,7 +515,7 @@ export const DrawdownChart = ({ ds, r, withStocks }: { ds: Dataset; r: Result; w
       aria-label={`Prepady stratégie pod predchádzajúce maximum. Najhlbší prepad ${pct(low.depth)}.`}
       onPointerMove={(e) => G && setHov(G.indexAt(pointerX(e, hostRef.current)))}
       onPointerLeave={() => setHov(null)}
-      style={{ minHeight: small || !W ? 218 : 258 }}
+      style={{ minHeight: !W ? 300 : plotHeight(W, "side") + 48 }}
     >
       {G ? (
         <svg width={W} height={G.H} viewBox={`0 0 ${W} ${G.H}`} className="ist-chart" aria-hidden>
@@ -507,10 +525,10 @@ export const DrawdownChart = ({ ds, r, withStocks }: { ds: Dataset; r: Result; w
               <text className="ist-ax" x={G.PL - 8} y={G.y(v) + 4} textAnchor="end">{pct(v, 0)}</text>
             </g>
           ))}
-          <path d={G.sArea} fill={GREEN} opacity={0.14} />
+          <path d={G.sArea} fill={RED} opacity={0.1} />
           {withStocks ? <path d={G.k} fill="none" stroke={INK} strokeWidth={1.25} strokeDasharray="4 4" strokeLinejoin="round" opacity={0.6} /> : null}
-          <path d={G.s} fill="none" stroke={GREEN} strokeWidth={2} strokeLinejoin="round" />
-          {low.depth < 0 ? <circle cx={G.x(low.trough)} cy={G.y(low.depth)} r={4.5} fill={GREEN} stroke={IVORY} strokeWidth={2} /> : null}
+          <path d={G.s} fill="none" stroke={RED} strokeWidth={2} strokeLinejoin="round" />
+          {low.depth < 0 ? <circle cx={G.x(low.trough)} cy={G.y(low.depth)} r={4.5} fill={RED} stroke={IVORY} strokeWidth={2} /> : null}
           {G.ticks.map((t) => (
             <text key={t.label} className="ist-ax" x={t.x} y={G.PB + 20} textAnchor="middle">{t.label}</text>
           ))}
@@ -518,7 +536,7 @@ export const DrawdownChart = ({ ds, r, withStocks }: { ds: Dataset; r: Result; w
             <g>
               <line x1={G.x(hov)} x2={G.x(hov)} y1={G.PT} y2={G.PB} stroke="rgba(41,36,32,0.38)" strokeWidth={1} />
               {withStocks ? <circle cx={G.x(hov)} cy={G.y(dd.k[hov])} r={4} fill={INK} stroke={IVORY} strokeWidth={2} /> : null}
-              <circle cx={G.x(hov)} cy={G.y(dd.s[hov])} r={4.5} fill={GREEN} stroke={IVORY} strokeWidth={2} />
+              <circle cx={G.x(hov)} cy={G.y(dd.s[hov])} r={4.5} fill={RED} stroke={IVORY} strokeWidth={2} />
             </g>
           ) : null}
         </svg>
@@ -526,7 +544,7 @@ export const DrawdownChart = ({ ds, r, withStocks }: { ds: Dataset; r: Result; w
       {G && hov !== null ? (
         <Tip x={G.x(hov)} width={W} top={G.PT + 8}>
           <div className="ist-tip-d">{dateLong(ds.day[r.i0 + hov])}</div>
-          <div className="ist-tip-row"><i style={{ background: GREEN }} />Tvoja stratégia <b>{pct(dd.s[hov])}</b></div>
+          <div className="ist-tip-row"><i style={{ background: RED }} />Tvoja stratégia <b>{pct(dd.s[hov])}</b></div>
           {withStocks ? <div className="ist-tip-row"><i style={{ background: INK }} />Len akcie <b>{pct(dd.k[hov])}</b></div> : null}
           <div className="ist-tip-mix">{dd.s[hov] < -0.0005 ? "pod predchádzajúcim maximom" : "na novom maxime"}</div>
         </Tip>
