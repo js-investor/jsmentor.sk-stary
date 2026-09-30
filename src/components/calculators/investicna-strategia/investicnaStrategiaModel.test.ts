@@ -2,7 +2,10 @@ import { describe, expect, it } from "vitest";
 import { DATA_END, RAW, UNIT } from "./investicnaStrategiaData";
 import { CASES } from "./investicnaStrategia.cases";
 import {
+  BRAKE_YEARS,
   DEFAULT_INPUTS,
+  GOAL_TARGET,
+  RENT_TARGET,
   addMonths,
   adjustWeights,
   compute,
@@ -16,26 +19,29 @@ import {
   isoOf,
   lastOnOrBefore,
   normalizeWeights,
-  presetsFor,
   resolveRange,
   rolling,
-  samePhases,
+  rowsBetween,
+  rowsFor,
   sampleIndexes,
   sanitize,
-  weightsAt,
+  yearsAvailable,
   type Dataset,
   type Inputs,
   type SetId,
+  type Weights,
 } from "./investicnaStrategiaModel";
 
 const SETS: Record<SetId, Dataset> = { eur: decodeSet("eur", RAW.eur, UNIT), usd: decodeSet("usd", RAW.usd, UNIT) };
 const near = (actual: number, expected: number, rel = 1e-9) => expect(Math.abs(actual - expected)).toBeLessThanOrEqual(rel * Math.max(1, Math.abs(expected)));
-const base: Inputs = { ...DEFAULT_INPUTS, phases: [{ from: 0, w: [60, 20, 20] }], transition: 0 };
+const base: Inputs = { ...DEFAULT_INPUTS, start: "1999-01-04", end: "2026-08-31", initial: 10000, monthly: 300 };
 
 describe("historické dáta", () => {
   it("majú správny rozsah a dĺžku", () => {
     expect(isoOf(SETS.eur.day[0])).toBe("1999-01-04");
     expect(isoOf(SETS.usd.day[0])).toBe("1962-01-02");
+    expect(yearsAvailable(SETS.eur)).toBe(27);
+    expect(yearsAvailable(SETS.usd)).toBe(64);
     for (const id of ["eur", "usd"] as const) {
       const ds = SETS[id];
       expect(isoOf(ds.day[ds.n - 1])).toBe(DATA_END);
@@ -54,12 +60,12 @@ describe("historické dáta", () => {
     expect(usd.stock[monday]).toBeLessThan(-0.17);
     expect(usd.stock[monday]).toBeGreaterThan(-0.18);
     /* rok 2008: akcie okolo −37 %, štátne dlhopisy v pluse */
-    const y2008 = compute(usd, { ...base, set: "usd", start: "2008-01-02", end: "2008-12-31", phases: [{ from: 0, w: [100, 0, 0] }] }).yearly[0];
+    const y2008 = compute(usd, { ...base, set: "usd", start: "2008-01-02", end: "2008-12-31", alloc: [100, 0, 0] }).yearly[0];
     expect(y2008.stock).toBeLessThan(-0.35);
     expect(y2008.stock).toBeGreaterThan(-0.39);
     expect(y2008.bond).toBeGreaterThan(0.15);
     /* záporné sadzby v eurozóne: peňažný trh bol v roku 2021 v miernom mínuse */
-    const y2021 = compute(SETS.eur, { ...base, start: "2021-01-04", end: "2021-12-31", phases: [{ from: 0, w: [0, 0, 100] }] }).yearly[0];
+    const y2021 = compute(SETS.eur, { ...base, start: "2021-01-04", end: "2021-12-31", alloc: [0, 0, 100] }).yearly[0];
     expect(y2021.cash).toBeLessThan(0);
     expect(y2021.cash).toBeGreaterThan(-0.01);
   });
@@ -79,11 +85,13 @@ describe("historické dáta", () => {
   });
 });
 
-describe("dátumy", () => {
+describe("dátumy a obdobie", () => {
   it("prevod tam a späť", () => {
     expect(isoOf(dayOf("2000-02-29"))).toBe("2000-02-29");
     expect(Number.isNaN(dayOf("2001-02-29"))).toBe(true);
     expect(Number.isNaN(dayOf("hocičo"))).toBe(true);
+    expect(isoOf(dayOf("0002-01-04"))).toBe("0002-01-04");
+    expect(dayOf("0002-01-04")).toBeLessThan(dayOf("1999-01-04"));
   });
 
   it("posun o mesiace drží deň a rešpektuje koniec mesiaca", () => {
@@ -93,9 +101,32 @@ describe("dátumy", () => {
     expect(isoOf(addMonths(dayOf("2020-11-15"), 2))).toBe("2021-01-15");
   });
 
+  it("počet rokov investovania", () => {
+    expect(rowsBetween(dayOf("2006-08-31"), dayOf("2026-08-31"))).toBe(20);
+    expect(rowsBetween(dayOf("2006-08-31"), dayOf("2026-09-15"))).toBe(21);
+    expect(rowsBetween(dayOf("2026-08-01"), dayOf("2026-08-31"))).toBe(1);
+    expect(rowsBetween(dayOf("1999-01-04"), dayOf("2026-08-31"))).toBe(28);
+  });
+
+  it("dĺžka v rokoch = posledných N rokov dát", () => {
+    const ds = SETS.eur;
+    const r = resolveRange(ds, { years: 20, start: "", end: "" });
+    expect(isoOf(ds.day[r.i0])).toBe("2006-08-31");
+    expect(r.i1).toBe(ds.n - 1);
+    expect(r.startMoved).toBe(false);
+    const r30 = resolveRange(ds, { years: 30, start: "", end: "" });
+    expect(r30.i0).toBe(0);
+    const usd = resolveRange(SETS.usd, { years: 40, start: "", end: "" });
+    expect(isoOf(SETS.usd.day[usd.i0])).toBe("1986-09-02");
+    /* koniec v minulosti: začiatok sa počíta od neho */
+    const past = resolveRange(ds, { years: 5, start: "", end: "2015-06-30" });
+    expect(isoOf(ds.day[past.i0])).toBe("2010-06-30");
+    expect(isoOf(ds.day[past.i1])).toBe("2015-06-30");
+  });
+
   it("víkend sa posunie na obchodný deň", () => {
     const ds = SETS.eur;
-    const r = resolveRange(ds, "2008-03-15", "2020-03-22");
+    const r = resolveRange(ds, { years: 20, start: "2008-03-15", end: "2020-03-22" });
     expect(isoOf(ds.day[r.i0])).toBe("2008-03-17");
     expect(isoOf(ds.day[r.i1])).toBe("2020-03-20");
     expect(r.startMoved).toBe(true);
@@ -105,18 +136,14 @@ describe("dátumy", () => {
 
   it("obdobie mimo dát sa oreže a má aspoň mesiac", () => {
     const ds = SETS.eur;
-    /* celé obdobie pred začiatkom dát: počíta sa od prvého dňa, koniec sa berie ako nezadaný */
-    const before = resolveRange(ds, "1950-01-01", "1960-01-01");
+    const before = resolveRange(ds, { years: 20, start: "1950-01-01", end: "1960-01-01" });
     expect(before).toMatchObject({ i0: 0, i1: ds.n - 1, startMoved: true, endMoved: true });
-    expect(resolveRange(ds, "", "1998-05-05")).toMatchObject({ i0: 0, i1: ds.n - 1, endMoved: true });
-    expect(resolveRange(ds, "2010-06-01", "2010-06-01")).toMatchObject({ i1: ds.n - 1 });
-    const short = resolveRange(ds, "", "1999-01-08");
+    expect(resolveRange(ds, { years: 20, start: "", end: "1998-05-05" })).toMatchObject({ i1: ds.n - 1, endMoved: true });
+    expect(resolveRange(ds, { years: 20, start: "2010-06-01", end: "2010-06-01" })).toMatchObject({ i1: ds.n - 1 });
+    const short = resolveRange(ds, { years: 20, start: "1999-01-04", end: "1999-01-08" });
     expect(short.i0).toBe(0);
     expect(short.i1).toBe(21);
-    const after = resolveRange(ds, "2090-01-01", "2095-01-01");
-    expect(after.i1).toBe(ds.n - 1);
-    expect(after.i1 - after.i0).toBeGreaterThanOrEqual(21);
-    const whole = resolveRange(ds, "", "");
+    const whole = resolveRange(ds, { years: 20, start: "1999-01-04", end: "" });
     expect(whole).toMatchObject({ i0: 0, i1: ds.n - 1, startMoved: false, endMoved: false });
   });
 });
@@ -125,6 +152,9 @@ describe("vstupy", () => {
   it("váhy majú vždy súčet 100", () => {
     expect(normalizeWeights([60, 20, 20])).toEqual([60, 20, 20]);
     expect(normalizeWeights([1, 1, 1])).toEqual([34, 33, 33]);
+    expect(normalizeWeights([33.3, 33.3, 33.4])).toEqual([33, 33, 34]);
+    expect(normalizeWeights([77, 16.5, 6.5])).toEqual([77, 17, 6]);
+    expect(normalizeWeights([53.5, 28, 18.5])).toEqual([54, 28, 18]);
     expect(normalizeWeights([200, 0, 0])).toEqual([100, 0, 0]);
     expect(normalizeWeights([0, 0, 0])).toEqual([60, 20, 20]);
     expect(normalizeWeights([-5, 50, 50])).toEqual([0, 50, 50]);
@@ -135,26 +165,24 @@ describe("vstupy", () => {
     }
   });
 
-  it("fázy sú zoradené, prvá od začiatku a najviac štyri", () => {
-    const a = sanitize({ phases: [{ from: 20, w: [30, 40, 30] }, { from: 5, w: [100, 0, 0] }, { from: 20, w: [50, 25, 25] }, { from: 30, w: [10, 10, 80] }, { from: 40, w: [0, 0, 100] }] });
-    expect(a.phases.map((p) => p.from)).toEqual([0, 20, 21, 30]);
-    expect(a.phases[0].w).toEqual([100, 0, 0]);
-  });
-
   it("nezmysly nahradí rozumnými hodnotami", () => {
-    const a = sanitize({ set: "gbp" as SetId, start: "2001-02-30", end: "zajtra", initial: -5, monthly: Number.NaN, cost: 99, transition: 50, rebalance: "weekly" as Inputs["rebalance"], phases: [] });
-    expect(a).toMatchObject({ set: "eur", start: "", end: "", initial: 0, monthly: 300, cost: 3, transition: 10, rebalance: "yearly", real: false });
-    expect(a.phases).toEqual(DEFAULT_INPUTS.phases);
+    const a = sanitize({ set: "gbp" as SetId, years: 500, start: "2001-02-30", end: "zajtra", initial: -5, monthly: Number.NaN, cost: 99, rebalance: "weekly" as Inputs["rebalance"], brake: "hard" as Inputs["brake"], alloc: [0, 0, 0] });
+    expect(a).toMatchObject({ set: "eur", years: 64, start: "", end: "", initial: 0, monthly: 150, cost: 3, rebalance: "yearly", brake: "none", real: false, alloc: [60, 20, 20], custom: [] });
     expect(sanitize({ start: "2020-01-01", end: "2019-01-01" }).end).toBe("");
+    /* vlastná brzda bez riadkov nemá zmysel; s riadkami preberá prvý riadok ako zloženie */
+    expect(sanitize({ brake: "custom", custom: [] }).brake).toBe("none");
+    const c = sanitize({ brake: "custom", alloc: [90, 10, 0], custom: [[70, 20, 10], [50, 30, 20]] });
+    expect(c.brake).toBe("custom");
+    expect(c.alloc).toEqual([70, 20, 10]);
+    expect(c.custom).toEqual([[70, 20, 10], [50, 30, 20]]);
   });
 });
 
-describe("editor stratégie", () => {
+describe("editor zloženia", () => {
   it("rozdiel vyrovná najdávnejšie upravená zložka", () => {
     expect(adjustWeights([60, 20, 20], 0, 80, [2, 1, 0])).toEqual([80, 20, 0]);
     expect(adjustWeights([80, 20, 0], 1, 10, [2, 1, 0])).toEqual([80, 10, 10]);
     expect(adjustWeights([80, 10, 10], 2, 30, [0, 1, 2])).toEqual([60, 10, 30]);
-    /* naposledy upravená ustúpi, až keď sa nezmestí */
     expect(adjustWeights([60, 30, 10], 0, 90, [2, 1, 0])).toEqual([90, 10, 0]);
     expect(adjustWeights([60, 30, 10], 0, 100, [2, 1, 0])).toEqual([100, 0, 0]);
     expect(adjustWeights([60, 30, 10], 0, 0, [2, 1, 0])).toEqual([0, 30, 70]);
@@ -173,64 +201,58 @@ describe("editor stratégie", () => {
           }
         }
   });
+});
 
-  it("predvoľby sú platné a životný cyklus sa prispôsobí dĺžke obdobia", () => {
-    for (const years of [0.2, 1, 5, 10, 27.66, 64.7]) {
-      const presets = presetsFor(years);
-      expect(presets.map((p) => p.id)).toEqual(["dynamicka", "vyvazena", "konzervativna", "zivotny-cyklus"]);
-      for (const p of presets) expect(samePhases(sanitize({ phases: p.phases }).phases, p.phases)).toBe(true);
+describe("brzda", () => {
+  const a = { alloc: [60, 20, 20] as Weights, brake: "none" as const, custom: [] as Weights[] };
+
+  it("bez brzdy je zloženie každý rok rovnaké", () => {
+    const rows = rowsFor(a, 20);
+    expect(rows.length).toBe(20);
+    expect(rows.every((w) => w[0] === 60 && w[1] === 20 && w[2] === 20)).toBe(true);
+    expect(rowsFor(a, 0).length).toBe(1);
+  });
+
+  it("na cieľ a na rentu brzdí posledných 10 rokov lineárne k cieľu", () => {
+    const goal = rowsFor({ ...a, brake: "goal" }, 20);
+    expect(goal.slice(0, 10).every((w) => w[0] === 60)).toBe(true);
+    expect(goal[19]).toEqual(GOAL_TARGET);
+    expect(goal[14]).toEqual([40, 30, 30]);
+    for (let k = 10; k < 20; k++) {
+      expect(goal[k][0]).toBeLessThanOrEqual(goal[k - 1][0]);
+      expect(goal[k][0] + goal[k][1] + goal[k][2]).toBe(100);
     }
-    expect(presetsFor(27.66)[3].phases.map((p) => p.from)).toEqual([0, 15, 22]);
-    expect(presetsFor(10)[3].phases.map((p) => p.from)).toEqual([0, 6, 8]);
-    /* desať kalendárnych rokov je o pár hodín menej ako 10 × 365,25 dňa */
-    expect(presetsFor(3652 / 365.25)[3].phases.map((p) => p.from)).toEqual([0, 6, 8]);
-    expect(samePhases(presetsFor(27.66)[3].phases, DEFAULT_INPUTS.phases)).toBe(true);
+    const rent = rowsFor({ ...a, brake: "rent" }, 20);
+    expect(rent[19]).toEqual(RENT_TARGET);
+    expect(rent[9]).toEqual([60, 20, 20]);
+    /* kratšie obdobie než BRAKE_YEARS: brzdí sa od prvého roka */
+    const short = rowsFor({ ...a, alloc: [100, 0, 0], brake: "goal" }, 5);
+    expect(short[0]).toEqual([84, 8, 8]);
+    expect(short[4]).toEqual(GOAL_TARGET);
+    expect(BRAKE_YEARS).toBe(10);
+  });
+
+  it("vlastné riadky sa doplnia posledným riadkom alebo orežú", () => {
+    const rows = rowsFor({ ...a, brake: "custom", custom: [[70, 20, 10], [50, 30, 20]] }, 4);
+    expect(rows).toEqual([[70, 20, 10], [50, 30, 20], [50, 30, 20], [50, 30, 20]]);
+    expect(rowsFor({ ...a, brake: "custom", custom: [[70, 20, 10], [50, 30, 20], [10, 10, 80]] }, 2)).toEqual([[70, 20, 10], [50, 30, 20]]);
+    expect(rowsFor({ ...a, brake: "custom", custom: [] }, 3)).toEqual([[60, 20, 20], [60, 20, 20], [60, 20, 20]]);
   });
 
   it("scenár prežije cestu cez odkaz", () => {
-    const a = sanitize({ set: "usd", start: "1987-08-25", end: "2020-03-23", initial: 25000, monthly: 450, transition: 4, rebalance: "monthly", cost: 0.35, real: true, phases: [{ from: 0, w: [100, 0, 0] }, { from: 12, w: [55, 30, 15] }] });
-    expect(decodeScenario(`?${encodeScenario(a)}`)).toEqual(a);
+    const a1 = sanitize({ set: "usd", years: 40, start: "", end: "", initial: 25000, monthly: 450, alloc: [80, 15, 5], brake: "rent", rebalance: "monthly", cost: 0.35, real: true });
+    expect(decodeScenario(`?${encodeScenario(a1)}`)).toEqual(a1);
+    const a2 = sanitize({ set: "eur", years: 12, start: "2008-03-17", end: "2020-03-20", alloc: [70, 20, 10], brake: "custom", custom: [[70, 20, 10], [70, 20, 10], [40, 40, 20]] });
+    expect(decodeScenario(encodeScenario(a2))).toEqual(a2);
     expect(decodeScenario(encodeScenario(DEFAULT_INPUTS))).toEqual(DEFAULT_INPUTS);
     expect(decodeScenario("")).toBeNull();
     expect(decodeScenario("?utm_source=instagram")).toBeNull();
-    expect(decodeScenario("?s=eur&f=0-abc-10-0")).toBeNull();
+    expect(decodeScenario("?s=eur&a=abc-10-0")).toBeNull();
     /* poškodený odkaz sa opraví na platné hodnoty */
-    const broken = decodeScenario("?s=xyz&f=0-500-0-0_3-10-10-10&v=-4&m=1e9&od=2001-13-45");
-    expect(broken).toMatchObject({ set: "eur", start: "", initial: 0, monthly: 50000 });
-    expect(broken?.phases).toEqual([{ from: 0, w: [100, 0, 0] }, { from: 3, w: [34, 33, 33] }]);
-  });
-});
-
-describe("cieľový pomer", () => {
-  const phases = [
-    { from: 0, w: [90, 10, 0] as [number, number, number] },
-    { from: 10, w: [60, 30, 10] as [number, number, number] },
-    { from: 12, w: [30, 40, 30] as [number, number, number] },
-  ];
-
-  it("zmena naraz platí od prvého dňa fázy", () => {
-    expect(weightsAt(phases, 0, 9.99)).toEqual([0.9, 0.1, 0]);
-    expect(weightsAt(phases, 0, 10)).toEqual([0.6, 0.3, 0.1]);
-    expect(weightsAt(phases, 0, 50)).toEqual([0.3, 0.4, 0.3]);
-  });
-
-  it("postupný prechod sa začína v prvom roku fázy a skončí najneskôr pri ďalšej", () => {
-    expect(weightsAt(phases, 4, 10)).toEqual([0.9, 0.1, 0]);
-    const half = weightsAt(phases, 4, 11);
-    near(half[0], 0.75);
-    near(half[1], 0.2);
-    near(half[2], 0.05);
-    /* druhá fáza má na prechod len 2 roky, potom sa začína tretia */
-    expect(weightsAt(phases, 4, 12)).toEqual([0.6, 0.3, 0.1]);
-    const late = weightsAt(phases, 4, 14);
-    near(late[0], 0.45);
-    near(late[1], 0.35);
-    near(late[2], 0.2);
-    expect(weightsAt(phases, 4, 16)).toEqual([0.3, 0.4, 0.3]);
-    for (const t of [0, 3.5, 10.25, 11.9, 13, 40]) {
-      const w = weightsAt(phases, 4, t);
-      near(w[0] + w[1] + w[2], 1);
-    }
+    const broken = decodeScenario("?s=xyz&a=500-0-0&v=-4&m=1e9&od=2001-13-45&y=999&b=custom&c=10-10-10_x-y-z");
+    expect(broken).toMatchObject({ set: "eur", start: "", initial: 0, monthly: 50000, years: 64, brake: "custom" });
+    expect(broken?.custom).toEqual([[34, 33, 33]]);
+    expect(broken?.alloc).toEqual([34, 33, 33]);
   });
 });
 
@@ -243,6 +265,8 @@ describe("výpočet proti nezávislej implementácii", () => {
       expect(isoOf(r.startDay)).toBe(e.start);
       expect(isoOf(r.endDay)).toBe(e.end);
       expect(r.n).toBe(e.days);
+      expect(r.rows).toBe(e.rows);
+      expect(r.allocation).toEqual(e.allocation);
       expect(r.depositCount).toBe(e.depositCount);
       near(r.strategy.final, e.final);
       near(r.strategy.deposits, e.deposits);
@@ -257,17 +281,20 @@ describe("výpočet proti nezávislej implementácii", () => {
       expect(rec === null ? null : isoOf(ds.day[r.i0 + rec])).toBe(e.ddRecovery);
       near(r.strategy.volatility, e.volatility);
       expect(r.yearly.map((y) => String(y.year))).toEqual(Object.keys(e.yearly));
-      for (const y of r.yearly) near(y.strategy, e.yearly[String(y.year)]);
+      const modeProfit = c.inputs.real ? "profitReal" : "profitNominal";
+      const otherProfit = c.inputs.real ? "profitNominal" : "profitReal";
+      for (const y of r.yearly) {
+        near(y.strategy, e.yearly[String(y.year)]);
+        near(y[modeProfit], e.profit[String(y.year)], 1e-8);
+        near(y[otherProfit], e.otherModeProfit[String(y.year)], 1e-8);
+      }
+      const other = c.inputs.real ? r.nominal : r.real;
+      near(other.final, e.otherModeFinal);
+      near(other.deposits, e.otherModeDeposits);
+      near(other.twr, e.otherModeTwr);
       near(r.stocks.final, e.stocksFinal);
       near(r.stocks.twr, e.stocksTwr);
       near(r.stocks.drawdown.depth, e.stocksMaxDrawdown);
-      if (r.flat) {
-        near(r.flat.final, e.flatFinal);
-        near(r.flat.twr, e.flatTwr);
-        near(r.flat.drawdown.depth, e.flatMaxDrawdown);
-      } else {
-        near(r.strategy.final, e.flatFinal);
-      }
       expect(r.crises.map((x) => x.id)).toEqual(e.crises.map((x) => x.id));
       r.crises.forEach((x, i) => {
         near(x.strategy, e.crises[i].strategy);
@@ -287,8 +314,6 @@ describe("výpočet proti nezávislej implementácii", () => {
         near(roll.positive, e.rolling.positive);
         expect(isoOf(roll.worst.start)).toBe(e.rolling.worstStart);
         expect(isoOf(roll.best.start)).toBe(e.rolling.bestStart);
-        expect(isoOf(roll.rows[0].start)).toBe(e.rolling.firstStart);
-        expect(isoOf(roll.rows[roll.rows.length - 1].start)).toBe(e.rolling.lastStart);
       }
     });
   }
@@ -300,9 +325,19 @@ describe("vlastnosti výpočtu", () => {
     /* 4. 1. 2010 až 4. 12. 2019 = 120 mesačných vkladov, v posledný deň sa nevkladá */
     expect(r.depositCount).toBe(120);
     expect(r.strategy.deposits).toBe(5000 + 120 * 200);
-    expect(r.paid[0]).toBe(5200);
+    expect(r.strategy.paid[0]).toBe(5200);
     expect(r.strategy.value[0]).toBe(5200);
     expect(r.strategy.unit[0]).toBe(1);
+    expect(r.rows).toBe(10);
+  });
+
+  it("zisky po rokoch sa sčítajú na celkový zisk, v oboch režimoch", () => {
+    for (const real of [false, true]) {
+      const r = compute(SETS.usd, { ...base, set: "usd", start: "1986-09-02", end: "2026-08-31", brake: "rent", real, cost: 0.3 });
+      near(r.yearly.reduce((s, y) => s + y.profitNominal, 0), r.nominal.gain, 1e-8);
+      near(r.yearly.reduce((s, y) => s + y.profitReal, 0), r.real.gain, 1e-8);
+      near(r.strategy.final, (real ? r.real : r.nominal).final);
+    }
   });
 
   it("jednorazový vklad má výnos vkladov rovný výnosu stratégie", () => {
@@ -317,21 +352,17 @@ describe("vlastnosti výpočtu", () => {
     near(b.strategy.final, 2 * a.strategy.final);
     near(b.strategy.twr, a.strategy.twr);
     near(b.strategy.irr as number, a.strategy.irr as number, 1e-8);
-    /* pri ročnom vyvažovaní nové vklady mierne doťahujú pomer k cieľu, rozdiel je v stotinách percenta */
     const c = compute(SETS.eur, { ...base, initial: 50000, monthly: 0 });
     expect(Math.abs(c.strategy.twr - a.strategy.twr)).toBeLessThan(0.001);
-    /* pri mesačnom vyvažovaní je zloženie v každom okamihu rovnaké, výnos stratégie je totožný */
     const d = compute(SETS.eur, { ...base, initial: 10000, monthly: 300, rebalance: "monthly" });
     const e = compute(SETS.eur, { ...base, initial: 50000, monthly: 0, rebalance: "monthly" });
     near(d.strategy.twr, e.strategy.twr);
   });
 
   it("stopercentné akcie sú totožné s porovnaním „len akcie“", () => {
-    const r = compute(SETS.eur, { ...base, phases: [{ from: 0, w: [100, 0, 0] }], cost: 0.4 });
+    const r = compute(SETS.eur, { ...base, alloc: [100, 0, 0], cost: 0.4 });
     near(r.strategy.final, r.stocks.final);
     for (const y of r.yearly) expect(Math.abs(y.strategy - y.stock)).toBeLessThan(0.006);
-    expect(r.flat).toBeNull();
-    expect(r.afterChange).toBeNull();
   });
 
   it("náklady znižujú výnos približne o svoju výšku", () => {
@@ -342,40 +373,52 @@ describe("vlastnosti výpočtu", () => {
     expect(paid.strategy.final).toBeLessThan(free.strategy.final);
   });
 
-  it("po očistení o infláciu je výnos nižší a vklady v dnešných cenách vyššie", () => {
+  it("reálne výnosy: výnos nižší, vklady v dnešných cenách vyššie, inflácia sedí", () => {
     const nominal = compute(SETS.eur, { ...base, real: false });
     const real = compute(SETS.eur, { ...base, real: true });
     near(real.strategy.final, nominal.strategy.final);
     expect(real.strategy.deposits).toBeGreaterThan(nominal.strategy.deposits);
     expect(real.strategy.twr).toBeLessThan(nominal.strategy.twr);
-    const inflation = Math.pow(cpiAt(SETS.eur, nominal.endDay) / cpiAt(SETS.eur, nominal.startDay), 1 / nominal.years) - 1;
-    near((1 + nominal.strategy.twr) / (1 + inflation) - 1, real.strategy.twr, 1e-9);
+    near((1 + nominal.strategy.twr) / (1 + nominal.strategy.assets.inflation) - 1, real.strategy.twr, 1e-9);
+    near(real.nominal.final, nominal.nominal.final);
+    near(nominal.real.twr, real.strategy.twr);
+    near((1 + nominal.strategy.assets.bond) / (1 + nominal.strategy.assets.inflation) - 1, real.strategy.assets.bond);
   });
 
-  it("zmena stratégie sa prejaví v skutočnom zložení portfólia", () => {
-    const r = compute(SETS.eur, { ...base, start: "2000-01-03", end: "2026-08-31", transition: 0, phases: [{ from: 0, w: [100, 0, 0] }, { from: 10, w: [20, 50, 30] }] });
-    const change = r.phaseStarts[1] as number;
-    expect(isoOf(SETS.eur.day[r.i0 + change])).toBe("2010-01-04");
-    expect(r.shareStock[change - 1]).toBeGreaterThan(0.999);
-    near(r.shareStock[change], 0.2, 1e-6);
-    near(r.shareBond[change], 0.5, 1e-6);
-    expect(r.afterChange).not.toBeNull();
-    /* po preklopení sú prepady plytšie ako pri čistých akciách */
-    expect(Math.abs(r.afterChange!.strategy.depth)).toBeLessThan(Math.abs(r.afterChange!.flat.depth));
-    /* fáza po konci obdobia sa neuplatní */
-    const short = compute(SETS.eur, { ...base, start: "2015-01-05", end: "2020-01-03", phases: [{ from: 0, w: [80, 20, 0] }, { from: 10, w: [20, 50, 30] }] });
-    expect(short.phaseStarts).toEqual([0, null]);
-    expect(short.afterChange).toBeNull();
-    near(short.strategy.final, short.flat!.final);
-  });
-
-  it("postupný prechod mení zloženie plynulo", () => {
-    const r = compute(SETS.eur, { ...base, start: "2000-01-03", end: "2026-08-31", transition: 5, rebalance: "monthly", phases: [{ from: 0, w: [100, 0, 0] }, { from: 10, w: [50, 50, 0] }] });
+  it("brzda sa prejaví v skutočnom zložení portfólia", () => {
+    const r = compute(SETS.eur, { ...base, start: "2006-08-31", end: "2026-08-31", alloc: [100, 0, 0], brake: "goal" });
+    expect(r.rows).toBe(20);
+    expect(r.allocation[9]).toEqual([100, 0, 0]);
+    expect(r.allocation[19]).toEqual(GOAL_TARGET);
     const at = (iso: string) => r.shareStock[firstOnOrAfter(SETS.eur.day, dayOf(iso)) - r.i0];
-    near(at("2010-01-04"), 1, 1e-6);
-    near(at("2012-07-03"), 0.75, 1e-6);
-    near(at("2015-01-05"), 0.5, 1e-6);
-    near(at("2020-01-03"), 0.5, 1e-6);
+    near(at("2016-08-30"), 1, 1e-6);
+    /* 11. rok sa začína 31. 8. 2016 s cieľom 92 % akcií, 12. rok s 84 % */
+    near(at("2016-08-31"), 0.92, 1e-6);
+    near(at("2017-08-31"), 0.84, 1e-6);
+    near(at("2026-08-31"), 0.2, 0.08);
+    /* najhlbší prepad (2007 až 2009) prišiel ešte pred brzdou, po nej sú prepady plytšie ako pri čistých akciách */
+    near(r.strategy.drawdown.depth, r.stocks.drawdown.depth);
+    const from = firstOnOrAfter(SETS.eur.day, dayOf("2016-08-31")) - r.i0;
+    expect(drawdownOf(r.strategy.unit, from).depth).toBeGreaterThan(drawdownOf(r.stocks.unit, from).depth + 0.05);
+    /* bez brzdy 100 % akcií = len akcie */
+    const none = compute(SETS.eur, { ...base, start: "2006-08-31", end: "2026-08-31", alloc: [100, 0, 0] });
+    near(none.strategy.final, none.stocks.final);
+  });
+
+  it("výnosy zložiek za obdobie sedia so stratégiou z jedinej zložky", () => {
+    const period = { start: "2003-03-12", end: "2019-11-29" };
+    const mix = compute(SETS.eur, { ...base, ...period });
+    const only = (w: Weights, real = false) => compute(SETS.eur, { ...base, ...period, real, alloc: w });
+    near(only([100, 0, 0]).strategy.twr, mix.strategy.assets.stock);
+    near(only([0, 100, 0]).strategy.twr, mix.strategy.assets.bond);
+    near(only([0, 0, 100]).strategy.twr, mix.strategy.assets.cash);
+    near(only([0, 100, 0], true).strategy.twr, mix.real.assets.bond);
+    expect(mix.strategy.assets.inflation).toBeGreaterThan(0.01);
+    expect(mix.strategy.assets.inflation).toBeLessThan(0.03);
+    /* trhy: hodnota 1 investovaného na začiatku */
+    near(mix.markets.stock[mix.n - 1], Math.pow(1 + mix.strategy.assets.stock, mix.years));
+    near(mix.markets.inflation[mix.n - 1], Math.pow(1 + mix.strategy.assets.inflation, mix.years));
+    expect(mix.markets.cash[0]).toBe(1);
   });
 
   it("roky označí ako neúplné len na okrajoch obdobia", () => {
@@ -397,20 +440,6 @@ describe("vlastnosti výpočtu", () => {
     }
   });
 
-  it("výnosy zložiek za obdobie sedia so stratégiou z jedinej zložky", () => {
-    const period = { start: "2003-03-12", end: "2019-11-29" };
-    const mix = compute(SETS.eur, { ...base, ...period });
-    const only = (w: [number, number, number], real = false) => compute(SETS.eur, { ...base, ...period, real, phases: [{ from: 0, w }] });
-    near(only([100, 0, 0]).strategy.twr, mix.assets.stock);
-    near(only([0, 100, 0]).strategy.twr, mix.assets.bond);
-    near(only([0, 0, 100]).strategy.twr, mix.assets.cash);
-    const real = compute(SETS.eur, { ...base, ...period, real: true });
-    near(only([0, 100, 0], true).strategy.twr, real.assets.bond);
-    near((1 + mix.assets.bond) / (1 + mix.assets.inflation) - 1, real.assets.bond);
-    expect(mix.assets.inflation).toBeGreaterThan(0.01);
-    expect(mix.assets.inflation).toBeLessThan(0.03);
-  });
-
   it("bez vkladov meria stratégiu na pomyselnom vklade", () => {
     const lump = compute(SETS.eur, { ...base, initial: 10000, monthly: 0 });
     const none = compute(SETS.eur, { ...base, initial: 0, monthly: 0 });
@@ -422,15 +451,10 @@ describe("vlastnosti výpočtu", () => {
     expect(none.depositCount).toBe(0);
     expect(Math.max(...none.strategy.value)).toBe(0);
     near(none.yearly[5].strategy, lump.yearly[5].strategy);
-    near(none.shareStock[3000], lump.shareStock[3000], 1e-6);
-    const roll = rolling(SETS.eur, { ...base, initial: 0, monthly: 0 }, 10)!;
-    const rollLump = rolling(SETS.eur, { ...base, initial: 500, monthly: 0 }, 10)!;
-    near(roll.annMedian, rollLump.annMedian);
-    expect(roll.finalMax).toBe(0);
   });
 
   it("peňažný fond nemá veľké prepady", () => {
-    const r = compute(SETS.usd, { ...base, set: "usd", phases: [{ from: 0, w: [0, 0, 100] }] });
+    const r = compute(SETS.usd, { ...base, set: "usd", alloc: [0, 0, 100] });
     expect(r.strategy.drawdown.depth).toBeGreaterThan(-0.001);
     expect(r.strategy.volatility).toBeLessThan(0.01);
   });
@@ -441,10 +465,9 @@ describe("vlastnosti výpočtu", () => {
       expect(r.strategy.final).toBeGreaterThan(r.strategy.deposits);
       expect(r.strategy.twr).toBeGreaterThan(0.02);
       expect(r.strategy.twr).toBeLessThan(0.12);
-      expect(r.flat).not.toBeNull();
-      expect(r.yearly.length).toBeGreaterThan(20);
-      expect(r.inputs.start).toBe(isoOf(SETS[id].day[0]));
+      expect(r.rows).toBe(20);
       expect(r.inputs.end).toBe(DATA_END);
+      expect(isoOf(r.startDay)).toBe("2006-08-31");
     }
   });
 });

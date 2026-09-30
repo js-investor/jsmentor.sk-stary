@@ -157,30 +157,62 @@ def cpi_at(st, d: date) -> float:
     return st["cpi"][lo] + (st["cpi"][hi] - st["cpi"][lo]) * (pos - lo)
 
 
-def weights_at(phases, transition, t):
-    """Cieľové váhy v čase t (roky od začiatku, t = poradie mesiaca / 12). phases = [(from, (s, b, c)), ...] vzostupne, prvá má from = 0.
-    Prechod na novú fázu sa začína v jej prvom roku a trvá `transition` rokov, najviac po začiatok ďalšej fázy."""
-    k = 0
-    for i, (f, _w) in enumerate(phases):
-        if t >= f:
-            k = i
-    if k == 0:
-        return tuple(phases[0][1])
-    prev, cur = phases[k - 1][1], phases[k][1]
-    nxt = phases[k + 1][0] if k + 1 < len(phases) else float("inf")
-    length = min(transition, nxt - phases[k][0])
-    x = min(1.0, (t - phases[k][0]) / length) if length > 0 else 1.0
-    return tuple(prev[j] + (cur[j] - prev[j]) * x for j in range(3))
+GOAL_TARGET = (20, 40, 40)
+RENT_TARGET = (50, 30, 20)
+BRAKE_YEARS = 10
 
 
-def simulate(st, inp, phases=None, i0=None, i1=None):
+def normalize(w):
+    """Tri celé čísla so súčtom 100: celé časti a zvyšné body podľa najväčších zvyškov (pri zhode nižší index)."""
+    total = sum(w)
+    scaled = [x / total * 100 for x in w]
+    out = [int(math.floor(x + 1e-9)) for x in scaled]
+    rest = 100 - sum(out)
+    for i in sorted(range(3), key=lambda i: (-(scaled[i] - out[i]), i)):
+        if rest <= 0:
+            break
+        out[i] += 1
+        rest -= 1
+    return tuple(out)
+
+
+def rows_for(inp, n_rows):
+    """Zloženie portfólia pre každý rok investovania (1..n_rows), v percentách.
+    brzda none = stále rovnaké; goal/rent = posledných BRAKE_YEARS rokov lineárne k cieľu; custom = vlastné riadky."""
+    alloc = tuple(inp["alloc"])
+    brake = inp.get("brake", "none")
+    if brake == "custom":
+        rows = [tuple(r) for r in inp["custom"]] or [alloc]
+        rows = rows[:n_rows] + [rows[-1]] * max(0, n_rows - len(rows))
+        return [normalize(r) for r in rows]
+    if brake in ("goal", "rent"):
+        target = GOAL_TARGET if brake == "goal" else RENT_TARGET
+        L = min(BRAKE_YEARS, n_rows)
+        out = []
+        for k in range(n_rows):
+            if k < n_rows - L:
+                out.append(alloc)
+            else:
+                x = (k - (n_rows - L) + 1) / L
+                out.append(normalize([alloc[j] + (target[j] - alloc[j]) * x for j in range(3)]))
+        return out
+    return [alloc] * n_rows
+
+
+def n_rows_of(start, end):
+    return max(1, math.ceil((end - start).days / 365.25 - 0.02))
+
+
+def simulate(st, inp, rows=None, i0=None, i1=None):
     days = st["days"]
     if i0 is None:
         i0 = first_on_or_after(days, iso(inp["start"]))
         i1 = last_on_or_before(days, iso(inp["end"]))
     assert 0 <= i0 < i1 < len(days)
     start, end = days[i0], days[i1]
-    phases = phases if phases is not None else [(p["from"], tuple(x / 100 for x in p["w"])) for p in inp["phases"]]
+    n_rows = n_rows_of(start, end)
+    rows = rows if rows is not None else rows_for(inp, n_rows)
+    rows = [tuple(x / 100 for x in r) for r in rows]
     ret = {a: [v * UNIT[a] for v in st["q"][a]] for a in ("stock", "bond", "cash")}
     dep_days = {}
     k = 0
@@ -191,6 +223,7 @@ def simulate(st, inp, phases=None, i0=None, i1=None):
         dep_days[i] = (k, (inp["initial"] if k == 0 else 0) + inp["monthly"])
         k += 1
     every = 1 if inp["rebalance"] == "monthly" else 12
+    notional = 0 if inp["initial"] + inp["monthly"] > 0 else 1
     h = [0.0, 0.0, 0.0]
     unit, units, values, deposits, dep_sum = 1.0, [], [], [], 0.0
     flows = []
@@ -203,13 +236,13 @@ def simulate(st, inp, phases=None, i0=None, i1=None):
             h = [h[0] * (1 + ret["stock"][i]) * fee, h[1] * (1 + ret["bond"][i]) * fee, h[2] * (1 + ret["cash"][i]) * fee]
             if before > 0:
                 unit *= sum(h) / before
-            else:
-                unit *= (1 + sum(w0 * ret[a][i] for w0, a in zip(phases[0][1], ("stock", "bond", "cash")))) * fee
         if i in dep_days:
             kk, amount = dep_days[i]
-            w = weights_at(phases, inp["transition"], kk / 12)
-            if amount > 0:
-                h = [h[j] + amount * w[j] for j in range(3)]
+            w = rows[min(len(rows) - 1, kk // 12)]
+            amount_in = amount + (notional if kk == 0 else 0)
+            if amount_in > 0:
+                h = [h[j] + amount_in * w[j] for j in range(3)]
+            if amount > 0 and not notional:
                 real_amount = amount * (cpi1 / cpi_at(st, d)) if inp["real"] else amount
                 dep_sum += real_amount
                 flows.append(((end - d).days / 365.25, real_amount))
@@ -217,7 +250,7 @@ def simulate(st, inp, phases=None, i0=None, i1=None):
                 total = sum(h)
                 h = [total * w[j] for j in range(3)]
         units.append(unit * (cpi0 / cpi_at(st, d)) if inp["real"] else unit)
-        values.append(sum(h) * (cpi1 / cpi_at(st, d)) if inp["real"] else sum(h))
+        values.append(0.0 if notional else (sum(h) * (cpi1 / cpi_at(st, d)) if inp["real"] else sum(h)))
         deposits.append(dep_sum)
     years = (end - start).days / 365.25
     final = values[-1]
@@ -245,17 +278,19 @@ def simulate(st, inp, phases=None, i0=None, i1=None):
     logs = [math.log(units[j] / units[j - 1]) for j in range(1, len(units))]
     mean = sum(logs) / len(logs)
     vol = math.sqrt(sum((x - mean) ** 2 for x in logs) / (len(logs) - 1)) * math.sqrt(252) if len(logs) > 1 else 0.0
-    yearly = {}
-    prev = 1.0
+    yearly, profit = {}, {}
+    prev, prev_value, prev_dep = 1.0, values[0] - deposits[0], 0.0
     for j, u in enumerate(units):
         y = days[i0 + j].year
         if j + 1 == len(units) or days[i0 + j + 1].year != y:
             yearly[str(y)] = u / prev - 1
-            prev = u
+            profit[str(y)] = values[j] - prev_value - (deposits[j] - prev_dep)
+            prev, prev_value, prev_dep = u, values[j], deposits[j]
     return {
-        "start": start.isoformat(), "end": end.isoformat(), "days": i1 - i0 + 1, "final": final, "deposits": dep_sum, "unit": units[-1],
+        "start": start.isoformat(), "end": end.isoformat(), "days": i1 - i0 + 1, "rows": n_rows, "final": final, "deposits": dep_sum, "unit": units[-1],
         "twr": units[-1] ** (1 / years) - 1, "irr": irr, "maxDrawdown": best, "ddPeak": days[i0 + res[0]].isoformat(), "ddTrough": days[i0 + res[1]].isoformat(),
-        "ddRecovery": days[i0 + rec].isoformat() if rec is not None else None, "volatility": vol, "yearly": yearly, "depositCount": len([1 for v in dep_days.values() if v[1] > 0]),
+        "ddRecovery": days[i0 + rec].isoformat() if rec is not None else None, "volatility": vol, "yearly": yearly, "profit": profit,
+        "depositCount": len([1 for v in dep_days.values() if v[1] > 0]), "allocation": [list(r) for r in rows_for(inp, n_rows)],
         "_units": units, "_i0": i0,
     }
 
@@ -300,43 +335,46 @@ def rolling(st, inp, horizon):
             "positive": sum(1 for r in rows if r["final"] >= r["deposits"]) / len(rows), "worstStart": worst["start"], "bestStart": best["start"], "firstStart": rows[0]["start"], "lastStart": rows[-1]["start"]}
 
 
-BASE = {"initial": 10000, "monthly": 300, "transition": 0, "rebalance": "yearly", "cost": 0, "real": False}
+BASE = {"initial": 10000, "monthly": 300, "alloc": [60, 20, 20], "brake": "none", "custom": [], "rebalance": "yearly", "cost": 0, "real": False, "years": 20}
+LIFE = [[90, 10, 0]] * 15 + [[60, 30, 10]] * 7 + [[30, 40, 30]] * 6
 CASES = [
-    {"name": "EUR celé obdobie, 80/15/5", "set": "eur", "start": "1999-01-04", "end": "2026-08-31", "phases": [{"from": 0, "w": [80, 15, 5]}], "rolling": 10},
-    {"name": "EUR len akcie, jednorazovo", "set": "eur", "start": "1999-01-04", "end": "2026-08-31", "initial": 10000, "monthly": 0, "phases": [{"from": 0, "w": [100, 0, 0]}]},
-    {"name": "EUR len dlhopisy, jednorazovo", "set": "eur", "start": "1999-01-04", "end": "2026-08-31", "initial": 10000, "monthly": 0, "phases": [{"from": 0, "w": [0, 100, 0]}]},
-    {"name": "EUR len peňažný fond, jednorazovo", "set": "eur", "start": "1999-01-04", "end": "2026-08-31", "initial": 10000, "monthly": 0, "phases": [{"from": 0, "w": [0, 0, 100]}]},
-    {"name": "EUR od vrcholu 2000, tri fázy naraz", "set": "eur", "start": "2000-03-27", "end": "2026-08-31", "phases": [{"from": 0, "w": [90, 10, 0]}, {"from": 10, "w": [60, 30, 10]}, {"from": 20, "w": [30, 40, 30]}]},
-    {"name": "EUR od vrcholu 2000, tri fázy postupne 5 rokov, mesačné rebalansovanie", "set": "eur", "start": "2000-03-27", "end": "2026-08-31", "transition": 5, "rebalance": "monthly", "phases": [{"from": 0, "w": [90, 10, 0]}, {"from": 10, "w": [60, 30, 10]}, {"from": 20, "w": [30, 40, 30]}]},
-    {"name": "EUR víkendový začiatok a koniec, náklady 0,5 %", "set": "eur", "start": "2008-03-15", "end": "2020-03-22", "cost": 0.5, "phases": [{"from": 0, "w": [60, 20, 20]}]},
-    {"name": "EUR po inflácii", "set": "eur", "start": "2010-06-01", "end": "2026-08-31", "real": True, "phases": [{"from": 0, "w": [60, 20, 20]}]},
-    {"name": "EUR len mesačné vklady, začiatok 31. v mesiaci", "set": "eur", "start": "2015-01-31", "end": "2025-12-31", "initial": 0, "monthly": 500, "phases": [{"from": 0, "w": [70, 20, 10]}]},
-    {"name": "EUR predvolené nastavenie nástroja", "set": "eur", "start": "1999-01-04", "end": "2026-08-31", "transition": 3, "phases": [{"from": 0, "w": [90, 10, 0]}, {"from": 15, "w": [60, 30, 10]}, {"from": 22, "w": [30, 40, 30]}]},
-    {"name": "USD predvolené nastavenie nástroja", "set": "usd", "start": "1962-01-02", "end": "2026-08-31", "transition": 3, "phases": [{"from": 0, "w": [90, 10, 0]}, {"from": 15, "w": [60, 30, 10]}, {"from": 22, "w": [30, 40, 30]}]},
-    {"name": "USD celé obdobie, 60/20/20", "set": "usd", "start": "1962-01-02", "end": "2026-08-31", "phases": [{"from": 0, "w": [60, 20, 20]}], "rolling": 15},
-    {"name": "USD životný cyklus po inflácii, začiatky na 20 rokov", "set": "usd", "start": "1980-01-02", "end": "2010-01-04", "real": True, "cost": 0.3, "transition": 4, "rebalance": "monthly", "phases": [{"from": 0, "w": [90, 10, 0]}, {"from": 10, "w": [60, 30, 10]}, {"from": 16, "w": [30, 40, 30]}], "rolling": 20},
-    {"name": "USD len akcie, jednorazovo", "set": "usd", "start": "1962-01-02", "end": "2026-08-31", "initial": 10000, "monthly": 0, "phases": [{"from": 0, "w": [100, 0, 0]}]},
-    {"name": "USD pred čiernym pondelkom, štyri fázy postupne 3 roky", "set": "usd", "start": "1987-08-25", "end": "2026-08-31", "transition": 3, "phases": [{"from": 0, "w": [100, 0, 0]}, {"from": 15, "w": [70, 25, 5]}, {"from": 25, "w": [50, 35, 15]}, {"from": 35, "w": [25, 40, 35]}]},
-    {"name": "USD po inflácii s nákladmi, 1973 až 1983", "set": "usd", "start": "1973-01-11", "end": "1983-01-11", "real": True, "cost": 1, "initial": 50000, "monthly": 0, "phases": [{"from": 0, "w": [50, 30, 20]}]},
-    {"name": "USD krátke obdobie covid", "set": "usd", "start": "2020-02-19", "end": "2020-12-31", "initial": 20000, "monthly": 1000, "phases": [{"from": 0, "w": [80, 20, 0]}]},
+    {"name": "EUR celé obdobie, 80/15/5 bez brzdy", "set": "eur", "start": "1999-01-04", "end": "2026-08-31", "alloc": [80, 15, 5], "rolling": 10},
+    {"name": "EUR len akcie, jednorazovo", "set": "eur", "start": "1999-01-04", "end": "2026-08-31", "initial": 10000, "monthly": 0, "alloc": [100, 0, 0]},
+    {"name": "EUR len dlhopisy, jednorazovo", "set": "eur", "start": "1999-01-04", "end": "2026-08-31", "initial": 10000, "monthly": 0, "alloc": [0, 100, 0]},
+    {"name": "EUR len peňažný fond, jednorazovo", "set": "eur", "start": "1999-01-04", "end": "2026-08-31", "initial": 10000, "monthly": 0, "alloc": [0, 0, 100]},
+    {"name": "EUR od vrcholu 2000, brzda na cieľ", "set": "eur", "start": "2000-03-27", "end": "2026-08-31", "alloc": [90, 10, 0], "brake": "goal"},
+    {"name": "EUR od vrcholu 2000, brzda na rentu, mesačné vyvažovanie", "set": "eur", "start": "2000-03-27", "end": "2026-08-31", "alloc": [90, 10, 0], "brake": "rent", "rebalance": "monthly"},
+    {"name": "EUR vlastné riadky (životný cyklus 15/22), celé obdobie", "set": "eur", "start": "1999-01-04", "end": "2026-08-31", "alloc": [90, 10, 0], "brake": "custom", "custom": LIFE},
+    {"name": "EUR vlastné riadky kratšie ako obdobie (posledný riadok sa opakuje)", "set": "eur", "start": "2005-01-03", "end": "2026-08-31", "alloc": [70, 20, 10], "brake": "custom", "custom": [[70, 20, 10], [70, 20, 10], [50, 30, 20]]},
+    {"name": "EUR víkendový začiatok a koniec, náklady 0,5 %", "set": "eur", "start": "2008-03-15", "end": "2020-03-22", "cost": 0.5},
+    {"name": "EUR po inflácii", "set": "eur", "start": "2010-06-01", "end": "2026-08-31", "real": True},
+    {"name": "EUR len mesačné vklady, začiatok 31. v mesiaci", "set": "eur", "start": "2015-01-31", "end": "2025-12-31", "initial": 0, "monthly": 500, "alloc": [70, 20, 10]},
+    {"name": "EUR predvolené nastavenie nástroja (20 rokov, 60/20/20, bez brzdy)", "set": "eur", "start": "2006-08-31", "end": "2026-08-31"},
+    {"name": "EUR 20 rokov, brzda na cieľ", "set": "eur", "start": "2006-08-31", "end": "2026-08-31", "brake": "goal"},
+    {"name": "EUR 5 rokov, brzda na cieľ (kratšie ako 10 rokov)", "set": "eur", "start": "2021-08-31", "end": "2026-08-31", "alloc": [100, 0, 0], "brake": "goal"},
+    {"name": "USD celé obdobie, 60/20/20", "set": "usd", "start": "1962-01-02", "end": "2026-08-31", "rolling": 15},
+    {"name": "USD 40 rokov, brzda na rentu po inflácii s nákladmi", "set": "usd", "start": "1986-08-31", "end": "2026-08-31", "alloc": [80, 15, 5], "brake": "rent", "real": True, "cost": 0.3, "rebalance": "monthly", "rolling": 20},
+    {"name": "USD len akcie, jednorazovo", "set": "usd", "start": "1962-01-02", "end": "2026-08-31", "initial": 10000, "monthly": 0, "alloc": [100, 0, 0]},
+    {"name": "USD pred čiernym pondelkom, vlastné riadky", "set": "usd", "start": "1987-08-25", "end": "2026-08-31", "alloc": [100, 0, 0], "brake": "custom", "custom": [[100, 0, 0]] * 15 + [[70, 25, 5]] * 10 + [[50, 35, 15]] * 10 + [[25, 40, 35]] * 5},
+    {"name": "USD po inflácii s nákladmi, 1973 až 1983", "set": "usd", "start": "1973-01-11", "end": "1983-01-11", "real": True, "cost": 1, "initial": 50000, "monthly": 0, "alloc": [50, 30, 20]},
+    {"name": "USD krátke obdobie covid", "set": "usd", "start": "2020-02-19", "end": "2020-12-31", "initial": 20000, "monthly": 1000, "alloc": [80, 20, 0]},
 ]
 cases = []
 for c in CASES:
     inp = {**BASE, **{k: v for k, v in c.items() if k not in ("name", "rolling")}}
     st = sets[inp["set"]]
     res = simulate(st, inp)
-    stocks = simulate(st, inp, phases=[(0, (1.0, 0.0, 0.0))])
-    first = inp["phases"][0]
-    flat = simulate(st, inp, phases=[(0, tuple(x / 100 for x in first["w"]))])
+    stocks = simulate(st, inp, rows=[(100, 0, 0)])
+    other = simulate(st, {**inp, "real": not inp["real"]})
     exp = {k: v for k, v in res.items() if not k.startswith("_")}
     exp["stocksFinal"], exp["stocksTwr"], exp["stocksMaxDrawdown"] = stocks["final"], stocks["twr"], stocks["maxDrawdown"]
-    exp["flatFinal"], exp["flatTwr"], exp["flatMaxDrawdown"] = flat["final"], flat["twr"], flat["maxDrawdown"]
+    exp["otherModeFinal"], exp["otherModeDeposits"], exp["otherModeTwr"], exp["otherModeProfit"] = other["final"], other["deposits"], other["twr"], other["profit"]
     exp["crises"] = crises_of(st, inp, res, stocks)
     if "rolling" in c:
         exp["rolling"] = rolling(st, inp, c["rolling"])
     cases.append({"name": c["name"], "inputs": inp, "expected": exp})
-    extra = f"  | {exp['rolling']['count']} začiatkov na {c['rolling']} r.: {exp['rolling']['annMin'] * 100:.2f} / {exp['rolling']['annMedian'] * 100:.2f} / {exp['rolling']['annMax'] * 100:.2f} % p. a., v pluse {exp['rolling']['positive'] * 100:.0f} %" if "rolling" in c else ""
-    print(f"{c['name'][:58]:58s} konečná {res['final']:13.2f} vklady {res['deposits']:10.2f} ročne {res['twr'] * 100:6.2f} % IRR {res['irr'] * 100:6.2f} % prepad {res['maxDrawdown'] * 100:6.1f} % | len akcie {stocks['final']:13.2f} bez zmeny {flat['final']:13.2f}{extra}")
+    extra = f"  | {exp['rolling']['count']} začiatkov na {c['rolling']} r.: {exp['rolling']['annMin'] * 100:.2f} / {exp['rolling']['annMedian'] * 100:.2f} / {exp['rolling']['annMax'] * 100:.2f} % p. a." if "rolling" in c else ""
+    print(f"{c['name'][:60]:60s} riadkov {res['rows']:2d} konečná {res['final']:13.2f} vklady {res['deposits']:10.2f} ročne {res['twr'] * 100:6.2f} % prepad {res['maxDrawdown'] * 100:6.1f} % | len akcie {stocks['final']:13.2f}{extra}")
 
 # ------------------------------------------------------------------ výstup
 (HERE / "out" / "cases.json").write_text(json.dumps(cases, ensure_ascii=False, indent=1), encoding="utf-8")
@@ -428,13 +466,17 @@ fixture = [
     "  ddRecovery: string | null;",
     "  volatility: number;",
     "  yearly: Record<string, number>;",
+    "  profit: Record<string, number>;",
+    "  rows: number;",
+    "  allocation: number[][];",
     "  depositCount: number;",
     "  stocksFinal: number;",
     "  stocksTwr: number;",
     "  stocksMaxDrawdown: number;",
-    "  flatFinal: number;",
-    "  flatTwr: number;",
-    "  flatMaxDrawdown: number;",
+    "  otherModeFinal: number;",
+    "  otherModeDeposits: number;",
+    "  otherModeTwr: number;",
+    "  otherModeProfit: Record<string, number>;",
     "  crises: { id: string; strategy: number; stocks: number }[];",
     "  rolling?: {",
     "    horizon: number;",
@@ -462,36 +504,29 @@ fixture = [
 print("kontrolné prípady pre testy zapísané")
 
 # ------------------------------------------------------------------ očakávané hodnoty pre kontrolu v prehliadači (ui-check.mjs)
-UI_W = ([90, 10, 0], [60, 30, 10], [30, 40, 30])
-
-
-def ui_life(a, b):
-    return [{"from": 0, "w": UI_W[0]}, {"from": a, "w": UI_W[1]}, {"from": b, "w": UI_W[2]}]
-
-
-UI_BAL = [{"from": 0, "w": [60, 20, 20]}]
-UI_BASE = {"initial": 10000, "monthly": 300, "transition": 3, "rebalance": "yearly", "cost": 0, "real": False, "set": "eur", "start": "1999-01-04", "end": S["end"]}
+UI_BASE = {**BASE, "initial": 5000, "monthly": 150, "set": "eur", "start": "2006-08-31", "end": S["end"]}
 UI = {
-    "s1": {"phases": ui_life(15, 22)},
-    "s2_usd": {"set": "usd", "start": "1962-01-02", "phases": ui_life(36, 52)},
-    "s3_vyvazena": {"phases": UI_BAL},
-    "s4_10rokov": {"start": "2016-08-31", "phases": ui_life(6, 8)},
-    "s6_real": {"phases": UI_BAL, "real": True},
-    "s8_monthly": {"phases": UI_BAL, "rebalance": "monthly"},
-    "s9_naraz": {"phases": ui_life(15, 22), "transition": 0},
-    "s10_usd_vyvazena": {"set": "usd", "start": "1962-01-02", "phases": UI_BAL},
-    "s11_dotcom_start": {"start": "2000-09-07", "phases": UI_BAL},
-    "s12_konzervativna": {"phases": [{"from": 0, "w": [30, 40, 30]}]},
-    "s13_dynamicka": {"phases": [{"from": 0, "w": [90, 10, 0]}]},
-    "s14_cost1": {"phases": UI_BAL, "cost": 1},
-    "s15_jednorazovo": {"phases": UI_BAL, "monthly": 0},
-    "s16_5rokov_vlastna": {"start": "2021-08-31", "phases": ui_life(7, 8)},
+    "s1_default": {},
+    "s2_goal": {"brake": "goal"},
+    "s3_rent": {"brake": "rent"},
+    "s4_dynamicka": {"alloc": [100, 0, 0]},
+    "s5_konzervativna": {"alloc": [30, 40, 30]},
+    "s6_real": {"real": True},
+    "s7_30rokov_usd": {"set": "usd", "start": "1996-08-31"},
+    "s8_usd_40": {"set": "usd", "start": "1986-08-31"},
+    "s9_cost1": {"cost": 1},
+    "s10_monthly": {"rebalance": "monthly"},
+    "s11_jednorazovo": {"monthly": 0},
+    "s12_10rokov": {"start": "2016-08-31"},
+    "s13_eur_max": {"start": "1999-01-04"},
+    "s14_custom_row5": {"brake": "custom", "custom": [[60, 20, 20]] * 4 + [[30, 20, 50]] * 16},
+    "s15_dotcom": {"start": "2000-09-07"},
 }
 ui_expected = {}
 for key, change in UI.items():
     inp = {**UI_BASE, **change}
     res = simulate(sets[inp["set"]], inp)
-    ui_expected[key] = {k: res[k] for k in ("start", "end", "final", "deposits", "twr", "irr", "maxDrawdown", "ddPeak", "ddTrough", "ddRecovery", "depositCount")}
+    ui_expected[key] = {k: res[k] for k in ("start", "end", "rows", "final", "deposits", "twr", "irr", "maxDrawdown", "ddPeak", "ddTrough", "ddRecovery", "depositCount", "allocation", "profit")}
 (HERE / "out" / "ui_expected.json").write_text(json.dumps(ui_expected, indent=1), encoding="utf-8")
 print("očakávané hodnoty pre kontrolu v prehliadači zapísané:", len(ui_expected))
 

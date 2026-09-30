@@ -1,6 +1,6 @@
 /**
  * Investičná stratégia – historické denné dáta (generovaný súbor, neupravovať ručne).
- * Vygenerované 2026-09-29 skriptom scripts/investicna-strategia/build_module.py; posledný deň dát 2026-08-31.
+ * Vygenerované 2026-09-30 skriptom scripts/investicna-strategia/build_module.py; posledný deň dát 2026-08-31.
  *
  * Zdroje:
  *  - akcie: Kenneth R. French Data Library (Dartmouth College). USA = celý americký akciový trh (CRSP), svet = rozvinuté trhy.

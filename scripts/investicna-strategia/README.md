@@ -49,10 +49,18 @@ percentuálnych bodov. Pri orientačnom porovnaní s ročnými výnosmi indexu v
 (čistý výnos v eurách, roky 2011 až 2024, hodnoty z verejných prehľadov, nie sú súčasťou dát) bol rozdiel v jednom roku
 najviac 2,3 bodu a v priemere 0,25 bodu ročne.
 
+## Model v skratke
+
+Vstupy: súbor dát, dĺžka investovania v rokoch (posledných N rokov dát) alebo presné dni Od a Do, jednorazový a mesačný vklad,
+zloženie v prvom roku (akcie / dlhopisy / peňažný fond) a brzda: `none` (stále rovnaké), `goal` a `rent` (posledných 10 rokov
+lineárne k 20/40/40, resp. 50/30/20), `custom` (zloženie pre každý rok zvlášť). Vklady sa rozdeľujú podľa zloženia daného roka,
+portfólio sa naň vracia raz ročne alebo mesačne, náklady sa strhávajú denne, reálne výnosy sú v cenách z konca obdobia.
+Predvolené nastavenie nástroja: 5 000 + 150 mesačne, 20 rokov, 60/20/20, bez brzdy.
+
 ## Kontrola v prehliadači
 
-`ui-check.mjs` prekliká celý nástroj (vyše 200 kontrol: výpočet proti nezávislému výpočtu, graf, záložky, editor stratégie,
-oba súbory dát, export, odkaz na scenár, šírky od 320 do 1920 px). Beží len proti lokálnemu serveru:
+`ui-check.mjs` prekliká celý nástroj (vyše 180 kontrol: výpočet proti nezávislému výpočtu, parametre, alokácia, brzda, graf,
+záložky, export, odkaz na scenár, šírky od 320 do 1920 px). Beží len proti lokálnemu serveru:
 
 ```bash
 mkdir -p /tmp/pptr && cd /tmp/pptr && npm i puppeteer-core
