@@ -1,5 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { scrollToAnchorId, isScrolledNearAnchor } from "@/lib/scrollToFormular";
 
 /** Zachytí klik na same-page anchor linky — zabráni dvojitému scrollu (browser + ScrollToTop). */
@@ -61,7 +61,7 @@ import KalkulackyCategoryPage from "./pages/kalkulacky/KalkulackyCategoryPage.ts
 import KalkulackyProductPage from "./pages/kalkulacky/KalkulackyProductPage.tsx";
 import {
   BONUSY_BASE_PATH,
-  KALKULACKY_CALCULATORS,
+  KALKULACKY_ROUTES,
 } from "./pages/kalkulacky/kalkulackyConfig.ts";
 import InteligentnaHypotekaCalculator from "./components/calculators/inteligentna-hypoteka/InteligentnaHypotekaCalculator.tsx";
 import InvesticnaCalculator from "./components/calculators/investicna/InvesticnaCalculator.tsx";
@@ -79,6 +79,19 @@ import VynosnostBytuCalculator from "./components/calculators/vynosnost-bytu/Vyn
 import NotFound from "./pages/NotFound.tsx";
 import type { ReactNode } from "react";
 
+/* Investičná stratégia sa načíta až pri otvorení: kód nástroja aj historické dáta sú mimo hlavného balíka. */
+const ToolLoadError = () => (
+  <div className="flex min-h-[28rem] flex-col items-center justify-center gap-4 text-center font-sans" role="alert">
+    <p className="max-w-sm text-sm text-muted-foreground">Nástroj sa nepodarilo načítať. Skontroluj pripojenie a skús to znova.</p>
+    <button type="button" className="btn-primary rounded-full px-5 py-3 text-sm font-semibold" onClick={() => window.location.reload()}>
+      Skúsiť znova
+    </button>
+  </div>
+);
+const InvesticnaStrategiaCalculator = lazy(() =>
+  import("./components/calculators/investicna-strategia/InvesticnaStrategiaCalculator.tsx").catch(() => ({ default: ToolLoadError })),
+);
+
 const calculatorBySlug: Record<string, ReactNode> = {
   "inteligentna-hypoteka": <InteligentnaHypotekaCalculator />,
   "investicna-kalkulacka": <InvesticnaCalculator />,
@@ -93,6 +106,11 @@ const calculatorBySlug: Record<string, ReactNode> = {
   "financny-checkup":    <FinancnyCheckup />,
   "skoring-bytov":       <SkoringBytovCalculator />,
   "vynosnost-bytu":      <VynosnostBytuCalculator />,
+  "investicna-strategia": (
+    <Suspense fallback={<p className="flex min-h-[28rem] items-center justify-center font-sans text-sm text-muted-foreground" role="status">Načítavam nástroj…</p>}>
+      <InvesticnaStrategiaCalculator />
+    </Suspense>
+  ),
 };
 
 const App = () => (
@@ -109,7 +127,7 @@ const App = () => (
       <Route path={BONUSY_BASE_PATH} element={<KalkulackyCategoryPage />} />
       {/* Hypotéka vs. investovanie nahradila Inteligentná hypotéka – stará URL presmeruje */}
       <Route path={`${BONUSY_BASE_PATH}/hypo-kalkulacka`} element={<Navigate to={`${BONUSY_BASE_PATH}/inteligentna-hypoteka`} replace />} />
-      {KALKULACKY_CALCULATORS.map((c) => {
+      {KALKULACKY_ROUTES.map((c) => {
         const calculator = calculatorBySlug[c.slug];
         return (
           <Route

@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
  * ------------------------------------------------------------------------- */
 
 export type ToneId = "sage" | "lime" | "green" | "sand" | "stone" | "rust" | "clay" | "forest" | "brown";
-export type Glyph = "venn" | "arcs" | "coins" | "gauge" | "pie" | "map" | "crescent" | "semafor" | "steps" | "dots" | "ring" | "house" | "euro" | "slice" | "cross" | "sun";
+export type Glyph = "venn" | "arcs" | "coins" | "gauge" | "pie" | "map" | "crescent" | "semafor" | "steps" | "dots" | "ring" | "house" | "euro" | "slice" | "cross" | "sun" | "glide";
 
 /* tón: povrch karty, hlavná farba tvaru, sekundárna farba tvaru, text, tlmený text */
 export const TONES: Record<ToneId, { bg: string; fg: string; fg2: string; text?: string; muted?: string }> = {
@@ -33,6 +33,7 @@ export const TOOL_META: Record<string, { category: string; tone: ToneId; glyph: 
   "skoring-bytov": { category: "Nehnuteľnosti", tone: "sand", glyph: "ring", score: 84 },
   "inteligentna-hypoteka": { category: "Hypotéka", tone: "sand", glyph: "cross" },
   "investicna-kalkulacka": { category: "Investovanie", tone: "green", glyph: "steps" },
+  "investicna-strategia": { category: "Investovanie", tone: "brown", glyph: "glide" },
   "mzdova-kalkulacka": { category: "Mzda", tone: "stone", glyph: "euro" },
   "uverova-kalkulacka": { category: "Úvery", tone: "stone", glyph: "coins" },
   "maximalna-hypoteka": { category: "Hypotéka", tone: "sand", glyph: "gauge" },
@@ -43,7 +44,7 @@ export const TOOL_META: Record<string, { category: string; tone: ToneId; glyph: 
   "vynosnost-bytu": { category: "Nehnuteľnosti", tone: "green", glyph: "house" },
 };
 
-export const NEW_SLUGS = new Set(["financny-checkup", "skoring-bytov", "vynosnost-bytu", "inteligentna-hypoteka"]);
+export const NEW_SLUGS = new Set(["financny-checkup", "skoring-bytov", "vynosnost-bytu", "inteligentna-hypoteka", "investicna-strategia"]);
 export const FAVORITE_SLUGS = new Set(["rentova-kalkulacka"]);
 export const focusClass = "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
 export const toneStyle = (t: ToneId, i = 0) => ({ "--i": i, "--tone-bg": TONES[t].bg, "--tone-fg": TONES[t].fg, "--tone-fg2": TONES[t].fg2, "--tone-text": TONES[t].text ?? "#292420", "--tone-muted": TONES[t].muted ?? "#4a4239" } as CSSProperties);
@@ -142,6 +143,18 @@ export const GlyphArt = ({ glyph, tone, score }: { glyph: Glyph; tone: ToneId; s
           <line className="g-ray" x1="91" y1="53" x2="101" y2="43" stroke={fg2} strokeWidth="6" strokeLinecap="round" />
           <circle className="g-sun" cx="60" cy="86" r="34" fill={fg} clipPath="url(#bz-sun-clip)" />
           <line x1="8" y1="82" x2="112" y2="82" stroke={fg2} strokeWidth="8" strokeLinecap="round" />
+        </svg>
+      );
+    case "glide":
+      /* investičná stratégia: tri vrstvy portfólia, akcie v čase ustupujú bezpečnejším zložkám */
+      return (
+        <svg viewBox="0 0 120 120" aria-hidden>
+          <defs><clipPath id="bz-glide-clip"><rect x="12" y="18" width="96" height="86" rx="16" /></clipPath></defs>
+          <g clipPath="url(#bz-glide-clip)">
+            <rect x="12" y="18" width="96" height="86" fill={fg2} />
+            <path className="g-2" d="M12 42 C 46 42, 72 50, 108 54 L108 118 L12 118 Z" fill={fg} fillOpacity="0.5" />
+            <path className="g-1" d="M12 56 C 46 58, 72 84, 108 90 L108 118 L12 118 Z" fill={fg} />
+          </g>
         </svg>
       );
     case "dots":

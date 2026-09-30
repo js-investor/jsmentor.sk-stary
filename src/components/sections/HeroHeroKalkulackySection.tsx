@@ -2,7 +2,7 @@ import AnimatedSection from "@/components/AnimatedSection";
 import { CENNIK_SECTION_HREF } from "@/lib/cennikCta";
 import { ArrowRight, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
-import { BONUSY_BASE_PATH, BONUSY_TOTAL_VALUE, KALKULACKY_CALCULATORS } from "@/pages/kalkulacky/kalkulackyConfig";
+import { BONUSY_BASE_PATH, BONUSY_TOTAL_VALUE, KALKULACKY_CALCULATORS, bonusyCountWord } from "@/pages/kalkulacky/kalkulackyConfig";
 import { ToolCard } from "@/pages/kalkulacky/bonusyCards";
 import "@/pages/kalkulacky/bonusy-dashboard.css";
 import "./komunita-bonusy.css";
@@ -57,8 +57,8 @@ const HeroHeroKalkulackySection = ({ locked = false }: { locked?: boolean }) => 
           </h2>
           <p className="mx-auto mt-5 max-w-2xl text-center font-sans text-[1.125rem] leading-relaxed text-muted-foreground md:text-[1.25rem] lg:text-[1.375rem]">
             {locked
-              ? "Trinásť kalkulačiek a nástrojov, ktoré dostaneš ako bonus hneď po pripojení do komunity. Ukážem ti, ako z nich vyťažiť maximum na tvojich vlastných číslach."
-              : "Trinásť kalkulačiek a nástrojov priamo v prehliadači. Žiadna registrácia, presné čísla hneď. V komunite ti ukážem, ako z nich vyťažiť maximum na tvojich vlastných číslach."}
+              ? `${bonusyCountWord(KALKULACKY_CALCULATORS.length)} kalkulačiek a nástrojov, ktoré dostaneš ako bonus hneď po pripojení do komunity. Ukážem ti, ako z nich vyťažiť maximum na tvojich vlastných číslach.`
+              : `${bonusyCountWord(KALKULACKY_CALCULATORS.length)} kalkulačiek a nástrojov priamo v prehliadači. Žiadna registrácia, presné čísla hneď. V komunite ti ukážem, ako z nich vyťažiť maximum na tvojich vlastných číslach.`}
           </p>
           {locked ? (
             <p className="kb-value" aria-label={`${KALKULACKY_CALCULATORS.length} nástrojov v hodnote ${BONUSY_TOTAL_VALUE}, pre členov úplne zadarmo`}>

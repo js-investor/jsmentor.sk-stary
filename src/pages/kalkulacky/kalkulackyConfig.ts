@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { BarChart3, FileDown, House, Percent, Receipt, Wallet, MapPin, TrendingUp, ScanLine, TrafficCone, HeartPulse, Building2, Landmark } from "lucide-react";
+import { BarChart3, FileDown, House, Percent, Receipt, Wallet, MapPin, TrendingUp, ScanLine, TrafficCone, HeartPulse, Building2, Landmark, History } from "lucide-react";
 
 export const BONUSY_BASE_PATH = "/bonusy";
 
@@ -19,10 +19,12 @@ export type KalkulackaCalculatorMeta = {
   Icon: LucideIcon;
   /** Kalkulačka manažuje vlastné sekcie na celú šírku stránky. */
   fullBleed?: boolean;
+  /** Nástroj má svoju stránku, ale nie je na prehľade, v menu ani v počtoch (dostupný len cez priamy odkaz). */
+  hidden?: boolean;
 };
 
 /** Zodpovedá súborom: Hypo Smart, Investičná, Mzdová kalkulačka, Podľa príjmu, Rentová kalkulačka. */
-export const KALKULACKY_CALCULATORS: KalkulackaCalculatorMeta[] = [
+const ALL_CALCULATORS: KalkulackaCalculatorMeta[] = [
   {
     slug: "inteligentna-hypoteka",
     title: "Inteligentná hypotéka",
@@ -38,6 +40,14 @@ export const KALKULACKY_CALCULATORS: KalkulackaCalculatorMeta[] = [
     description:
       "Jednorazové a pravidelné vklady, očakávané zhodnotenie a zložené úročenie v priebehu rokov.",
     Icon: BarChart3,
+  },
+  {
+    slug: "investicna-strategia",
+    title: "Investičná stratégia",
+    menuLabel: "Investičná stratégia",
+    description:
+      "Pomer akcií, dlhopisov a peňažného fondu na skutočných denných dátach od roku 1962. Vyber deň začiatku aj konca a meň stratégiu v čase.",
+    Icon: History,
   },
   {
     slug: "mzdova-kalkulacka",
@@ -131,6 +141,18 @@ export const KALKULACKY_CALCULATORS: KalkulackaCalculatorMeta[] = [
   },
 ];
 
+/** Všetky nástroje vrátane skrytých: z tohto zoznamu vznikajú stránky. */
+export const KALKULACKY_ROUTES: KalkulackaCalculatorMeta[] = ALL_CALCULATORS;
+
+/** Nástroje viditeľné na prehľade, v menu a v počtoch. */
+export const KALKULACKY_CALCULATORS: KalkulackaCalculatorMeta[] = ALL_CALCULATORS.filter((c) => !c.hidden);
+
+const HIDDEN_HREFS = new Set(ALL_CALCULATORS.filter((c) => c.hidden).map((c) => `${BONUSY_BASE_PATH}/${c.slug}`));
+
+/** Počet nástrojov slovom na začiatku vety. */
+export const bonusyCountWord = (n: number): string =>
+  ({ 12: "Dvanásť", 13: "Trinásť", 14: "Štrnásť", 15: "Pätnásť", 16: "Šestnásť", 17: "Sedemnásť", 18: "Osemnásť" })[n] ?? String(n);
+
 /** Položka menu — doplniť `href`, keď bude PDF pripravené. */
 export const BONUSY_PDF_MENU_ITEM = {
   label: "PDF",
@@ -151,7 +173,7 @@ export type NavGroup = {
   items: { label: string; href: string }[];
 };
 
-export const KALKULACKY_HEADER_GROUPS: NavGroup[] = [
+const HEADER_GROUPS: NavGroup[] = [
   {
     label: "Kalkulačky",
     items: [
@@ -173,6 +195,7 @@ export const KALKULACKY_HEADER_GROUPS: NavGroup[] = [
       { label: "Finančný check-up", href: `${BONUSY_BASE_PATH}/financny-checkup` },
       { label: "Skóring bytov", href: `${BONUSY_BASE_PATH}/skoring-bytov` },
       { label: "Výnosnosť bytu", href: `${BONUSY_BASE_PATH}/vynosnost-bytu` },
+      { label: "Investičná stratégia", href: `${BONUSY_BASE_PATH}/investicna-strategia` },
     ],
   },
   {
@@ -180,6 +203,8 @@ export const KALKULACKY_HEADER_GROUPS: NavGroup[] = [
     items: [],
   },
 ];
+
+export const KALKULACKY_HEADER_GROUPS: NavGroup[] = HEADER_GROUPS.map((g) => ({ ...g, items: g.items.filter((i) => !HIDDEN_HREFS.has(i.href)) }));
 
 export const KALKULACKY_KONZULTACIA_CARD = {
   title: "Mám otázku k výsledku",
