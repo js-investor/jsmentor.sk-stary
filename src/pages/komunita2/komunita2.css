@@ -383,8 +383,8 @@
 .km-summary .km-btn { white-space: normal; text-align: center; line-height: 1.25; padding-top: 0.8rem; padding-bottom: 0.8rem; }
 
 /* ---------- 3. Prvých 14 dní: tmavý pás so stepperom (prevzaté z /nova; v živom shelle komunita.html je rovnaký doplnok) ---------- */
-#prvych-14-dni.km14-band { padding: 4.5rem 0; background: radial-gradient(120% 90% at 50% 0%, #4a3c31 0%, #322b26 48%, #241f1b 100%); color: #f3e9dd; box-shadow: inset 0 1px 0 rgba(243, 233, 221, 0.08); }
-@media (min-width: 900px) { #prvych-14-dni.km14-band { padding: 6rem 0; } }
+#prvych-14-dni.km14-band { padding: 1.5rem 0 4.5rem; background: #241f1b radial-gradient(80% 70% at 50% 60%, #2e2722 0%, rgba(36, 31, 27, 0) 100%); color: #f3e9dd; box-shadow: none; }
+@media (min-width: 900px) { #prvych-14-dni.km14-band { padding: 2.5rem 0 6rem; } }
 #prvych-14-dni.km14-band .km-head--left { max-width: 48rem; margin: 0 auto; text-align: center; }
 #prvych-14-dni.km14-band .km-kicker { justify-content: center; margin-bottom: 1.25rem; padding: 0.4375rem 0.9375rem 0.4375rem 0.75rem; border-radius: 9999px; border: 1px solid rgba(217, 177, 92, 0.35); background: rgba(217, 177, 92, 0.08); color: #d9b15c; font-size: 0.6875rem; letter-spacing: 0.16em; }
 #prvych-14-dni.km14-band .km-kicker::before { width: 0.4375rem; height: 0.4375rem; border-radius: 50%; background: #d9b15c; box-shadow: 0 0 0 3px rgba(217, 177, 92, 0.18); }
