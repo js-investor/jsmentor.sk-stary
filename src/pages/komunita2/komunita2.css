@@ -381,3 +381,36 @@
 
 /* Karta členstva: dlhý text tlačidla (klient) sa zalomí v pilulke namiesto pretečenia. */
 .km-summary .km-btn { white-space: normal; text-align: center; line-height: 1.25; padding-top: 0.8rem; padding-bottom: 0.8rem; }
+
+/* ---------- 3. Prvých 14 dní: tmavý pás so stepperom (prevzaté z /nova; v živom shelle komunita.html je rovnaký doplnok) ---------- */
+#prvych-14-dni.km14-band { padding: 4.5rem 0; background: radial-gradient(120% 90% at 50% 0%, #4a3c31 0%, #322b26 48%, #241f1b 100%); color: #f3e9dd; box-shadow: inset 0 1px 0 rgba(243, 233, 221, 0.08); }
+@media (min-width: 900px) { #prvych-14-dni.km14-band { padding: 6rem 0; } }
+#prvych-14-dni.km14-band .km-head--left { max-width: 48rem; margin: 0 auto; text-align: center; }
+#prvych-14-dni.km14-band .km-kicker { justify-content: center; margin-bottom: 1.25rem; padding: 0.4375rem 0.9375rem 0.4375rem 0.75rem; border-radius: 9999px; border: 1px solid rgba(217, 177, 92, 0.35); background: rgba(217, 177, 92, 0.08); color: #d9b15c; font-size: 0.6875rem; letter-spacing: 0.16em; }
+#prvych-14-dni.km14-band .km-kicker::before { width: 0.4375rem; height: 0.4375rem; border-radius: 50%; background: #d9b15c; box-shadow: 0 0 0 3px rgba(217, 177, 92, 0.18); }
+#prvych-14-dni.km14-band .km-h2 { color: #f3e9dd; }
+#prvych-14-dni.km14-band .km-h2 em { color: #d9b15c; }
+#prvych-14-dni.km14-band .km-lede { max-width: 40rem; margin: 0 auto; color: rgba(243, 233, 221, 0.82); }
+#prvych-14-dni .km-days.km-days--hidden { display: none; }
+.km14 { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); gap: 2rem; margin: 2.5rem 0 0; padding: 0; list-style: none; }
+.km14-line { position: absolute; left: calc(1.625rem - 0.75px); top: 1.625rem; height: calc(var(--line-end, 100%) - 1.625rem); width: 1.5px; background: rgba(243, 233, 221, 0.16); }
+.km14-line b { position: absolute; left: 0; right: 0; top: 0; height: 100%; background: #d9b15c; transform: scaleY(var(--p, 0)); transform-origin: 50% 0; }
+.km14-step { position: relative; display: grid; grid-template-columns: 3.25rem minmax(0, 1fr); column-gap: 1rem; align-items: start; opacity: 0; transform: translateY(16px); transition: opacity 0.75s var(--km-ease), transform 0.75s var(--km-ease); transition-delay: calc(var(--i, 0) * 80ms); }
+.km14-step.is-in { opacity: 1; transform: none; }
+.km14-n { position: relative; z-index: 1; display: inline-flex; align-items: center; justify-content: center; width: 3.25rem; height: 3.25rem; border-radius: 50%; background: #342c26; box-shadow: inset 0 0 0 1.5px rgba(243, 233, 221, 0.32); color: #f3e9dd; font-family: var(--font-serif); font-size: 1.375rem; font-weight: 700; line-height: 1; transition: background 0.5s var(--km-ease), box-shadow 0.5s var(--km-ease), color 0.5s, transform 0.5s var(--km-ease); }
+.km14-step.is-on .km14-n { background: #d9b15c; box-shadow: inset 0 0 0 1.5px #d9b15c, 0 0 0 6px rgba(217, 177, 92, 0.14), 0 12px 30px -10px rgba(217, 177, 92, 0.55); color: #292420; transform: scale(1.08); }
+.km14-tag { display: block; margin-top: 0.625rem; font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #d9b15c; }
+.km14-step h3 { margin: 0.375rem 0 0; font-family: var(--font-serif); font-size: clamp(1.375rem, 2.2vw, 1.625rem); line-height: 1.15; font-weight: 700; color: #f3e9dd; text-wrap: balance; }
+.km14-step p { margin: 0.75rem 0 0; font-size: 1rem; line-height: 1.6; color: rgba(243, 233, 221, 0.78); text-wrap: pretty; }
+@media (min-width: 900px) {
+  .km14 { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; margin-top: 3.5rem; }
+  .km14-step { display: block; padding: 0 1rem; text-align: center; }
+  .km14-n { width: 4.25rem; height: 4.25rem; font-size: 1.875rem; }
+  .km14-tag { margin-top: 1.375rem; }
+  .km14-step h3 { margin-top: 0.375rem; }
+  .km14-step p { max-width: 24em; margin-left: auto; margin-right: auto; }
+  .km14-line { left: 12.5%; right: 12.5%; top: calc(2.125rem - 0.75px); height: 1.5px; width: auto; }
+  .km14-line b { transform: scaleX(var(--p, 0)); transform-origin: 0 50%; }
+}
+@media (prefers-reduced-motion: reduce) { .km14-step { opacity: 1; transform: none; transition: none; } .km14-n { transition: none; } }
+    

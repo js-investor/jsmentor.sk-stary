@@ -71,6 +71,78 @@ const DAYS = [
   { badge: "Deň 14", title: "Rozhodneš sa podľa seba.", text: "Ak zistíš, že ti to nedáva hodnotu, členstvo jednoducho zrušíš. Bez viazanosti, bez telefonátov, bez presviedčania." },
 ];
 
+
+/** Prvých 14 dní ako stepper (prevzaté z /nova): zlatá čiara sa vypĺňa pri skrolovaní, dosiahnuté číslice sa rozsvietia; na mobile zvislo. */
+const Steps14 = () => {
+  const ref = useRef<HTMLOListElement>(null);
+  useEffect(() => {
+    const ol = ref.current;
+    if (!ol) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const clamp = (v: number) => Math.min(1, Math.max(0, v));
+    const steps = Array.from(ol.querySelectorAll<HTMLLIElement>(".km14-step"));
+    const ns = steps.map((s) => s.querySelector<HTMLElement>(".km14-n"));
+    let ticking = false;
+    const job = () => {
+      ticking = false;
+      const vh = window.innerHeight;
+      let p: number;
+      if (window.innerWidth >= 900) {
+        const r = ol.getBoundingClientRect();
+        p = clamp((vh * 0.8 - r.top) / (vh * 0.42));
+      } else {
+        const a = ns[0]?.getBoundingClientRect();
+        const b = ns[ns.length - 1]?.getBoundingClientRect();
+        if (!a || !b) return;
+        p = clamp((vh * 0.68 - a.top - a.height / 2) / Math.max(1, b.top - a.top));
+        ol.style.setProperty("--line-end", `${(b.top + b.height / 2 - ol.getBoundingClientRect().top).toFixed(1)}px`);
+      }
+      if (reduce) p = 1;
+      ol.style.setProperty("--p", p.toFixed(3));
+      steps.forEach((s, k) => s.classList.toggle("is-on", p >= k / (steps.length - 1) - 0.02));
+    };
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(job);
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    job();
+    let io: IntersectionObserver | undefined;
+    if (reduce || !("IntersectionObserver" in window)) {
+      steps.forEach((s) => s.classList.add("is-in"));
+    } else {
+      io = new IntersectionObserver(
+        (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("is-in"); io?.unobserve(e.target); } }),
+        { rootMargin: "0px 0px -6% 0px", threshold: 0.05 },
+      );
+      steps.forEach((s) => io?.observe(s));
+    }
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      io?.disconnect();
+    };
+  }, []);
+  return (
+    <ol className="km14" ref={ref} aria-label="Prvých 14 dní krok za krokom">
+      <i className="km14-line" aria-hidden="true"><b /></i>
+      {DAYS.map((d, i) => (
+        <li key={d.badge} className="km14-step" style={st(i)}>
+          <span className="km14-n" aria-hidden="true"><b>{i + 1}</b></span>
+          <div className="km14-body">
+            <span className="km14-tag">{d.badge}</span>
+            <h3>{d.title}</h3>
+            <p>{d.text}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  );
+};
+
 const CtaLink = ({ cta, className = "km-btn", children }: { cta: Cta; className?: string; children?: ReactNode }) => (
   <a
     href={cta.href}
@@ -393,7 +465,7 @@ const Komunita2 = () => {
         </section>
 
         {/* ═══ 3. Prvých 14 dní ═══ */}
-        <section className="km-section" id="prvych-14-dni">
+        <section className="km-band km-band--ink km14-band" id="prvych-14-dni">
           <div className="km-wrap">
             <AnimatedSection>
               <div className="km-head km-head--left">
@@ -402,17 +474,7 @@ const Komunita2 = () => {
                 <p className="km-lede">Vojdeš dnu, pozrieš si videá, vyskúšaš nástroje, stiahneš si bonusy a rozhodneš sa podľa seba.</p>
               </div>
             </AnimatedSection>
-            <AnimatedSection delay={0.06}>
-              <ol className="km-days">
-                {DAYS.map((d, i) => (
-                  <li key={d.badge} className={cn("km-day", i === DAYS.length - 1 && "km-day--last")}>
-                    <span className="km-day-badge">{d.badge}</span>
-                    <h3>{d.title}</h3>
-                    <p>{d.text}</p>
-                  </li>
-                ))}
-              </ol>
-            </AnimatedSection>
+            <Steps14 />
           </div>
         </section>
 
