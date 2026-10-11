@@ -423,5 +423,6 @@
 .km-show-latest-thumb i { position: absolute; left: 50%; top: 50%; width: 2rem; height: 2rem; border-radius: 50%; background: rgba(243, 233, 221, 0.92); color: var(--km-ink); transform: translate(-50%, -50%); display: inline-flex; align-items: center; justify-content: center; }
 .km-show-latest-body { min-width: 0; }
 .km-show-latest-label { display: block; margin-bottom: 0.25rem; font-size: 0.625rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--km-gold); }
+.km-show-latest-label i { font-style: normal; margin: 0 0.25rem; color: rgba(243, 233, 221, 0.4); }
 .km-show-latest-title { display: block; font-family: var(--font-serif); font-size: 1.0625rem; line-height: 1.25; font-weight: 700; text-wrap: balance; }
 @media (min-width: 768px) { .km-show-latest { gap: 1.25rem; padding: 0.875rem; } .km-show-latest-thumb { flex-basis: 11rem; } .km-show-latest-title { font-size: 1.1875rem; } }

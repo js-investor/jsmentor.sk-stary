@@ -335,6 +335,7 @@ export const DARK_GRADIENT = {
   /** Úzky pásik pod tromi ukážkami (2026-10-11). Na živom webe vložený ako doplnok v obale komunita.html (prefix kmnv-). */
   latest: {
     label: "Najnovšie video v komunite",
+    duration: "8 minút",
     title: "Ako investovať 1 000 € / 10 000 € / 100 000 €",
     image: { src: "@/assets/images/Ako investovat 3 sumy.jpg", alt: "Ako investovať 1 000 € / 10 000 € / 100 000 €" },
   },

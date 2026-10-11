@@ -608,7 +608,7 @@ const Komunita2 = () => {
                 data-umami-event-section="ukazky-play-nove"
               >
                 <span className="km-show-latest-thumb"><img src={asset(DARK_GRADIENT.latest.image.src)} alt="" loading="lazy" decoding="async" /><i aria-hidden><Play className="h-3 w-3" strokeWidth={0} fill="currentColor" /></i></span>
-                <span className="km-show-latest-body"><span className="km-show-latest-label">{DARK_GRADIENT.latest.label}</span><span className="km-show-latest-title">{DARK_GRADIENT.latest.title}</span></span>
+                <span className="km-show-latest-body"><span className="km-show-latest-label">{DARK_GRADIENT.latest.label} <i aria-hidden>·</i> {DARK_GRADIENT.latest.duration}</span><span className="km-show-latest-title">{DARK_GRADIENT.latest.title}</span></span>
               </button>
             </AnimatedSection>
             <AnimatedSection>
