@@ -414,3 +414,7 @@
 }
 @media (prefers-reduced-motion: reduce) { .km14-step { opacity: 1; transform: none; transition: none; } .km14-n { transition: none; } }
     
+
+/* Najnovšie video v komunite: štítok nad názvom karty v ukážkach (zrkadlo doplnku kmnv v shelle komunita.html) */
+.km-show-label { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.4375rem 0.9375rem 0.4375rem 0.75rem; border-radius: 9999px; box-shadow: inset 0 0 0 1px rgba(217, 177, 92, 0.55); color: #d9b15c; font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; white-space: nowrap; }
+.km-show-label::before { content: ""; width: 0.4375rem; height: 0.4375rem; border-radius: 50%; background: #d9b15c; box-shadow: 0 0 0 3px rgba(217, 177, 92, 0.2); }

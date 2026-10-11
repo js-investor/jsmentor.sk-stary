@@ -588,6 +588,7 @@ const Komunita2 = () => {
                       data-umami-event={DARK_GRADIENT.thumbnailClick.umamiEvent}
                       data-umami-event-section={DARK_GRADIENT.thumbnailClick.umamiSection}
                     >
+                      {"label" in v && v.label ? <span className="km-show-label">{v.label}</span> : null}
                       <span className="km-show-title">{v.title}</span>
                       <span className="km-show-frame">
                         <img src={asset(v.image.src)} alt="" loading="lazy" decoding="async" />

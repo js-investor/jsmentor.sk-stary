@@ -305,6 +305,17 @@ export const DARK_GRADIENT = {
    */
   items: [
     {
+      /** Najnovšie video (2026-10-11): štítok nad názvom, pilulka „Nové“ namiesto dĺžky. Na živom webe vložené ako doplnok v obale komunita.html (prefix kmnv-). */
+      label: "Najnovšie video v komunite",
+      title: "Ako investovať 1 000 € / 10 000 € / 100 000 €",
+      duration: "Nové",
+      image: {
+        src: "@/assets/images/Ako investovat 3 sumy.jpg",
+        alt: "Ako investovať 1 000 € / 10 000 € / 100 000 €",
+      },
+      tilt: "2.5deg",
+    },
+    {
       title: "Ako by som začal investovať v roku 2026, keby som dnes začínal od nuly",
       duration: "16 minút",
       image: {
