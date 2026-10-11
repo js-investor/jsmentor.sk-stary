@@ -415,6 +415,13 @@
 @media (prefers-reduced-motion: reduce) { .km14-step { opacity: 1; transform: none; transition: none; } .km14-n { transition: none; } }
     
 
-/* Najnovšie video v komunite: štítok nad názvom karty v ukážkach (zrkadlo doplnku kmnv v shelle komunita.html) */
-.km-show-label { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.4375rem 0.9375rem 0.4375rem 0.75rem; border-radius: 9999px; box-shadow: inset 0 0 0 1px rgba(217, 177, 92, 0.55); color: #d9b15c; font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; white-space: nowrap; }
-.km-show-label::before { content: ""; width: 0.4375rem; height: 0.4375rem; border-radius: 50%; background: #d9b15c; box-shadow: 0 0 0 3px rgba(217, 177, 92, 0.2); }
+/* Najnovšie video v komunite: úzky pásik pod tromi ukážkami (zrkadlo doplnku kmnv v shelle komunita.html) */
+.km-show-latest { display: flex; align-items: center; gap: 1rem; width: 100%; max-width: 46rem; margin: 2.25rem auto 0; padding: 0.75rem; border: 0; border-radius: 1.25rem; background: rgba(243, 233, 221, 0.05); box-shadow: inset 0 0 0 1px rgba(243, 233, 221, 0.14); color: var(--km-paper); font-family: var(--font-sans); text-align: left; cursor: pointer; transition: background 0.3s, box-shadow 0.3s; }
+.km-show-latest:hover { background: rgba(243, 233, 221, 0.08); box-shadow: inset 0 0 0 1px rgba(243, 233, 221, 0.26); }
+.km-show-latest-thumb { position: relative; flex: 0 0 8rem; aspect-ratio: 16 / 9; border-radius: 0.75rem; overflow: hidden; background: var(--km-ink-2); }
+.km-show-latest-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.km-show-latest-thumb i { position: absolute; left: 50%; top: 50%; width: 2rem; height: 2rem; border-radius: 50%; background: rgba(243, 233, 221, 0.92); color: var(--km-ink); transform: translate(-50%, -50%); display: inline-flex; align-items: center; justify-content: center; }
+.km-show-latest-body { min-width: 0; }
+.km-show-latest-label { display: block; margin-bottom: 0.25rem; font-size: 0.625rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--km-gold); }
+.km-show-latest-title { display: block; font-family: var(--font-serif); font-size: 1.0625rem; line-height: 1.25; font-weight: 700; text-wrap: balance; }
+@media (min-width: 768px) { .km-show-latest { gap: 1.25rem; padding: 0.875rem; } .km-show-latest-thumb { flex-basis: 11rem; } .km-show-latest-title { font-size: 1.1875rem; } }

@@ -588,7 +588,6 @@ const Komunita2 = () => {
                       data-umami-event={DARK_GRADIENT.thumbnailClick.umamiEvent}
                       data-umami-event-section={DARK_GRADIENT.thumbnailClick.umamiSection}
                     >
-                      {"label" in v && v.label ? <span className="km-show-label">{v.label}</span> : null}
                       <span className="km-show-title">{v.title}</span>
                       <span className="km-show-frame">
                         <img src={asset(v.image.src)} alt="" loading="lazy" decoding="async" />
@@ -600,6 +599,18 @@ const Komunita2 = () => {
                 </li>
               ))}
             </ol>
+            <AnimatedSection>
+              <button
+                type="button"
+                className="km-show-latest"
+                onClick={scrollToCta}
+                data-umami-event={DARK_GRADIENT.thumbnailClick.umamiEvent}
+                data-umami-event-section="ukazky-play-nove"
+              >
+                <span className="km-show-latest-thumb"><img src={asset(DARK_GRADIENT.latest.image.src)} alt="" loading="lazy" decoding="async" /><i aria-hidden><Play className="h-3 w-3" strokeWidth={0} fill="currentColor" /></i></span>
+                <span className="km-show-latest-body"><span className="km-show-latest-label">{DARK_GRADIENT.latest.label}</span><span className="km-show-latest-title">{DARK_GRADIENT.latest.title}</span></span>
+              </button>
+            </AnimatedSection>
             <AnimatedSection>
               <div className="km-shows-foot">
                 <CtaLink cta={DARK_GRADIENT.cta} className="km-btn km-btn--light km-btn--lg" />
